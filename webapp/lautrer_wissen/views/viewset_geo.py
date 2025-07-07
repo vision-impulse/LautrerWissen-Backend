@@ -1,0 +1,173 @@
+# Copyright (c) 2025 Vision Impulse GmbH
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+#
+# Authors: Benjamin Bischke
+
+from ..serializers.geo_serializers import create_geo_serializer
+
+from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter, SearchFilter
+
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, CharFilter, BooleanFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
+from django.db.models import Q
+# Custom filter for JSON field
+from django.db import models
+import django_filters
+from rest_framework.response import Response
+import json
+
+
+class MultiCategoryFilter(django_filters.BaseInFilter, django_filters.CharFilter):
+    pass
+
+
+def create_dynamic_geo_filter(model):
+    """Dynamically create a filter class based on available JSON properties."""
+
+    # Extract filterable fields from MAP_FIELDS (if defined in model)
+    fields = getattr(model, "MAP_FIELDS", {})
+    rel_fields = []
+
+    def is_missing_filter(queryset, name, value, *, field_name):
+        if value:                      # ?field__missing=true
+            return queryset.filter(
+                models.Q(**{f"{field_name}__isnull": True}) |
+                models.Q(**{f"{field_name}": ""})
+            )
+        else:                          # ?field__missing=false
+            return queryset.exclude(
+                models.Q(**{f"{field_name}__isnull": True}) |
+                models.Q(**{f"{field_name}": ""})
+            )
+    # Define dynamic filter methods
+    filter_methods = {}
+    for model_field_name, public_field_name in fields.items():
+
+        model_field = model._meta.get_field(model_field_name)
+
+        if not isinstance(model_field, (models.DateField, models.DateTimeField)):
+            rel_fields.append(public_field_name)
+
+            filter_methods[public_field_name] = CharFilter(field_name=model_field_name, lookup_expr="iexact")
+
+            # Define a custom "not equal" filter function (e.g., `?access__ne=Kunden`)
+            def ne_filter(queryset, name, value, field_name=model_field_name):
+                # Make sure to exclude where model_field_name matches value
+                return queryset.exclude(**{field_name: value})
+            
+            filter_methods[f"{public_field_name}__ne"] = CharFilter(method=ne_filter)
+            filter_methods[f"{public_field_name}__in"] = MultiCategoryFilter(field_name=model_field_name,
+                                                                             lookup_expr='in')
+            filter_methods[f"{public_field_name}__gte"] = django_filters.NumberFilter(
+                    field_name=model_field_name, lookup_expr="gte")
+         
+            filter_methods[f"{public_field_name}__missing"] = BooleanFilter(
+                method=lambda qs, name, value, field_name=model_field_name: 
+                   is_missing_filter(qs, name, value, field_name=field_name)
+        )
+
+    # Dynamically create the filter class
+    filter_class = type(
+        f"{model.__name__}Filter",  # Dynamic class name
+        (FilterSet,),  # Inherit from FilterSet
+        {
+            **filter_methods,  # Add filter fields and methods
+            "Meta": type("Meta", (), {"model": model, "fields": rel_fields}),  # Meta class
+        }
+    )
+
+    return filter_class
+
+
+def create_geo_viewset(model):
+    """Dynamically create a viewset for a given model."""
+
+    serializer_class = create_geo_serializer(model)
+    dynamic_filter_class = create_dynamic_geo_filter(model)
+
+    viewset_name = f"{model.__name__}ViewSet"
+
+    if 'latitude' in [f.name for f in model._meta.get_fields()]:
+        queryset = model.objects.filter(latitude__isnull=False)
+    else:
+        queryset = model.objects.all()
+
+    def merge_features_by_geometry(feature_collection):
+        merged = {}
+        for feature in feature_collection["features"]:
+            geometry = feature["geometry"]
+            if isinstance(geometry, str):
+                geometry = json.loads(geometry)
+
+            geometry_key = tuple(geometry["coordinates"])
+            if geometry_key not in merged:
+                merged[geometry_key] = {
+                    "type": "Feature",
+                    "geometry": geometry,
+                    "properties": {}
+                }
+
+            for key, value in feature["properties"].items():
+                if key not in merged[geometry_key]["properties"]:
+                    merged[geometry_key]["properties"][key] = [value]
+                else:
+                    if value not in merged[geometry_key]["properties"][key]:
+                        merged[geometry_key]["properties"][key].append(value)
+
+        merged_features = []
+        for feature in merged.values():
+            props = feature["properties"]
+            final_props = {}
+
+            for key, values in props.items():
+                final_props[key] = values[0] if len(values) == 1 else values
+
+            del final_props["size_radius_meters"]
+            del final_props["dashboard_url"]
+            del final_props["timefilters"]
+            del final_props["id"]
+            feature["properties"] = final_props
+            merged_features.append(feature)
+        
+        feature_collection["features"] = merged_features
+        return feature_collection
+
+    # Create a custom `list` method
+    def merged_list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True, context={"request": request})
+        data = serializer.data
+
+        # Merge overlapping features
+        if model.__name__ == "KLSensorGrafanaDashboard":
+            data = merge_features_by_geometry(data)
+        return Response(data)
+
+    # Build the ViewSet class dynamically with type()
+    return type(
+        viewset_name,
+        (viewsets.ReadOnlyModelViewSet,),
+        {
+            "queryset": queryset,
+            "serializer_class": serializer_class,
+            "ordering_fields": ["id"],
+            "pagination_class": None,
+            "filter_backends": [DjangoFilterBackend, OrderingFilter, SearchFilter],
+            "filterset_class": dynamic_filter_class,
+            "list": merged_list,  # Overriding list method
+        },
+    )
