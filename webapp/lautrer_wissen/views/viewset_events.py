@@ -19,6 +19,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
+from django.utils.timezone import now  
 
 from ..serializers.generic_serializer import create_generic_serializer
 
@@ -150,8 +151,10 @@ class KLConstructionSiteViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = PageNumberPagination
 
     def get_queryset(self):
-        today = datetime.now().date()
-        return KLConstructionSite.objects.all().order_by('baustart')
+        today = now().date()
+        return KLConstructionSite.objects.filter(
+            bauende__gte=today
+        ).order_by('baustart')
 
 
 class DemographicDataViewSet(viewsets.ReadOnlyModelViewSet):
@@ -180,22 +183,3 @@ class DemographicDataViewSet(viewsets.ReadOnlyModelViewSet):
             ]
         })
 
-
-class DemographicDataDistrictsViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet to provide a list of unique city_district_id and city_district_name pairs.
-    """
-    def list(self, request):
-        districts = (
-            DemographicData.objects
-            .values('city_district_id', 'city_district_name')
-            .distinct()
-            .order_by('city_district_name') 
-        )
-
-        return Response({
-            "districts": [
-                {"id": d["city_district_id"], "name": d["city_district_name"]}
-                for d in districts
-            ]
-        })

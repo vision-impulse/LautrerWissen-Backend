@@ -22,7 +22,7 @@ from .views.viewset_geo import create_geo_viewset
 from .views.viewset_wiki import create_wiki_viewset
 from .views.viewset_events import KLLeisureEventViewSet, KLWGAEventViewSet
 from .views.viewset_events import KLCouncilEventViewSet, KLConstructionSiteViewSet
-from .views.viewset_events import DemographicDataViewSet, DemographicDataDistrictsViewSet
+from .views.viewset_events import DemographicDataViewSet
 from .views.viewset_elections import ElectionViewSet, ElectionResultViewSet
 from .models.events import events
 from .models import API_GEO_MODELS, API_WIKI_MODLES
