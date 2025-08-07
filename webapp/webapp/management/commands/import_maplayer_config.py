@@ -24,8 +24,8 @@ class Command(BaseCommand):
     help = "Import a JSON layer config into the database"
 
     def handle(self, *args, **kwargs):
-        csv_file = os.path.join(os.getenv("APP_DATA_DIR"), "initial/config/layer_groups_import.json")
-        with open(csv_file, 'r', encoding='utf-8') as f:
+        json_file = os.path.join(os.getenv("CONFIG_DIR"), "init/frontend_sidebar_config.json")
+        with open(json_file, 'r', encoding='utf-8') as f:
             config = json.load(f)
 
         MapLayerGroup.objects.all().delete()

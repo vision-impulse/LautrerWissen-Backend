@@ -1,0 +1,525 @@
+[
+  {
+    "title": "Bildungsstadtplan",
+    "color": "#F1945C",
+    "layers": [
+      {
+        "title": "Schulen",
+        "url": "/geo/kleducationalinstitution?Kategorie=Schule",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Kitas",
+        "url": "/geo/kleducationalinstitution?Kategorie=Kita",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Bildung",
+        "url": "/geo/kleducationalinstitution?Kategorie=Bildung",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Beratung",
+        "url": "/geo/kleducationalinstitution?Kategorie=Beratung",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Kunst & Kultur",
+        "url": "/geo/kleducationalinstitution?Kategorie=Kunst%20und%20Kultur",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Musikschule",
+        "url": "/geo/osmmusicschool",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Sprache",
+        "url": "/geo/kleducationalinstitution?Kategorie=Sprache",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "title": "Freizeit, Spiel und Sport",
+    "color": "#9c27b0",
+    "layers": [
+      {
+        "title": "Basketballplätze",
+        "url": "/geo/osmsportbasketball",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Fussballplätze",
+        "url": "/geo/osmsportsoccer",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Spielplätze",
+        "url": "/geo/osmleisureplayground",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Tennisplätze",
+        "url": "/geo/osmsporttennis",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Tanzschulen",
+        "url": "/geo/osmleisuredance",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Volleyballfelder",
+        "url": "/geo/osmvolleyball",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Minigolf",
+        "url": "/geo/osmminiaturegolf",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Schwimmbad",
+        "url": "/geo/osmsportcenterswimming",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Kino",
+        "url": "/geo/osmcinema",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Kletterhallen",
+        "url": "/geo/osmsportcenterclimbing",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Escaperoom",
+        "url": "/geo/osmescapegame",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Zoo",
+        "url": "/geo/osmzoo",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "title": "Kultur",
+    "color": "#d06292",
+    "layers": [
+      {
+        "title": "Brunnen",
+        "url": "/geo/wikifountain",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Ehem. Brauereien",
+        "url": "/geo/wikibrewery",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Fischskulpturen",
+        "url": "/geo/wikifishsculpture",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Kulturdenkmäler",
+        "url": "/geo/wikiculturalmonument",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Naturdenkmäler",
+        "url": "/geo/wikinaturalmonument",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Skulpturen",
+        "url": "/geo/klsculpture",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Stolpersteine",
+        "url": "/geo/wikistolperstein",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Rittersteine",
+        "url": "/geo/wikiritterstein",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "title": "Leben in KL",
+    "color": "#FF9800",
+    "layers": [
+      {
+        "title": "Briefkasten",
+        "url": "/geo/osmpostbox",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Packstation",
+        "url": "/geo/osmparcellocker",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Copyshop",
+        "url": "/geo/osmcopyshop",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Litfaßsäulen",
+        "url": "/geo/osmadvertisingcolumn",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Mülleimer",
+        "url": "/geo/osmamenitywastebasket",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Sitzbänke",
+        "url": "/geo/osmamenitybench",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Wasserspender",
+        "url": "/geo/osmamenitydrinkingwater",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Rettungspunkte",
+        "url": "/geo/emergencypoint",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Wifi-Hot-Spots",
+        "url": "/geo/wlanhotspot/?format=json",
+        "visible": false,
+        "color": "#000000",
+        "subLayers": [
+          {
+            "title": "Empera",
+            "url": "/geo/wlanhotspot/?Datenquelle=Empera&format=json",
+            "visible": false
+          },
+          {
+            "title": "Freifunk",
+            "url": "/geo/wlanhotspot/?Datenquelle=Freifunk&format=json",
+            "visible": false
+          },
+          {
+            "title": "MySpot",
+            "url": "/geo/wlanhotspot/?Datenquelle=MySpot&format=json",
+            "visible": false
+          }
+        ]
+      },
+      {
+        "title": "Öffentliche Toiletten",
+        "url": "/geo/osmamenitytoilets/?format=json",
+        "visible": false,
+        "color": "#000000",
+        "subLayers": [
+          {
+            "title": "Nette Toilette",
+            "url": "/geo/osmamenitytoilets/?Betreiber=Nette%20Toilette",
+            "visible": false
+          },
+          {
+            "title": "Sonstige",
+            "url": "/geo/osmamenitytoilets/?Betreiber__ne=Nette%20Toilette",
+            "visible": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Bubatzkarte",
+    "color": "#000000",
+    "layers": [
+      {
+        "title": "Cannabis Konsum Verbotszone",
+        "url": "https://geoportal.kaiserslautern.de/cgi-bin/bubatz_wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=Cannabiskonsumverbot&FORMAT=image/png&SRS=EPSG:4326&TRANSPARENT=false",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Verbot Cannabiskonsum",
+        "url": "https://geoportal.kaiserslautern.de/cgi-bin/bubatz_wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=Bubatz_100&FORMAT=image/png&SRS=EPSG:4326&TRANSPARENT=false",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Verbot Gründung von Anbauvereinigungen",
+        "url": "https://geoportal.kaiserslautern.de/cgi-bin/bubatz_wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=Bubatz_200&FORMAT=image/png&SRS=EPSG:4326&TRANSPARENT=false",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "title": "Planen und Bauen",
+    "color": "#9575cd",
+    "layers": [
+      {
+        "title": "Flächennutzungsplan",
+        "url": "https://geoportal.kaiserslautern.de/cgi-bin/mapserv?map=/var/wms/fnpkl_utm32.map&REQUEST=GetMap&LAYERS=FNP_Stadt_Kaiserslautern&SERVICE=WMS&SRS=EPSG:4326&TRANSPARENT=false&VERSION=1.1.1",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Baulandskataster",
+        "url": "/geo/klvacantlot",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Baurechtskataster",
+        "url": "/geo/kllanduseplan",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "title": "Recycling / Nachhaltigkeit",
+    "color": "#4db6ac",
+    "layers": [
+      {
+        "title": "Wertstoffhof",
+        "url": "/geo/osmrecyclingcenter",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Müllcontainer",
+        "url": "/geo/osmrecyclingcontainer",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Hundekotbeutel",
+        "url": "/geo/osmvendingmachinedogtoilet",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "title": "Religion",
+    "color": "#f06292",
+    "layers": [
+      {
+        "title": "Sakralbauten",
+        "url": "/geo/wikisacralbuilding",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Friedhöfe",
+        "url": "/geo/osmcemetery",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "title": "Sensorik",
+    "color": "#33eda7",
+    "layers": [
+      {
+        "title": "Umweltsensoren",
+        "url": "/geo/klenvironmentalsensor",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Sensor-Gateways",
+        "url": "/geo/ttngateway",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Sensor-Dashboard",
+        "url": "/geo/klsensorgrafanadashboard",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Feldstärke",
+        "url": "/geo/klfieldtestmeasurements",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "title": "Umwelt und Natur",
+    "color": "#79ED33",
+    "layers": [
+      {
+        "title": "Bäume",
+        "url": "/geo/osmnaturaltrees",
+        "visible": false,
+        "color": "#4CAF50"
+      },
+      {
+        "title": "Naturschutzgebiete",
+        "url": "/geo/osmnaturereserve",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Naturschutzgebiete (Wiki)",
+        "url": "/geo/wikinaturalreserve",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "title": "Verkehr und Mobilität",
+    "color": "#4fc3f7",
+    "layers": [
+      {
+        "title": "Autoverleih",
+        "url": "/geo/osmcarrental",
+        "visible": false,
+        "color": "#4CAF50"
+      },
+      {
+        "title": "Baustellen",
+        "url": "/geo/klconstructionsite",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "E-Ladesäulen",
+        "url": "/geo/chargingstation",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Fahrschulen",
+        "url": "/geo/osmdrivingschool",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Fahrradständer",
+        "url": "/geo/osmbicycleparking",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Fahrrad-Sharing-Stationen",
+        "url": "/geo/osmbicyclerental",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Fahrradreparatur-Stationen",
+        "url": "/geo/osmbicyclerepairstation",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Haltestellen",
+        "url": "/geo/vrnbusstation",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Parkscheinautomat",
+        "url": "/geo/osmvendingmachineparkingticket",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Parkplätze",
+        "url": "/geo/osmamenitytoilets/?format=json",
+        "visible": false,
+        "color": "#000000",
+        "subLayers": [
+          {
+            "title": "Behinderten-Parkplatz",
+            "url": "/geo/osmamenityparking/?Kapazität%20Behindertenparkplätze__gte=1",
+            "visible": false
+          },
+          {
+            "title": "Parkhäuser",
+            "url": "/geo/klparkinglocation",
+            "visible": false
+          },
+          {
+            "title": "Parkplatz (Öffentlich)",
+            "url": "/geo/osmamenityparking/?Zugang=Ja",
+            "visible": false
+          },
+          {
+            "title": "Parkplatz (Privat)",
+            "url": "/geo/osmamenityparking/?Zugang=privat",
+            "visible": false
+          },
+          {
+            "title": "Parkplatz (Kunden)",
+            "url": "/geo/osmamenityparking/?Zugang__in=Kunden,Erlaubt",
+            "visible": false
+          },
+          {
+            "title": "Parkplatz (Zugang unklar)",
+            "url": "/geo/osmamenityparking/?Zugang__missing=true",
+            "visible": false
+          }
+        ]
+      },
+      {
+        "title": "Parkzonen",
+        "url": "/geo/klparkingzone",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  }
+]

@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
         if config_path is None or not os.path.exists(config_path):
             self.stdout.write(self.style.SUCCESS(f"Using default config path"))
-            config_path = os.path.join(os.getenv("APP_DATA_DIR"), "initial/config/config.yaml")
+            config_path = os.path.join(os.getenv("CONFIG_DIR"), "init/datasources_config.yaml")
             override_existing = True
 
         if not os.path.exists(config_path):

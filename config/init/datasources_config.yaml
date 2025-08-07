@@ -1,0 +1,401 @@
+out_dir: ./../datadir
+#--------------------------------------------------------------------------------------------------------------------
+kl_event_calendar_resource:
+  - url: "https://www.kaiserslautern.de/export/miadi/xml_miadi.xml"
+    filename: "kl_calendar_events.csv"
+    data_source: "Stadtverwaltung Kaiserslautern (Veranstaltungskalender)"
+    db_model_class: KLLeisureEvent
+#--------------------------------------------------------------------------------------------------------------------
+ev_resource:
+  - url: "https://data.bundesnetzagentur.de/Bundesnetzagentur/SharedDocs/Downloads/DE/Sachgebiete/Energie/Unternehmen_Institutionen/E_Mobilitaet/Ladesaeulenregister_BNetzA_2025-02-24.xlsx"
+    filename: "ev_station.xlsx"
+    data_source: "Bundesnetzagentur (Öffentliche Ladeinfrastruktur)"
+    db_model_class: ChargingStation
+#--------------------------------------------------------------------------------------------------------------------
+ttn_gateway_resource:
+  - url: "https://mapper.packetbroker.net/api/v2/gateways?distanceWithin[latitude]=49.4431&distanceWithin[longitude]=7.7716&distanceWithin[distance]=15000&netID=000013&tenantID=ttn"
+    filename: "ttn_gateways.json"
+    data_source: "Packet Broker Mapper API"
+    db_model_class: TTNGateway
+#--------------------------------------------------------------------------------------------------------------------
+kl_event_ris_calendar_resource:
+  - url: "https://ris.kaiserslautern.de/buergerinfo/rssfeed.asp?filter=s"
+    filename: "kl_calendar_council.csv"
+    data_source: "Stadtverwaltung Kaiserslautern (Ratsinformationssystem)"
+    db_model_class: KLCouncilEvent
+#--------------------------------------------------------------------------------------------------------------------
+kl_geo_resources:
+  - url: https://opendata.kaiserslautern.de/dataset/9bb02c74-2e79-4bf2-9165-4cfd6ada94fa/resource/42c8b3cc-1e17-4222-bb49-4b368d4127d8/download/parkraumzonen_kl_wgs84.geojson
+    filename: 'kl_parking_zones.geojson'
+    db_model_class: KLParkingZone
+    data_source: "Stadtverwaltung Kaiserslautern (OpenDataPortal)"
+  - url: https://opendata.kaiserslautern.de/dataset/e2757392-39b5-4008-8a0b-5998adcf7238/resource/701101ef-b868-4f49-ab78-86a79139d46c/download/ortsbezirksgrenzen_wgs84.geojson
+    filename: 'kl_city_districts.geojson'
+    db_model_class: KLCityDistrict
+    data_source: "Stadtverwaltung Kaiserslautern (OpenDataPortal)"
+  - url: https://opendata.kaiserslautern.de/dataset/9bb02c74-2e79-4bf2-9165-4cfd6ada94fa/resource/80df0327-b929-4d05-9368-4f5703bef514/download/parkhaeuserkaiserslautern.geojson
+    filename: 'kl_parking_locations.geojson'
+    db_model_class: KLParkingLocation
+    data_source: "Stadtverwaltung Kaiserslautern (OpenDataPortal)"
+#--------------------------------------------------------------------------------------------------------------------
+kl_sensors_mqtt:
+  - filename: 'kl_sensors.yaml'
+    db_model_class: KLEnvironmentalSensor
+    data_source: "Stadtverwaltung Kaiserslautern"
+#--------------------------------------------------------------------------------------------------------------------
+kl_wfs_resources:
+  - layer_name: ms:Bildungsstadtplan_Alle
+    srs_name: "EPSG:4326"
+    out_format: "text/xml; subtype=gml/3.2.1"
+    url: "https://geoportal.kaiserslautern.de/cgi-bin/bildung_wfs"
+    filename: "kl_wfs_education_sites.geojson"
+    db_model_class: KLEducationalInstitution
+    data_source: Stadtverwaltung Kaiserslautern (Geoportal)
+  - layer_name: ms:GPSLocation
+    srs_name: "EPSG:4326"
+    out_format: "text/xml; subtype=gml/3.2.1"
+    url: "https://geoportal.kaiserslautern.de/cgi-bin/skulpturen?"
+    filename: "kl_wfs_sculptures.geojson"
+    db_model_class: KLSculpture
+    data_source: Stadtverwaltung Kaiserslautern (Geoportal)
+  - layer_name: ms:Baustellen
+    srs_name: "EPSG:4326"
+    out_format: "text/xml; subtype=gml/3.2.1"
+    url: "https://geoportal.kaiserslautern.de/cgi-bin/baustellen_wfs"
+    filename: "kl_wfs_construction_sites_ongoing.geojson"
+    db_model_class: KLConstructionSite
+    data_source: Stadtverwaltung Kaiserslautern (Geoportal)
+  - layer_name: ms:Bauluecke
+    srs_name: "EPSG:4326"
+    out_format: "text/xml; subtype=gml/3.2.1"
+    url: "https://geoportal.kaiserslautern.de/cgi-bin/baulandwfs"
+    filename: "kl_wfs_building_area_sites.geojson"
+    db_model_class: KLVacantLot
+    data_source: "Stadtverwaltung Kaiserslautern (Geoportal)"
+  - layer_name: ms:Bebauungsplan
+    srs_name: "EPSG:4326"
+    out_format: "text/xml; subtype=gml/3.2.1"
+    url: "https://geoportal.kaiserslautern.de/cgi-bin/baurechtwfs"
+    filename: "kl_wfs_building_right_sites.geojson"
+    db_model_class: KLLandUsePlan
+    data_source: "Stadtverwaltung Kaiserslautern (Geoportal)"
+#--------------------------------------------------------------------------------------------------------------------
+emergency_point_resources:
+  - url: https://kwf2020.kwf-online.de/wp-content/uploads/2025/01/KWF_RP_V2_18_DE_SHP.zip
+    filename: emergency_points.zip
+    db_model_class: EmergencyPoint
+    data_source: "KWF-Rettungspunkte"
+#--------------------------------------------------------------------------------------------------------------------
+was_geht_app_resources:
+  - url: "https://www.wasgehtapp.de/export.php"
+    filename: wga_events.csv
+    db_model_class: WGAEvent
+    data_source: "Was geht app?"
+#--------------------------------------------------------------------------------------------------------------------
+wiki_resources:
+  - page_name: "Liste der Kulturdenkmäler in Kaiserslautern"
+    data_source: "Wikipedia (Liste der Kulturdenkmäler in Kaiserslautern)"
+    table_indices: [ 0, 1 ]
+    table_filenames: [ 'monuments_city_zones.csv', 'monuments_city_center.csv' ]
+    table_extractor_classes: [ CulturalMonumentTableExtractor, CulturalMonumentTableExtractor_Special ]
+    db_model_class: WikiCulturalMonument
+  - page_name: "Liste_der_Naturdenkmale_in_Kaiserslautern"
+    data_source: "Wikipedia (Liste der Naturdenkmale in Kaiserslautern)"
+    table_indices: [ 0, ]
+    table_filenames: [ 'natural_monuments.csv', ]
+    table_extractor_classes: [ NaturalMonumentTableExtractor ]
+    db_model_class: WikiNaturalMonument
+  - page_name: "Liste_von_Brunnen_in_Kaiserslautern"
+    data_source: "Wikipedia (Liste von Brunnen in Kaiserslautern)"
+    table_indices: [ 0, 1 ]
+    table_filenames: [ 'fountains_city_center.csv', 'fountains_city_districts.csv' ]
+    table_extractor_classes: [ FountainTableExtractor, FountainTableExtractor ]
+    db_model_class: WikiFountain
+  - page_name: "Liste der öffentlichen Fischskulpturen in Kaiserslautern"
+    data_source: "Wikipedia (Liste der öffentlichen Fischskulpturen in Kaiserslautern)"
+    table_indices: [ 0, ]
+    table_filenames: [ 'wiki_fish_sculptures.csv', ]
+    table_extractor_classes: [ FishSculptureTableExtractor, ]
+    db_model_class: WikiFishSculpture
+  - page_name: "Liste der Kulturdenkmäler in Kaiserslautern (Stadtteile)"
+    data_source: "Wikipedia (Liste der Kulturdenkmäler in Kaiserslautern (Stadtteile))"
+    table_indices: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
+    table_filenames: [ 'wiki_monuments_dansenberg.csv', 'wiki_monuments_einsiedlerhof.csv', 'wiki_monuments_erfenbach.csv',
+                        'wiki_monuments_erlenbach.csv', 'wiki_monuments_hohenecken_zone.csv',
+                        'wiki_monuments_hohenecken.csv', 'wiki_monuments_mölschbach.csv',
+                        'wiki_monuments_morlautern.csv', 'wiki_monuments_siegelbach.csv', ]
+    table_extractor_classes: [ CulturalMonumentTableExtractor, CulturalMonumentTableExtractor, CulturalMonumentTableExtractor,
+                                CulturalMonumentTableExtractor, CulturalMonumentTableExtractor, CulturalMonumentTableExtractor,
+                                CulturalMonumentTableExtractor, CulturalMonumentTableExtractor, CulturalMonumentTableExtractor ]
+    db_model_class: WikiCulturalMonument
+  - page_name: "Liste_der_Rittersteine"
+    data_source: "Wikipedia (Liste der Rittersteine)"
+    table_indices: [ 0, ]
+    table_filenames: [ 'wiki_rittersteine.csv', ]
+    table_extractor_classes: [ RittersteinTableExtractor, ]
+    db_model_class: WikiRitterstein
+  - page_name: "Liste_der_Naturschutzgebiete_in_Kaiserslautern"
+    data_source: "Wikipedia (Liste der Naturschutzgebiete in Kaiserslautern)"
+    table_indices: [ 0, ]
+    table_filenames: [ 'wiki_wiki_nature_reserves.csv', ]
+    table_extractor_classes: [ NatureReservesTableExtractor, ]
+    db_model_class: WikiNaturalReserve
+  - page_name: "Liste_von_Sakralbauten_in_Kaiserslautern"
+    data_source: "Wikipedia (Liste der Sakralbauten in Kaiserslautern)"
+    table_indices: [ 0, 1]
+    table_filenames: [ 'wiki_sacral_buildings.csv', 'wiki_sacral_buildings_2.csv', ]
+    table_extractor_classes: [ SacralBuildingsTableExtractor, SacralBuildingsTableExtractor, ]
+    db_model_class: WikiSacralBuilding
+  - page_name: "Liste_der_ehemaligen_Brauereien_in_Kaiserslautern"
+    data_source: "Wikipedia (Liste der ehemaligen Brauereien in Kaiserslautern)"
+    table_indices: [0,]
+    table_filenames: ['wiki_breweries.csv', ]
+    table_extractor_classes: [BreweryTableExtractor,]
+    db_model_class: WikiBrewery
+  - page_name: "Liste_der_Stolpersteine_in_Kaiserslautern"
+    data_source: "Wikipedia (Liste der Stolpersteine in Kaiserslautern)"
+    table_indices: [0,]
+    table_filenames: ['wiki_stolpersteine.csv', ]
+    table_extractor_classes: [StolpersteinTableExtractor,]
+    db_model_class: WikiStolperstein
+#--------------------------------------------------------------------------------------------------------------------
+wifi_freifunk_resource:
+  - url: https://api.karlsruhe.freifunk.net/yanic/meshviewer/ffwp/meshviewer.json
+    filename: wifi_freifunk.json
+    db_model_class: WLANHotspot
+    data_source: "Freifunk"
+#--------------------------------------------------------------------------------------------------------------------
+wifi_myspot_empera_resource:
+  - filename: 'wifi_myspot.xlsx'
+    db_model_class: WLANHotspot
+    data_source: "MySpot"
+  - filename: 'wifi_empera.kml'
+    db_model_class: WLANHotspot
+    data_source: "Empera"
+#--------------------------------------------------------------------------------------------------------------------
+vrn_resource:
+  - url: https://geoportal.vrn.de/services/sharing/rest/content/items/99af9c8780b542d08f02c9f08a52cea4/data
+    filename: 'bus_stations.zip'
+    db_model_class: VRNBusStation
+    data_source: "Verkehrsverbund Rhein-Neckar GmbH (Opendata)"
+#--------------------------------------------------------------------------------------------------------------------
+osm_resources:
+  - tags:
+      leisure:
+        - nature_reserve
+    filename: 'osm_leisure_nature_reserve.geojson'
+    db_model_class: OsmNatureReserve
+    data_source: "OSM"
+  - tags:
+      amenity:
+        - music_school
+    filename: 'osm_amenity_music_school.geojson'
+    db_model_class: OsmMusicSchool
+    data_source: "OSM"
+  - tags:
+      amenity:
+        - driving_school
+    filename: 'osm_amenity_driving_school.geojson'
+    db_model_class: OsmDrivingSchool
+    data_source: "OSM"
+  - tags:
+      sport:
+        - volleyball
+    filename: 'osm_sport_volleyball.geojson'
+    db_model_class: OsmVolleyball
+    data_source: "OSM"
+  - tags:
+      leisure:
+        - dance
+    filename: 'osm_leisure_dance.geojson'
+    db_model_class: OsmLeisureDance
+    data_source: "OSM"
+  - tags:
+      tourism:
+        - zoo
+    filename: 'osm_tourism_zoo.geojson'
+    db_model_class: OsmZoo
+    data_source: "OSM"
+  - tags:
+      amenity:
+        - cinema
+    filename: 'osm_amenity_cinema.geojson'
+    db_model_class: OsmCinema
+    data_source: "OSM"
+  - tags:
+      leisure:
+        - miniature_golf
+    filename: 'osm_leisure_miniature_golf.geojson'
+    db_model_class: OsmMiniatureGolf
+    data_source: "OSM"
+  - tags:
+      leisure:
+        - escape_game
+    filename: 'osm_leisure_escape_game.geojson'
+    db_model_class: OsmEscapegame
+    data_source: "OSM"
+  - tags:
+      shop:
+        - copyshop
+    filename: 'osm_shop_copyshop.geojson'
+    db_model_class: OsmCopyshop
+    data_source: "OSM"
+  - tags:
+      advertising:
+        - column
+    filename: 'osm_advertising_column.geojson'
+    db_model_class: OsmAdvertisingColumn
+    data_source: "OSM"
+  - tags:
+      landuse:
+        - cemetery
+    filename: 'osm_landuse_cemetery.geojson'
+    db_model_class: OsmCemetery
+    data_source: "OSM"
+  # --- Briefkästen ----
+  - tags:
+      amenity:
+        - post_box
+    filename: 'osm_amenity_post_box.geojson'
+    db_model_class: OsmPostBox
+    data_source: "OSM"
+  # --- Packstationen ----
+  - tags:
+      amenity:
+        - parcel_locker
+    filename: 'osm_amenity_parcel_locker.geojson'
+    db_model_class: OsmParcelLocker
+    data_source: "OSM"
+  # --- Wertstoffhof ----
+  - tags:
+      amenity:
+        - recycling
+    filename: 'osm_amenity_recycling_center.geojson'
+    db_model_class: OsmRecyclingCenter
+    data_source: "OSM"
+  #--- Container ----
+  - tags:
+     amenity:
+       - recycling
+    filename: 'osm_amenity_recycling_container.geojson'
+    db_model_class: OsmRecyclingContainer
+    data_source: "OSM"
+  # --- Autoverleih ----
+  - tags:
+      amenity:
+        - car_rental
+    filename: 'osm_amenity_car_rental.geojson'
+    db_model_class: OsmCarRental
+    data_source: "OSM"
+  # --- Parkplätze ----
+  - tags:
+      amenity:
+        - parking
+    filename: 'osm_amenity_parking.geojson'
+    db_model_class: OsmAmenityParking
+    data_source: "OSM"
+   #--- Fahrradreparaturstation ----
+  - tags:
+      amenity:
+        - bicycle_repair_station
+    filename: 'osm_amenity_bicycle_repair_station.geojson'
+    data_source: "OSM"
+    db_model_class: OsmBicycleRepairStation
+  # --- bicycle_parking ----
+  - tags:
+      amenity:
+        - bicycle_parking
+    filename: 'osm_amenity_bicycle_parking.geojson'
+    db_model_class: OsmBicycleParking
+    data_source: "OSM"
+  # --- Bikesharing ----
+  - tags:
+      amenity:
+        - bicycle_rental
+    filename: 'osm_amenity_bicycle_rental.geojson'
+    db_model_class: OsmBicycleRental
+    data_source: "OSM"
+  - tags:
+      amenity:
+        - drinking_water
+    filename: 'osm_amenity_drinking_water.geojson'
+    db_model_class: OsmAmenityDrinkingWater
+    data_source: "OSM"
+  - tags:
+      amenity:
+        - waste_basket
+    filename: 'osm_amenity_waste_basket.geojson'
+    db_model_class: OsmAmenityWasteBasket
+    data_source: "OSM"
+  - tags:
+      amenity:
+        - toilets
+    filename: 'osm_amenity_toilets.geojson'
+    db_model_class: OsmAmenityToilets
+    data_source: "OSM"
+  - tags:
+      amenity:
+        - bench
+    filename: 'osm_amenity_bench.geojson'
+    db_model_class: OSMAmenityBench
+    data_source: "OSM"
+  - tags:
+      sport:
+        - basketball
+    filename: 'osm_sport_basketball.geojson'
+    db_model_class: OsmSportBasketball
+    data_source: "OSM"
+  - tags:
+      sport:
+        - soccer
+    filename: 'osm_sport_soccer.geojson'
+    db_model_class: OsmSportSoccer
+    data_source: "OSM"
+  - tags:
+      sport:
+        - tennis
+    filename: 'osm_sport_tennis.geojson'
+    db_model_class: OsmSportTennis
+    data_source: "OSM"
+  - tags:
+      leisure:
+        - pitch
+    filename: 'osm_leisure_pitch.geojson'
+    db_model_class: OsmLeisurePitch
+    data_source: "OSM"
+  - tags:
+      leisure:
+        - playground
+    filename: 'osm_leisure_playground.geojson'
+    db_model_class: OsmLeisurePlayground
+    data_source: "OSM"
+  - tags:
+      natural:
+        - tree
+    filename: 'osm_natural_trees.geojson'
+    db_model_class: OsmNaturalTrees
+    data_source: "OSM"
+  - tags:
+      amenity:
+        - vending_machine
+    filename: 'osm_amenity_vending_machine__parking_ticket.geojson'
+    db_model_class: OsmVendingMachineParkingTicket
+    data_source: "OSM"
+  - tags:
+      amenity:
+        - vending_machine
+    filename: 'osm_amenity_vending_machine__excrement_bag.geojson'
+    db_model_class: OsmVendingMachineDogToilet
+    data_source: "OSM"
+  - tags:
+      leisure:
+        - sports_centre
+    filename: 'osm_leisure_sports_centre__climbing.geojson'
+    db_model_class: OsmSportCenterClimbing
+    data_source: "OSM"
+  - tags:
+      leisure:
+        - sports_centre
+    filename: 'osm_leisure_sports_centre__swimming.geojson'
+    db_model_class: OsmSportCenterSwimming
+    data_source: "OSM"
