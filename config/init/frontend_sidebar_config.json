@@ -22,7 +22,7 @@
         "color": "#000000"
       },
       {
-        "title": "Beratung",
+        "title": "Beratungen",
         "url": "/geo/kleducationalinstitution?Kategorie=Beratung",
         "visible": false,
         "color": "#000000"
@@ -34,13 +34,13 @@
         "color": "#000000"
       },
       {
-        "title": "Musikschule",
+        "title": "Musikschulen",
         "url": "/geo/osmmusicschool",
         "visible": false,
         "color": "#000000"
       },
       {
-        "title": "Sprache",
+        "title": "Sprachschulen",
         "url": "/geo/kleducationalinstitution?Kategorie=Sprache",
         "visible": false,
         "color": "#000000"
@@ -94,13 +94,13 @@
         "color": "#000000"
       },
       {
-        "title": "Schwimmbad",
+        "title": "Schwimmbäder",
         "url": "/geo/osmsportcenterswimming",
         "visible": false,
         "color": "#000000"
       },
       {
-        "title": "Kino",
+        "title": "Kinos",
         "url": "/geo/osmcinema",
         "visible": false,
         "color": "#000000"
@@ -112,13 +112,13 @@
         "color": "#000000"
       },
       {
-        "title": "Escaperoom",
+        "title": "Escape-Rooms",
         "url": "/geo/osmescapegame",
         "visible": false,
         "color": "#000000"
       },
       {
-        "title": "Zoo",
+        "title": "Zoos",
         "url": "/geo/osmzoo",
         "visible": false,
         "color": "#000000"
@@ -148,13 +148,13 @@
         "color": "#000000"
       },
       {
-        "title": "Kulturdenkmäler",
+        "title": "Kulturdenkmale",
         "url": "/geo/wikiculturalmonument",
         "visible": false,
         "color": "#000000"
       },
       {
-        "title": "Naturdenkmäler",
+        "title": "Naturdenkmale",
         "url": "/geo/wikinaturalmonument",
         "visible": false,
         "color": "#000000"
@@ -184,19 +184,19 @@
     "color": "#FF9800",
     "layers": [
       {
-        "title": "Briefkasten",
+        "title": "Abfalleimer",
+        "url": "/geo/osmamenitywastebasket",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Briefkästen",
         "url": "/geo/osmpostbox",
         "visible": false,
         "color": "#000000"
       },
       {
-        "title": "Packstation",
-        "url": "/geo/osmparcellocker",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Copyshop",
+        "title": "Copyshops",
         "url": "/geo/osmcopyshop",
         "visible": false,
         "color": "#000000"
@@ -208,8 +208,8 @@
         "color": "#000000"
       },
       {
-        "title": "Mülleimer",
-        "url": "/geo/osmamenitywastebasket",
+        "title": "Packstationen",
+        "url": "/geo/osmparcellocker",
         "visible": false,
         "color": "#000000"
       },
@@ -279,7 +279,7 @@
     "color": "#000000",
     "layers": [
       {
-        "title": "Cannabis Konsum Verbotszone",
+        "title": "Cannabis Konsum Verbotszonen",
         "url": "https://geoportal.kaiserslautern.de/cgi-bin/bubatz_wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=Cannabiskonsumverbot&FORMAT=image/png&SRS=EPSG:4326&TRANSPARENT=false",
         "visible": false,
         "color": "#000000"
@@ -327,7 +327,7 @@
     "color": "#4db6ac",
     "layers": [
       {
-        "title": "Wertstoffhof",
+        "title": "Wertstoffhöfe",
         "url": "/geo/osmrecyclingcenter",
         "visible": false,
         "color": "#000000"
@@ -381,13 +381,13 @@
         "color": "#000000"
       },
       {
-        "title": "Sensor-Dashboard",
+        "title": "Sensor-Dashboards",
         "url": "/geo/klsensorgrafanadashboard",
         "visible": false,
         "color": "#000000"
       },
       {
-        "title": "Feldstärke",
+        "title": "Sensor-Feldstärke",
         "url": "/geo/klfieldtestmeasurements",
         "visible": false,
         "color": "#000000"
@@ -471,7 +471,7 @@
         "color": "#000000"
       },
       {
-        "title": "Parkscheinautomat",
+        "title": "Parkscheinautomaten",
         "url": "/geo/osmvendingmachineparkingticket",
         "visible": false,
         "color": "#000000"
@@ -483,7 +483,7 @@
         "color": "#000000",
         "subLayers": [
           {
-            "title": "Behinderten-Parkplatz",
+            "title": "Behinderten-Parkplätze",
             "url": "/geo/osmamenityparking/?Kapazität%20Behindertenparkplätze__gte=1",
             "visible": false
           },
@@ -493,22 +493,22 @@
             "visible": false
           },
           {
-            "title": "Parkplatz (Öffentlich)",
+            "title": "Parkplätze (Öffentlich)",
             "url": "/geo/osmamenityparking/?Zugang=Ja",
             "visible": false
           },
           {
-            "title": "Parkplatz (Privat)",
+            "title": "Parkplätze (Privat)",
             "url": "/geo/osmamenityparking/?Zugang=privat",
             "visible": false
           },
           {
-            "title": "Parkplatz (Kunden)",
+            "title": "Parkplätze (Kunden)",
             "url": "/geo/osmamenityparking/?Zugang__in=Kunden,Erlaubt",
             "visible": false
           },
           {
-            "title": "Parkplatz (Zugang unklar)",
+            "title": "Parkplätze (Zugang unklar)",
             "url": "/geo/osmamenityparking/?Zugang__missing=true",
             "visible": false
           }
