@@ -35,7 +35,6 @@ class WikiTransformStep(DefaultTransformStep):
         result = []
         for fn in context.resource.table_filenames:
             download_file = os.path.join(context.out_dir, fn)
-            print("processing", download_file)
             df = pd.read_csv(download_file, sep=";")
             df = df.fillna("")
 

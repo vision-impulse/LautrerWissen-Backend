@@ -197,7 +197,6 @@ class WikipediaDownloader(Downloader):
     @staticmethod
     def _get_wikipedia_page_html(page_name):
         response = WikipediaDownloader._download_main_wikipage(page_name)
-        print(response)
         return response.json()['parse']['text']['*']
 
     @staticmethod

@@ -67,7 +67,6 @@ class SensorConsumer(AsyncWebsocketConsumer):
         async def reader():
             async for message in self.pubsub.listen():
                 if message['type'] == 'message':
-                    print(message)
                     try:
                         payload = json.loads(message['data'])                    
                     except json.JSONDecodeError:

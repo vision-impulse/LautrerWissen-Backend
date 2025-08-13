@@ -31,6 +31,10 @@ from ingestor.datapipe.pipelines.emergency_point_pipeline import EmergencyPointP
 from ingestor.datapipe.pipelines.wga_events_pipeline import WGAEventPipeline
 from ingestor.datapipe.pipelines.ttn_gateway_pipeline import TTNGatewayPipeline
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class PipelineFactory:
     """Factory to register and create pipelines dynamically."""
@@ -39,7 +43,7 @@ class PipelineFactory:
 
     @classmethod
     def register_pipeline(cls, name, pipeline_cls):
-        print(f"Pipeline '{name}' registered!")
+        logger.info(f"Pipeline '{name}' registered!")
         cls._pipelines[name] = pipeline_cls
 
     @classmethod

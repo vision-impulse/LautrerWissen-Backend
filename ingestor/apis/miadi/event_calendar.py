@@ -27,10 +27,9 @@ class EventCalendarDownloader(XMLDownloader):
         super(EventCalendarDownloader, self).__init__(out_dir, resource_file.url, resource_file.filename, logger)
 
     def _parse_xml(self, response_content):
-        return EventCalendarDownloader._parse_xml_static(response_content)
+        return self._parse_xml_static(response_content)
 
-    @staticmethod
-    def _parse_xml_static(response_content):
+    def _parse_xml_static(self, response_content):
         """ Sample Response
         <response>
             <version value="1.0"/>
@@ -69,7 +68,7 @@ class EventCalendarDownloader(XMLDownloader):
         channel = root.find('channel').get('value')
         pagination = root.find('pagination').attrib  # currently not used
         items = []
-        print("Downloaded calender version %s, channel %s" % (version, channel))
+        self.logger.info("Downloaded calender version %s, channel %s", version, channel)
         for item in root.find('results').findall('item'):
             item_data = OrderedDict({
                 'id': item.find('id').get('value'),

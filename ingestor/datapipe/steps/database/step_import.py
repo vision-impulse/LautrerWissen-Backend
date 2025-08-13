@@ -16,8 +16,11 @@
 # Authors: Benjamin Bischke
 
 from ingestor.datapipe.steps.base_step import PipelineStep
-from ingestor.datapipe.utils.django_orm_utils import DjangoORMUtils   
+from ingestor.datapipe.utils.django_orm_utils import DjangoORMUtils
 import traceback
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class GenericImportStep(PipelineStep):
@@ -27,19 +30,21 @@ class GenericImportStep(PipelineStep):
 
     def execute(self, context):
         try:
-            print("ImportStep...")
+            logger.info(
+                "Starting data import for model class (%s)",
+                context.resource.db_model_class,
+            )
             db_model_name = context.resource.db_model_class
             db_model_rows = context.get_data("rows")
 
-            print("IMPORTING DATA: ", context.resource)
+            logger.info("Importing data: %s", context.resource)
             DjangoORMUtils.bulk_insert_and_cleanup(
                 django_model=DjangoORMUtils.get_django_model_class(db_model_name),
                 db_model_rows=db_model_rows,
-                batch_size=5000
+                batch_size=5000,
             )
-
-            return "Success"
+            logger.info("Successfully imported data")
+            return True
         except Exception as e:
-            traceback.print_exc()
-            print(f"Import failed for {context.resource}: {e}")
+            logger.error(f"Import failed for %s: %s", context.resource, exc_info=True)
             return False

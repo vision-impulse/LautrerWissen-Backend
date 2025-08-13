@@ -26,6 +26,9 @@ from ingestor.utils.geo_districts import CityDistrictsDecoder
 import json
 from shapely.geometry import shape, mapping, Polygon, MultiPolygon
 from datetime import datetime, date
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def parse_date(construction_str: str) -> date | None:
@@ -34,7 +37,7 @@ def parse_date(construction_str: str) -> date | None:
             raise ValueError("Empty string provided")
         return datetime.strptime(construction_str, "%Y-%m-%d").date()
     except ValueError as e:
-        print(f"Error parsing date: {e}")
+        logger.error("Error parsing date: %s", construction_str, exc_info=True)
         return None
 
 

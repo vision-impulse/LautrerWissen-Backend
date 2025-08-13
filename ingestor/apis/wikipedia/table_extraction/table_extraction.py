@@ -100,7 +100,6 @@ class WikipediaTableExtractor(object):
         table_data = self._extract_table_from_html(html_table)
         df_table = self._create_data_frame(table_data)
         df_table = self.apply_custom_transforms_data_frame(df_table)
-        print("Table extraction completed...")
         return df_table
 
     def extract_coords_from_url_string(self, input_string):
@@ -112,14 +111,11 @@ class WikipediaTableExtractor(object):
     def _extract_table_from_html(self, html_table):
         table_data = []
 
-        # Print parsed table for debugging
         table = normalize_table(html_table)
-        #print(html_table.prettify())
 
         for row in table.find_all('tr'):
             cells = row.find_all(['td', 'th'])
             if len(cells) != len(self.table_structure):
-                print("im if", "colspan", row)
                 continue
 
             address_found_in_row, row_data = self._extract_single_row(row)
@@ -208,7 +204,6 @@ class WikipediaTableExtractor(object):
                         image_available = True
                     if 'class' in a.attrs and 'extiw' in a["class"] and a.text == "weitere Bilder":
                         row_info[WikiDfColums.ADDITIONAL_IMAGE_URL_CATEGORY] = a["href"]
-                        print("WEITERE BILDER VERFÜGBAR")
                 if not image_available:
                     cell_text = ""
         else:

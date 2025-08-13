@@ -25,6 +25,7 @@ import json
 import threading
 import time
 import os
+import logging
 
 
 MQTT_BROKER = os.getenv("MQTT_BROKER")
@@ -41,6 +42,7 @@ DB_PORT = os.getenv('DATABASE_PORT')
 DB_DSN = "postgresql://%s:%s@%s:%s/%s" %(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
 TABLENAME = "lautrer_wissen_klfieldtestmeasurements"
 
+logger = logging.getLogger(__name__)
 
 class SensorDBHandler:
     def __init__(self, dsn, flush_interval=5, max_buffer_size=10):
@@ -71,7 +73,7 @@ class SensorDBHandler:
                     if len(self.buffer) >= self.max_buffer_size:
                         await self._flush()
         except Exception as e:
-            print(f"[Handler] Parse Error: {e}")
+            logger.error("[SensorDBHandler] Parse Error: %s", e, exc_info=True)
 
     async def _flush(self):
         if len(self.buffer) == 0:
@@ -89,10 +91,10 @@ class SensorDBHandler:
             """
             await conn.executemany(query, self.buffer)
             await conn.close()
-            print(f"[Handler] Flushed {len(self.buffer)} rows to DB.")
+            logger.info("[SensorDBHandler] Flushed: %s rows to DB.", len(self.buffer))
             self.buffer.clear()
         except Exception as e:
-            print(f"[Handler] DB Insert Error: {e}")
+            logger.error("[SensorDBHandler] DB Insert Error: %s", e, exc_info=True)
 
     async def background_flusher(self):
         while True:
@@ -127,16 +129,16 @@ class MQTTFieldtesterConsumer():
 
     def on_connect(self, client, userdata, flags, rc):
         if rc != 0:
-            print("Failed to connect to MQTT Broker!", self.broker)
+            logger.error("Failed to connect to MQTT Broker %s!", self.broker)
             return
-        print("Connected to MQTT Broker!", self.broker)
+        logger.info("Connected to MQTT Broker %s!", self.broker)
         client.subscribe("#")
 
     def on_message(self, client, userdata, message):
         topic = message.topic
         if "fieldtester" in topic:
             raw = message.payload.decode()
-            print(f"[MQTT] Writing to PostgreSQL from topic: {topic}")
+            logger.info("[MQTT] Writing to PostgreSQL from topic: %s", topic)
             asyncio.run_coroutine_threadsafe(self.db_handler.handle_message(raw), self.loop)
 
     def run(self):

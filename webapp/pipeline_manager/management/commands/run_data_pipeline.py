@@ -26,22 +26,6 @@ from ingestor.datapipe.pipelines.base_pipeline import PipelineType
 import os
 from datetime import date
 
-class ClassNameFormatter(logging.Formatter):
-    def format(self, record):
-        if hasattr(record, 'classname'):
-            record.classname = f"[{record.classname}]"
-        else:
-            record.classname = "[UnknownClass]"
-        return super().format(record)
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler('downloader.log')
-formatter = ClassNameFormatter('%(asctime)s - %(levelname)s - %(classname)s - %(message)s')
-file_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-   
    
 class Command(BaseCommand):
     help = "Execute a specific pipeline"
@@ -81,7 +65,7 @@ class Command(BaseCommand):
 
         data_import_folder = self._get_import_folder() 
 
-        manager = PipelineManager(logger)        
+        manager = PipelineManager()        
         self.stdout.write(f"Running pipeline: {name}")
         manager.run_pipeline(name, resources, data_import_folder)
     

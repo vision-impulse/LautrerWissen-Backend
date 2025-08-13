@@ -17,24 +17,30 @@
 # Authors: Benjamin Bischke
  
 import logging
+from logging.handlers import RotatingFileHandler
+import os
 
 
-class ClassNameFormatter(logging.Formatter):
-    def format(self, record):
-        if hasattr(record, 'classname'):
-            record.classname = f"[{record.classname}]"
-        else:
-            record.classname = "[UnknownClass]"
-        return super().format(record)
+def setup_logging(log_dir="/var/log/lautrerwissen", log_file="data-importer.log", level=logging.INFO):
+    LOG_DIR = os.environ.get("LOG_DIR", "/var/log/lautrerwissen")
 
+    os.makedirs(log_dir, exist_ok=True)
+    log_path = os.path.join(LOG_DIR, log_file)
 
-def get_logger():
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    root_logger = logging.getLogger()
+    if root_logger.handlers:
+        return
 
-    file_handler = logging.FileHandler('downloader.log')
-    formatter = ClassNameFormatter('%(asctime)s - %(levelname)s - %(classname)s - %(message)s')
+    formatter = logging.Formatter(
+        "%(asctime)s [%(levelname)s] %(name)s: %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+    )
+
+    file_handler = RotatingFileHandler(log_path, maxBytes=5_000_000, backupCount=3)
     file_handler.setFormatter(formatter)
 
-    logger.addHandler(file_handler)
-    return logger
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+
+    root_logger.setLevel(level)
+    root_logger.addHandler(file_handler)
+    root_logger.addHandler(console_handler)

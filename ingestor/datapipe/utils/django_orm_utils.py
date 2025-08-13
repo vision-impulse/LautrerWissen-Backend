@@ -26,6 +26,7 @@ from shapely.wkt import dumps as shapely_to_wkt
 import os
 import sys
 import django
+import logging
 
 # Add the Django project root to Python path (webapp is an external project)
 sys.path.append('/lautrer_wissen_data_integration/webapp')
@@ -35,6 +36,8 @@ sys.path.append('/lautrer_wissen_data_integration')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webapp.settings')
 
 django.setup()
+
+logger = logging.getLogger(__name__)
 
 
 class DjangoORMUtils:
@@ -83,7 +86,7 @@ class DjangoORMUtils:
         # Bulk insert using Django ORM
         for i in range(0, len(new_records), batch_size):
             django_model.objects.bulk_create(new_records[i:i + batch_size], batch_size=batch_size)
-            print("Insert done...")
+            logger.info("Inserted new records...")
 
         # Delete outdated records
         with transaction.atomic():
@@ -91,4 +94,4 @@ class DjangoORMUtils:
             queryset |= django_model.objects.filter(data_source__isnull=True)
             queryset |= django_model.objects.filter(data_source="")
             deleted_count, _ = queryset.delete()
-            print(f"Deleted {deleted_count} outdated records.")
+            logger.info("Deleted %s outdated records.", deleted_count)

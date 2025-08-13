@@ -15,25 +15,27 @@
 #
 # Authors: Benjamin Bischke
 
+import traceback
+import logging
+
 from abc import ABC, abstractmethod
 from datetime import datetime
-import traceback
 from ingestor.datapipe.utils.django_orm_utils import DjangoORMUtils   
 
+logger = logging.getLogger(__name__)
 
 class PipelineStep(ABC):
     """Base class for pipeline steps."""
 
     def __init__(self, next_step=None):
         self.next_step = next_step
-
+        
     def execute(self, ctx):
         """Each step must implement this method."""
         return False
 
-
     def handle_error(self, error, data):
-        print(f"Error in {self.__class__.__name__}: {error}")
+        logger.error("Error in %s: %s", self.__class__.__name__, error)
         raise Exception(error)
 
 
@@ -52,10 +54,8 @@ class DefaultTransformStep(PipelineStep):
 
             rows = self.transform(context, db_model_class, data_acquisition_date)
             context.set_data("rows", rows)
-
             return True
         except Exception as e:
-            traceback.print_exc()
-            print(f"TransformStep failed for {context.resource}: {e}")
+            logger.error("TransformStep failed for %s, (%s)", context.resource, exc_info=True)
             raise Exception(e)
             return False

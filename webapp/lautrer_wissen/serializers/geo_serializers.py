@@ -28,7 +28,6 @@ class BaseGeoSerializer(GeoFeatureModelSerializer):
         Compute geometry if the model does not have a `geometry` field.
         Otherwise, use the existing geometry field.
         """
-        # print(hasattr(obj, "latitude"), hasattr(obj, "longitude"))
         if hasattr(obj, "geometry") and obj.geometry:  # If model has geometry, use it
             if obj.geometry.geom_type == "LineString":
                 return {

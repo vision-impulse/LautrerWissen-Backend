@@ -15,6 +15,11 @@
 #
 # Authors: Benjamin Bischke
  
+import csv
+import re
+import json
+import logging
+
 from django.core.management.base import BaseCommand
 from lautrer_wissen.models.geo.kl import KLFieldtestMeasurements
 import csv
@@ -22,10 +27,7 @@ import os
 from datetime import datetime
 from django.db.models import Q
 
-
-import csv
-import re
-import json
+logger = logging.getLogger("django")
 
 
 # Output columns (add 'deveui' as requested)
@@ -125,7 +127,7 @@ class Command(BaseCommand):
             for row in rows:
                 writer.writerow(row)
 
-        print(f" Extracted {len(rows)} rows to {csv_file}")
+        logger.info(" Extracted %s rows to %s.", len(rows), csv_file)
         return csv_file
 
 
@@ -167,7 +169,7 @@ class Command(BaseCommand):
                     }
                     writer.writerow(row)
 
-        print(f"[✓] Converted SQL COPY to CSV: {output_csv_path}")
+        logger.info("[✓] Converted SQL COPY to CSV: %s", output_csv_path)
         return output_csv_path 
         
 
@@ -204,7 +206,7 @@ class Command(BaseCommand):
                 )
                 self.safe_create_measurement(data)
 
-        self.stdout.write(self.style.SUCCESS('Successfully imported data.'))
+        logger.info('Successfully imported data.')
     
     def safe_create_measurement(self, data):
         """
@@ -224,4 +226,4 @@ class Command(BaseCommand):
         if not KLFieldtestMeasurements.objects.filter(filter_q).exists():
             KLFieldtestMeasurements.objects.create(**data)
         else:
-            print(f"Duplicate entry found for data: {data}. Skipping creation.")
+            logger.warning("Duplicate entry found for data: %s. Skipping creation.", data)

@@ -18,10 +18,12 @@
 from ingestor.datapipe.config import load_config
 from ingestor.datapipe.manager import PipelineManager
 from ingestor.datapipe.pipelines.base_pipeline import PipelineType
-from ingestor.utils.logging_utils import get_logger
+from ingestor.utils.logging_utils import setup_logging
 
 import argparse
 import os 
+
+setup_logging()
 
 
 def parse_arguments():
@@ -51,13 +53,11 @@ def parse_arguments():
 
 if __name__ == "__main__":
     args = parse_arguments()
-    print(f"Running pipeline for source: {args.source}")
-    logger = get_logger()
     config_file = os.path.join(os.getenv("APP_DATA_DIR"), "/initial/config/config.yaml")
     config = load_config(config_file)
     outdir = config.out_dir
     
-    manager = PipelineManager(logger)
+    manager = PipelineManager()
 
     if args.source == "all":
         manager.run_pipeline(PipelineType.EMERGENCY_POINTS, config.get_resources(PipelineType.EMERGENCY_POINTS), outdir)

@@ -19,6 +19,10 @@ from ingestor.datapipe.steps.base_step import PipelineStep
 from ingestor.utils.geo_districts import CityDistrictsDecoder
 import geopandas as gpd
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class FilterStep(PipelineStep):
 
@@ -26,7 +30,7 @@ class FilterStep(PipelineStep):
         super(FilterStep, self).__init__(next_step=None)
 
     def execute(self, context):
-        print(f"Filter objects by region ...")
+        logger.info("Filter objects by geographic region ...")
         try:
             rows = context.get_data("rows")
 
@@ -37,7 +41,7 @@ class FilterStep(PipelineStep):
             context.set_data("rows", rows)
             return True
         except Exception as e:
-            print(f"Filter failed for {context.resource}: {e}")
+            logger.error("Filter failed for %s", context.resource, exc_info=True)
             return False
 
 

@@ -16,9 +16,11 @@
 # Authors: Benjamin Bischke
 
 import argparse
+import logging
 
 from ingestor.apis.mqtt.mqtt_stream_fieldtester import MQTTFieldtesterConsumer
 from ingestor.apis.mqtt.mqtt_stream_sensors_redis import MQTTSensorConsumer
+from ingestor.utils.logging_utils import setup_logging
 
 
 def main():
@@ -32,8 +34,10 @@ def main():
     args = parser.parse_args()
 
     if args.sensor == "fieldtester":
+        setup_logging(log_file="mqtt-streaming-fieldtester.log", level=logging.INFO)
         MQTTFieldtesterConsumer().run()
     elif args.sensor == "sensors":
+        setup_logging(log_file="mqtt-streaming-sensors.log", level=logging.INFO)
         MQTTSensorConsumer().run()
 
 

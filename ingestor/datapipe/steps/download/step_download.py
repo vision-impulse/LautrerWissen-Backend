@@ -26,7 +26,9 @@ from ingestor.apis.wikipedia.wiki_downloader import WikipediaDownloader
 from ingestor.apis.mqtt.mqtt_static_sensors import MQTTInitialSensorsDownloader
 from ingestor.apis import ResourceDownloader, LocalResourceDownloader
 from typing import Type, Dict
-import traceback
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class GenericDownloadStep(PipelineStep):
@@ -36,20 +38,23 @@ class GenericDownloadStep(PipelineStep):
         self.downloader_class = downloader_class
 
     def execute(self, context):
-        print(f"Downloading {context.resource} to ...") #{context.resource.filename}
+        logger.info("Downloading resource %s", context.resource)
         try:
-            self.downloader_class(context.out_dir, context.resource, context.logger).run_download()
+            self.downloader_class(
+                context.out_dir, context.resource, context.logger
+            ).run_download()
             return True
         except Exception as e:
-            traceback.print_exc()
-            print(f"Download failed for {context.resource}: {e}")
+            logger.error("Download failed for %s", context.resource, exc_info=True)
             return False
 
 
 class DownloadStepFactory:
     """Factory for creating download steps dynamically based on the downloader class."""
 
-    _registry: Dict[Type, GenericDownloadStep] = {}  # Stores {DownloaderClass: GenericDownloadStep}
+    _registry: Dict[Type, GenericDownloadStep] = (
+        {}
+    )  # Stores {DownloaderClass: GenericDownloadStep}
 
     @classmethod
     def register(cls, downloader_class: Type):
@@ -60,7 +65,9 @@ class DownloadStepFactory:
     def create(cls, downloader_class: Type):
         """Creates a `GenericDownloadStep` for the given `downloader_class`."""
         if downloader_class not in cls._registry:
-            raise ValueError(f"No download step registered for {downloader_class.__name__}")
+            raise ValueError(
+                f"No download step registered for {downloader_class.__name__}"
+            )
         return cls._registry[downloader_class]
 
 
@@ -74,8 +81,3 @@ DownloadStepFactory.register(ResourceDownloader)
 DownloadStepFactory.register(LocalResourceDownloader)
 DownloadStepFactory.register(WGAEventDownloader)
 DownloadStepFactory.register(MQTTInitialSensorsDownloader)
-
-
-
-
-

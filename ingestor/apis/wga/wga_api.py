@@ -43,7 +43,7 @@ class WGAEventDownloader(Downloader):
         for i in range(WGAEventDownloader.NUM_MONTHS):
             datum_start = (datetime.date.today() + datetime.timedelta(days=31*i)).strftime("%Y-%m-%d")
             datum_end = (datetime.date.today() + datetime.timedelta(days=31*(i+1))).strftime("%Y-%m-%d")
-            print(datum_start, datum_end)
+            self.logger.info("Downloading events between %s and %s", datum_start, datum_end)
             _data = self._fetch_data_from_api(datum_start, datum_end)
             data.extend(_data)
 
@@ -66,8 +66,8 @@ class WGAEventDownloader(Downloader):
         response = requests.post(self.url, headers=WGAEventDownloader.HEADERS, data=payload)
         if response.status_code == 200:
             termine = response.json()
-            print("read", len(termine))
+            self.logger.info("Read data (%s events)", len(termine))
             return termine["data"]
         else:
-            print(f"Fehler: {response.status_code} - {response.text}")
+            self.logger.error("Error (Code: %s) %s", response.status_code, response.text)
         return []

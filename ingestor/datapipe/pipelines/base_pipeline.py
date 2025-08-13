@@ -75,9 +75,9 @@ class BasePipeline(ABC):
     def run(self):
         for resource in self.resources:
             context = PipelineContext(resource, self.out_dir, self.logger)
-            print(f" Processing feature: {context.out_dir}")
+            self.logger.info("Processing data from: %s", context.out_dir)
 
             for step in self.steps:
                 if not step.execute(context):  # If a step fails, stop processing this feature
-                    print(f" Stopping {context.out_dir} due to failure.")
+                    self.logger.error(" Stopping %s due to failure.", context.out_dir)
                     break

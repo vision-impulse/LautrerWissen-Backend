@@ -32,7 +32,6 @@ class CouncilCalendarDownloader(XMLDownloader):
     }
 
     def __init__(self, out_dir, resource_file, logger):
-        print(resource_file)
         super(CouncilCalendarDownloader, self).__init__(out_dir, resource_file.url, resource_file.filename, logger)
 
     def _parse_xml(self, response_content):

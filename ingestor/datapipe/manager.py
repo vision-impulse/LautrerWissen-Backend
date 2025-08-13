@@ -15,18 +15,28 @@
 #
 # Authors: Benjamin Bischke
 
+import logging
 
 from ingestor.datapipe.factory import PipelineFactory
+from ingestor.utils.logging_utils import setup_logging
+
+setup_logging()
 
 
 class PipelineManager:
     """Manages multiple data pipelines."""
 
-    def __init__(self, logger):
-        self.logger = logger
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
     def run_pipeline(self, source_name, resources, out_dir):
-        pipeline = PipelineFactory.create_pipeline(source_name, resources, out_dir, self.logger)
+        pipeline = PipelineFactory.create_pipeline(
+            source_name, resources, out_dir, self.logger
+        )
+        self.logger.info("Starting pipeline for data source: %s", source_name)
         result = pipeline.run()
-        print(f"Pipeline finished with result: {result}")
-
+        self.logger.info(
+            "Pipeline for data source (%s) finished with result: %s",
+            source_name,
+            result,
+        )

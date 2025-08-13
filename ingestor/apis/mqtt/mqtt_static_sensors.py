@@ -23,6 +23,8 @@ import json
 import time
 import yaml
 import os
+import logging
+
 from ingestor.apis import Downloader
 
 MQTT_BROKER = os.getenv("MQTT_BROKER")
@@ -51,11 +53,11 @@ class MQTTInitialSensorsDownloader(Downloader):
     def on_connect(self, client, userdata, flags, rc):
         if rc == 0:
             self.start_time = time.time()
-            print("Connected to MQTT Broker!", MQTT_BROKER)
+            self.logger.info("Connected to MQTT Broker! %s", MQTT_BROKER)
             client.subscribe("#")
         else:
-            print("Failed to connect to MQTT Broker!", MQTT_BROKER)
-            print(rc)
+            self.logger.error("Failed to connect to MQTT Broker! %s", MQTT_BROKER)
+            self.logger.error(rc)
 
     def write_to_yaml(self):
         yaml_data = {
@@ -72,7 +74,7 @@ class MQTTInitialSensorsDownloader(Downloader):
         topic = message.topic
         raw = message.payload.decode()
         data = json.loads(raw)
-        print("Analyzing topic", topic)
+        self.logger.info("Analyzing topic %s", topic)
         if topic.startswith("geo") and "sensor" in topic:
             if "latitude" in data and "longitude" in data:
                 self.available_sensors[topic] = {

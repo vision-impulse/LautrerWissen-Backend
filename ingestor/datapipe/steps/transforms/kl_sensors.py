@@ -15,19 +15,19 @@
 #
 # Authors: Benjamin Bischke
 
-from ingestor.datapipe.steps.base_step import DefaultTransformStep
-
-import os
 import importlib
-
-from datetime import datetime
-
 import json
-from shapely.geometry import shape, mapping, Polygon, MultiPolygon
 import yaml
 import os
+import logging
+
+from ingestor.datapipe.steps.base_step import DefaultTransformStep
+from shapely.geometry import shape, mapping, Polygon, MultiPolygon
 from ingestor.utils.geo_districts import CityDistrictsDecoder
 from shapely.geometry import Point
+from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 
 class KLSensorsTransformStep(DefaultTransformStep):
@@ -56,7 +56,7 @@ class KLSensorsTransformStep(DefaultTransformStep):
         with open(download_file, 'r') as file:
             mqtt_resources = yaml.safe_load(file)
             for mqtt_res in mqtt_resources["sensors"]:
-                print("Loading KLEnvironmentalSensor: ", mqtt_res["topic"])
+                logger.info("Loading Sensor: %s", mqtt_res["topic"])
 
                 sensor_type = "Unbekannt"
                 for (k, v) in KLSensorsTransformStep.SENSOR_TYPES:                

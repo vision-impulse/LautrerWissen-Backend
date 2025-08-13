@@ -94,7 +94,6 @@ class CustomAdminWithQR(admin.ModelAdmin):
         return response
     
     def generate_qr(self, request, pk):
-        print(request)
         obj = self.model.objects.get(pk=pk)
         url = obj.get_frontend_url()
 

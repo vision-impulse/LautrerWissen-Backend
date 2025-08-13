@@ -25,6 +25,7 @@ import yaml
 import os
 import redis
 from zoneinfo import ZoneInfo
+import logging
 
 
 MQTT_BROKER = os.getenv("MQTT_BROKER")
@@ -35,6 +36,8 @@ MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_HOSTNAME = "redis"
 REDIS_PORT = 6379
+
+logger = logging.getLogger(__name__)
 
 
 class MQTTSensorConsumer():
@@ -53,10 +56,10 @@ class MQTTSensorConsumer():
         
     def on_connect(self, client, userdata, flags, rc):
         if rc != 0:
-            print("Failed to connect to MQTT Broker!", MQTT_BROKER)
-            print(rc)
+            logger.error("Failed to connect to MQTT Broker! %s", MQTT_BROKER)
+            logger.error(rc)
             exit(0)
-        print("Connected to MQTT Broker!", MQTT_BROKER)
+        logger.info("Connected to MQTT Broker! %s", MQTT_BROKER)
         client.subscribe("#")
 
     def on_message(self, client, userdata, message):
@@ -65,14 +68,14 @@ class MQTTSensorConsumer():
             raw = message.payload.decode()
             data = json.loads(raw)
             if "latitude" in data and "longitude" in data:
-                print("Writing to redis_cache on ", topic), 
+                logger.info("Writing to redis_cache on %s", topic)
                 try:
                     dt = datetime.fromtimestamp(int(data["time"]) / 1000, tz=ZoneInfo("Europe/Berlin"))
                     data["time"] = dt.strftime("%Y-%m-%d %H:%M:%S")
                 except Exception as e:
-                    print("Error converting timestamp", e)
+                    logger.error("Error converting timestamp %s", e)
                     pass
-                print(data)
+                logger.info("Writing to redis_cache data %s", data)
                 updated_data = json.dumps(data)
                 self.redis_cache.hset('sensor_data', topic, updated_data)
                 self.redis_cache.publish(topic, updated_data) 
