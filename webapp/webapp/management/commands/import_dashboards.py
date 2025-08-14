@@ -16,62 +16,40 @@
 # Authors: Benjamin Bischke
  
 import json
+import yaml
+import os 
+import pandas as pd
+import logging
+
 from django.core.management.base import BaseCommand
 from lautrer_wissen.models.geo.kl import KLSensorGrafanaDashboard
-import pandas as pd
-
-
-from datetime import datetime
-from datetime import date
-
 from django.contrib.gis.geos import Point
+
+logger = logging.getLogger("django")
 
 
 class Command(BaseCommand):
-    help = "Import a JSON layer config into the database"
+    help = "Import grafana-dashboard objects into the database"
 
     def handle(self, *args, **kwargs):
-        KLSensorGrafanaDashboard.objects.all().delete()
+        yaml_file = os.path.join(os.getenv("APP_DATA_DIR"), "initial/data/dashboards.yaml")
+        with open(yaml_file, "r") as f:
+            data = yaml.safe_load(f)
 
-        KLSensorGrafanaDashboard.objects.create(
-            name="HSG-Dashboard",
-            dashboard_url="https://dash.kaiserslautern.digital/public-dashboards/5cc28ae1bfab42dda2d495d11485fb26",
-            geometry=Point(7.7498212,49.4387123),
-            size_radius_meters=10,
-            timefilters="täglich")
+        for entry in data:
+            obj, created = KLSensorGrafanaDashboard.objects.get_or_create(
+                name=entry["name"],
+                timefilters=entry["timefilters"],
+                defaults={
+                    "dashboard_url": entry["dashboard_url"],
+                    "geometry": Point(entry["lon"], entry["lat"]),
+                    "size_radius_meters": entry.get("size_radius_meters", 10),
+                    "timefilters": entry.get("timefilters", "täglich"),
+                }
+            )
+            if created:
+                logger.info(f"Created new dashboard object (%s)!", obj.name)
+            else:
+                logger.info(f"Skipped existing dashboard (%s)!", obj.name)
 
-        KLSensorGrafanaDashboard.objects.create(
-            name="HSG-Dashboard",
-            dashboard_url="https://dash.kaiserslautern.digital/hsg_1w",
-            geometry=Point(7.7498212,49.4387123),
-            size_radius_meters=10,
-            timefilters="wöchentlich")
-
-        KLSensorGrafanaDashboard.objects.create(
-            name="HSG-Dashboard",
-            dashboard_url="https://dash.kaiserslautern.digital/hsg_1m",
-            geometry=Point(7.7498212,49.4387123),
-            size_radius_meters=10,
-            timefilters="monatlich")
-
-        KLSensorGrafanaDashboard.objects.create(
-            name="Eselsbach-Dashboard",
-            dashboard_url="https://dash.kaiserslautern.digital/pegel_eselsbach",
-            geometry=Point(7.761743,49.459719),
-            size_radius_meters=10,
-            timefilters="Pegelstand")
-        
-        KLSensorGrafanaDashboard.objects.create(
-            name="Waschmühle-Dashboard",
-            dashboard_url="https://dash.kaiserslautern.digital/wesch",
-            geometry=Point(7.762565,49.460629),
-            size_radius_meters=10,
-            timefilters="Temperatur Schwimmbecken")
-
-        KLSensorGrafanaDashboard.objects.create(
-            name="Baumgesundheit-Dashboard",
-            dashboard_url="https://dash.kaiserslautern.digital/bauag",
-            geometry=Point(7.787932,49.451428),
-            size_radius_meters=10,
-            timefilters="Bodenfeuchte")
-        self.stdout.write(self.style.SUCCESS("KLSensorGrafanaDashboard imported successfully."))
+        logger.info(f"All GrafanaDashboards successfully imported!")
