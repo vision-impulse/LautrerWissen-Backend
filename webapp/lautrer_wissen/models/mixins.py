@@ -39,6 +39,8 @@ class FrontendURLMixin:
         if url_partial is None:
             return FRONTEND_URL
         
+        if hasattr(self, "virtual_id"):
+            return f"{FRONTEND_URL}/{url_partial}/{self.virtual_id}"
         return f"{FRONTEND_URL}/{url_partial}/{self.pk}"
 
     def get_frontend_url_name(self):

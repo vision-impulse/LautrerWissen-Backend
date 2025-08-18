@@ -17,9 +17,11 @@
 
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from ..models import MODELS_WITH_DETAIL_PAGE
 
 
 class BaseGeoSerializer(GeoFeatureModelSerializer):
+    id = serializers.SerializerMethodField()
     properties = serializers.SerializerMethodField()
     geometry = serializers.SerializerMethodField()
 
@@ -84,7 +86,22 @@ class BaseGeoSerializer(GeoFeatureModelSerializer):
 
         # Add ID
         properties["id"] = obj.id
+        if self._should_use_virtual_id(obj):
+            properties["id"] = obj.virtual_id
+
         return properties
+
+    def get_id(self, obj, ):
+        """
+        Custom logic to return object depending on specific model 
+        (use virtual_ids for specific models).
+        """
+        if self._should_use_virtual_id(obj):
+            return obj.virtual_id
+        return obj.id
+
+    def _should_use_virtual_id(self, obj):
+        return obj.__class__ in MODELS_WITH_DETAIL_PAGE and hasattr(obj, "virtual_id")
 
 
 def create_geo_serializer(model):

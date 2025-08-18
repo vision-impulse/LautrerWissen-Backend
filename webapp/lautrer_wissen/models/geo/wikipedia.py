@@ -25,6 +25,7 @@ from ..base_model import BaseModel
 from ..mixins import FrontendURLMixin
 import django
 import re
+import hashlib
 
 
 class WikiModel(BaseModel, FrontendURLMixin):
@@ -36,38 +37,65 @@ class WikiModel(BaseModel, FrontendURLMixin):
 
     DB_CASE_MODIFY_NAME = Case(
         When(
-            name__in=["Wohnhaus", "Wohnhäuser", "Gasthaus", "Wohn- und Geschäftshaus",
-                      "Wohn- und Geschäftshäuser", "Villa", "Stadtbefestigung", "Kriegerdenkmal"],
-            then=Concat(F('name'), Value(" ("), F('address'), Value(")"), output_field=CharField())
+            name__in=[
+                "Wohnhaus",
+                "Wohnhäuser",
+                "Gasthaus",
+                "Wohn- und Geschäftshaus",
+                "Wohn- und Geschäftshäuser",
+                "Villa",
+                "Stadtbefestigung",
+                "Kriegerdenkmal",
+            ],
+            then=Concat(
+                F("name"),
+                Value(" ("),
+                F("address"),
+                Value(")"),
+                output_field=CharField(),
+            ),
         ),
-        default=F('name'),
-        output_field=CharField()  # Ensure the output is consistently CharField
+        default=F("name"),
+        output_field=CharField(),  # Ensure the output is consistently CharField
     )
 
     class Meta:
         abstract = True  # This makes it an abstract base class in Django
 
+    @property
+    def virtual_id(self):
+        # Create a hash from lat/lon
+        lat = round(self.geometry.y, 8)
+        lon = round(self.geometry.x, 8)
+        return hashlib.md5(f"{lat}:{lon}".encode()).hexdigest()
+
     @classmethod
     def objects_for_list_view(cls):
-        objs = cls.objects.annotate(
-            has_image=Length('image_url')
-        ).annotate(
-            combined_name=WikiModel.DB_CASE_MODIFY_NAME
-        ).order_by('-has_image', 'name')
+        objs = (
+            cls.objects.annotate(has_image=Length("image_url"))
+            .annotate(combined_name=WikiModel.DB_CASE_MODIFY_NAME)
+            .order_by("-has_image", "name")
+        )
         return objs
 
     @classmethod
     def nearby_objects_as_dict(cls, curr_obj, top_n=5):
-        return [{"distance": str(round(obj.distance.km, 3)).replace(".", ","), 'id': obj.id, 'name': obj.combined_name}
-                for obj in cls._nearby_objects_by_location(curr_obj, top_n)]
+        return [
+            {
+                "distance": str(round(obj.distance.km, 3)).replace(".", ","),
+                "id": obj.virtual_id,
+                "name": obj.combined_name,
+            }
+            for obj in cls._nearby_objects_by_location(curr_obj, top_n)
+        ]
 
     @classmethod
     def _nearby_objects_by_location(cls, curr_obj, top_n=5):
-        return cls.objects.annotate(
-            distance=Distance('geometry', curr_obj.geometry)
-        ).annotate(
-            combined_name=WikiModel.DB_CASE_MODIFY_NAME
-        ).order_by('distance')[1:top_n + 1]
+        return (
+            cls.objects.annotate(distance=Distance("geometry", curr_obj.geometry))
+            .annotate(combined_name=WikiModel.DB_CASE_MODIFY_NAME)
+            .order_by("distance")[1 : top_n + 1]
+        )
 
     geometry = models.PointField()
     image_url = models.TextField(default="")
@@ -82,35 +110,52 @@ class WikiModel(BaseModel, FrontendURLMixin):
     image_additional_license_texts = models.TextField(default="")
 
     def get_references(self):
-        return [{"ref": ref, "link": link} for ref, link in
-                    zip(self.reference_names.split(";")[:-1], self.reference_links.split(";")[:-1])]
+        return [
+            {"ref": ref, "link": link}
+            for ref, link in zip(
+                self.reference_names.split(";")[:-1],
+                self.reference_links.split(";")[:-1],
+            )
+        ]
 
     def get_image_info(self):
         """Returns the image info of the object."""
         res = {
-            "image_url" : re.sub(r'/(\d+)px', '/500px', str(self.image_url)) if self.image_url else "",
+            "image_url": (
+                re.sub(r"/(\d+)px", "/500px", str(self.image_url))
+                if self.image_url
+                else ""
+            ),
             "image_author_name": self.image_author_name,
             "image_license_url": self.image_license_url,
             "image_license_text": self.image_license_text,
         }
 
         if self.image_additional_urls:
-            image_additional_urls = re.sub(r'/(\d+)px', '/500px', str(self.image_additional_urls))
+            image_additional_urls = re.sub(
+                r"/(\d+)px", "/500px", str(self.image_additional_urls)
+            )
             image_additional_urls = image_additional_urls.split(";")[:-1]
-            image_additional_author_names = str(self.image_additional_author_names).split(";")[:-1]
-            image_additional_license_urls = str(self.image_additional_license_urls).split(";")[:-1]
-            image_additional_license_texts = str(self.image_additional_license_texts).split(";")[:-1]
+            image_additional_author_names = str(
+                self.image_additional_author_names
+            ).split(";")[:-1]
+            image_additional_license_urls = str(
+                self.image_additional_license_urls
+            ).split(";")[:-1]
+            image_additional_license_texts = str(
+                self.image_additional_license_texts
+            ).split(";")[:-1]
 
             res["image_additional_info"] = [
                 {"url": url, "author_name": an, "license_url": lu, "license_text": lt}
                 for url, an, lu, lt in zip(
-                    image_additional_urls, image_additional_author_names,
-                    image_additional_license_urls, image_additional_license_texts
+                    image_additional_urls,
+                    image_additional_author_names,
+                    image_additional_license_urls,
+                    image_additional_license_texts,
                 )
             ]
         return res
-
-
 
 
 class WikiFishSculpture(WikiModel):
@@ -121,7 +166,7 @@ class WikiFishSculpture(WikiModel):
         "name": "Name",
         "number": "Nummer",
         "address": "Adresse",
-        **BaseModel.MAP_FIELDS
+        **BaseModel.MAP_FIELDS,
     }
     address = models.TextField()
     name = models.TextField()
@@ -134,7 +179,11 @@ class WikiFishSculpture(WikiModel):
 
     def get_image_info(self):
         return {
-            "image_url": re.sub(r'/(\d+)px', '/480px', str(self.image_url)) if self.image_url else "",
+            "image_url": (
+                re.sub(r"/(\d+)px", "/480px", str(self.image_url))
+                if self.image_url
+                else ""
+            ),
             "image_author_name": self.image_author_name,
             "image_license_url": self.image_license_url,
             "image_license_text": self.image_license_text,
@@ -150,13 +199,15 @@ class WikiFishSculpture(WikiModel):
 
 
 class WikiCulturalMonument(WikiModel):
-    WIKI_OBJECT_URL = "https://de.wikipedia.org/wiki/Liste_der_Kulturdenkmäler_in_Kaiserslautern"
+    WIKI_OBJECT_URL = (
+        "https://de.wikipedia.org/wiki/Liste_der_Kulturdenkmäler_in_Kaiserslautern"
+    )
     VISIBLE_OBJECT_NAME = "Kulturdenkmal"
     MAP_FIELDS = {
         "name": "Name",
         "description": "Beschreibung",
         "address": "Adresse",
-        **BaseModel.MAP_FIELDS  
+        **BaseModel.MAP_FIELDS,
     }
     address = models.TextField()
     name = models.TextField()
@@ -173,13 +224,15 @@ class WikiCulturalMonument(WikiModel):
 
 
 class WikiNaturalMonument(WikiModel):
-    WIKI_OBJECT_URL = "https://de.wikipedia.org/wiki/Liste_der_Naturdenkmale_in_Kaiserslautern"
+    WIKI_OBJECT_URL = (
+        "https://de.wikipedia.org/wiki/Liste_der_Naturdenkmale_in_Kaiserslautern"
+    )
     VISIBLE_OBJECT_NAME = "Naturdenkmal"
     MAP_FIELDS = {
         "name": "Name",
         "description": "Beschreibung",
         "address": "Adresse",
-        **BaseModel.MAP_FIELDS
+        **BaseModel.MAP_FIELDS,
     }
     address = models.TextField()
     name = models.TextField()
@@ -195,13 +248,15 @@ class WikiNaturalMonument(WikiModel):
 
 
 class WikiFountain(WikiModel):
-    WIKI_OBJECT_URL = "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    WIKI_OBJECT_URL = (
+        "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    )
     VISIBLE_OBJECT_NAME = "Brunnen"
     MAP_FIELDS = {
         "name": "Name",
         "description": "Beschreibung",
         "address": "Adresse",
-        **BaseModel.MAP_FIELDS
+        **BaseModel.MAP_FIELDS,
     }
     address = models.TextField()
     name = models.TextField()
@@ -216,14 +271,16 @@ class WikiFountain(WikiModel):
 
 
 class WikiBrewery(WikiModel):
-    WIKI_OBJECT_URL = "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    WIKI_OBJECT_URL = (
+        "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    )
     VISIBLE_OBJECT_NAME = "Ehemalige Brauerei"
     MAP_FIELDS = {
         "name": "Name",
         "address": "Lage",
         "timespan": "Betrieb",
         "description": "Beschreibung",
-        **BaseModel.MAP_FIELDS
+        **BaseModel.MAP_FIELDS,
     }
     address = models.TextField()
     name = models.TextField()
@@ -240,7 +297,9 @@ class WikiBrewery(WikiModel):
 
 
 class WikiNaturalReserve(WikiModel):
-    WIKI_OBJECT_URL = "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    WIKI_OBJECT_URL = (
+        "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    )
     VISIBLE_OBJECT_NAME = "Naturschutzgebiet"
     MAP_FIELDS = {
         "name": "Name",
@@ -249,7 +308,7 @@ class WikiNaturalReserve(WikiModel):
         "date": "Datum",
         "area": "Fläche [ha]",
         "details": "Einzelheiten",
-        **BaseModel.MAP_FIELDS
+        **BaseModel.MAP_FIELDS,
     }
     name = models.TextField()
     location_area = models.TextField()
@@ -260,30 +319,38 @@ class WikiNaturalReserve(WikiModel):
 
     DB_CASE_MODIFY_NAME = Case(
         When(
-            name__in=["Wohnhaus", "Wohnhäuser", "Gasthaus", "Wohn- und Geschäftshaus",
-                      "Wohn- und Geschäftshäuser", "Villa", "Stadtbefestigung", "Kriegerdenkmal"],
-            then=Concat(F('name'), Value(" ("), Value(")"), output_field=CharField())
+            name__in=[
+                "Wohnhaus",
+                "Wohnhäuser",
+                "Gasthaus",
+                "Wohn- und Geschäftshaus",
+                "Wohn- und Geschäftshäuser",
+                "Villa",
+                "Stadtbefestigung",
+                "Kriegerdenkmal",
+            ],
+            then=Concat(F("name"), Value(" ("), Value(")"), output_field=CharField()),
         ),
-        default=F('name'),
-        output_field=CharField()  # Ensure the output is consistently CharField
+        default=F("name"),
+        output_field=CharField(),  # Ensure the output is consistently CharField
     )
 
     @classmethod
     def objects_for_list_view(cls):
-        objs = cls.objects.annotate(
-            has_image=Length('image_url')
-        ).annotate(
-            combined_name=WikiNaturalReserve.DB_CASE_MODIFY_NAME
-        ).order_by('-has_image', 'name')
+        objs = (
+            cls.objects.annotate(has_image=Length("image_url"))
+            .annotate(combined_name=WikiNaturalReserve.DB_CASE_MODIFY_NAME)
+            .order_by("-has_image", "name")
+        )
         return objs
 
     @classmethod
     def _nearby_objects_by_location(cls, curr_obj, top_n=5):
-        return cls.objects.annotate(
-            distance=Distance('geometry', curr_obj.geometry)
-        ).annotate(
-            combined_name=WikiNaturalReserve.DB_CASE_MODIFY_NAME
-        ).order_by('distance')[1:top_n + 1]
+        return (
+            cls.objects.annotate(distance=Distance("geometry", curr_obj.geometry))
+            .annotate(combined_name=WikiNaturalReserve.DB_CASE_MODIFY_NAME)
+            .order_by("distance")[1 : top_n + 1]
+        )
 
     def get_fields_to_display(self):
         return {
@@ -297,14 +364,16 @@ class WikiNaturalReserve(WikiModel):
 
 
 class WikiRitterstein(WikiModel):
-    WIKI_OBJECT_URL = "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    WIKI_OBJECT_URL = (
+        "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    )
     VISIBLE_OBJECT_NAME = "Ritterstein"
     MAP_FIELDS = {
         "name": "Name",
         "meaning": "Bedeutung",
         "number": "Nummer",
         "address": "Beschreibung der Lage",
-        **BaseModel.MAP_FIELDS
+        **BaseModel.MAP_FIELDS,
     }
     address = models.TextField()
     name = models.TextField()
@@ -321,14 +390,16 @@ class WikiRitterstein(WikiModel):
 
 
 class WikiSacralBuilding(WikiModel):
-    WIKI_OBJECT_URL = "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    WIKI_OBJECT_URL = (
+        "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    )
     VISIBLE_OBJECT_NAME = "Sakralbau"
     MAP_FIELDS = {
         "name": "Name",
         "description": "Anmerkungen",
         "construction_year": "Bauzeit",
         "address": "Stadtteil/Lage",
-        **BaseModel.MAP_FIELDS
+        **BaseModel.MAP_FIELDS,
     }
     address = models.TextField()
     name = models.TextField()
@@ -345,14 +416,16 @@ class WikiSacralBuilding(WikiModel):
 
 
 class WikiStolperstein(WikiModel):
-    WIKI_OBJECT_URL = "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    WIKI_OBJECT_URL = (
+        "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
+    )
     VISIBLE_OBJECT_NAME = "Stolperstein"
     MAP_FIELDS = {
-        "name": "Person, Inschrift", 
-        "description": "Beschreibung", 
-        "timespan": "Verlegedatum", 
-        "address": "Verlegeort", 
-        **BaseModel.MAP_FIELDS
+        "name": "Person, Inschrift",
+        "description": "Beschreibung",
+        "timespan": "Verlegedatum",
+        "address": "Verlegeort",
+        **BaseModel.MAP_FIELDS,
     }
     address = models.TextField()
     name = models.TextField()
@@ -377,5 +450,5 @@ MODEL_CLASSES = [
     WikiNaturalReserve,
     WikiRitterstein,
     WikiSacralBuilding,
-    WikiStolperstein
+    WikiStolperstein,
 ]

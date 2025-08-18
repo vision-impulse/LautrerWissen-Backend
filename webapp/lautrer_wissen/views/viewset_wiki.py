@@ -18,6 +18,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from django.http import Http404
 
 
 from ..serializers.wiki_serializer import get_wiki_serializer_for_model
@@ -28,6 +29,15 @@ def create_wiki_viewset(model):
 
     class GenericWikiViewSet(ReadOnlyModelViewSet):
         """API ViewSet for listing all objects and retrieving details."""
+
+        def get_object(self):
+            """Override default get_object to use virtual_id instead of pk."""
+            pk = self.kwargs.get(self.lookup_field)
+            for obj in model.objects.all():
+                if obj.virtual_id == pk:
+                    return obj
+            raise Http404(f"{model.__name__} with virtual_id '{pk}' not found")
+        
 
         def list(self, request):
             """Handles GET /api/{model_name}/"""
@@ -43,7 +53,8 @@ def create_wiki_viewset(model):
                  'city_district_name': "Kaiserslautern Umkreis"
                     if obj.city_district_name == "" else obj.city_district_name,
                  'name': obj.combined_name,
-                 'id': obj.id} for obj in objects]
+                 'id': obj.virtual_id} 
+                 for obj in objects]
 
             return Response({
                 'objects': objects,
@@ -54,7 +65,7 @@ def create_wiki_viewset(model):
 
         def retrieve(self, request, pk=None):
             """Handles GET /api/{model_name}/{id}/"""
-            obj = get_object_or_404(model, id=pk)
+            obj = self.get_object()
 
             serializer = get_wiki_serializer_for_model(obj, model)
             return Response({

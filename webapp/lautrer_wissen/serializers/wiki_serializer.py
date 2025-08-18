@@ -30,14 +30,17 @@ def get_wiki_serializer_for_model(obj, model):
             "Meta": type(
                 "Meta",
                 (WikiBaseObjectSerializer.Meta,),  # Inherit base Meta
-                {"model": model}  # Assign the correct model dynamically
+                {"model": model},  # Assign the correct model dynamically
             )
-        }
+        },
     )
     return DynamicSerializer(obj)
 
 
-class WikiBaseObjectSerializer(serializers.ModelSerializer, metaclass=type(serializers.ModelSerializer)):
+class WikiBaseObjectSerializer(
+    serializers.ModelSerializer, metaclass=type(serializers.ModelSerializer)
+):
+    id = serializers.SerializerMethodField()
     nearby_objects = serializers.SerializerMethodField()
     coordinate = serializers.SerializerMethodField()
     fields_to_display = serializers.SerializerMethodField()
@@ -49,10 +52,18 @@ class WikiBaseObjectSerializer(serializers.ModelSerializer, metaclass=type(seria
     class Meta:
         fields = [
             "id",
-            "wiki_url", "object_type", "fields_to_display", "image_info", "coordinate", "nearby_objects", "references",
-
+            "wiki_url",
+            "object_type",
+            "fields_to_display",
+            "image_info",
+            "coordinate",
+            "nearby_objects",
+            "references",
         ]
         abstract = True  # Ensure the base serializer is not instantiated
+
+    def get_id(self, obj):
+        return obj.virtual_id
 
     def get_wiki_url(self, obj):
         return obj.__class__.WIKI_OBJECT_URL
@@ -71,9 +82,11 @@ class WikiBaseObjectSerializer(serializers.ModelSerializer, metaclass=type(seria
 
     def get_coordinate(self, obj):
         """Returns the latitude and longitude of the object."""
-        return {"latitude": obj.geometry.x, "longitude": obj.geometry.y}  # OpenLayers expects lon, lat
+        return {
+            "latitude": obj.geometry.x,
+            "longitude": obj.geometry.y,
+        }
 
     def get_nearby_objects(self, obj):
         """Returns nearby objects based on the model type."""
         return obj.__class__.nearby_objects_as_dict(obj)
-
