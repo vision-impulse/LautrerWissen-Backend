@@ -65,8 +65,8 @@ class WikiModel(BaseModel, FrontendURLMixin):
     @property
     def virtual_id(self):
         # Create a hash from lat/lon
-        lat = round(self.geometry.y, 8)
-        lon = round(self.geometry.x, 8)
+        lat = self.geometry.y
+        lon = self.geometry.x
         return hashlib.md5(f"{lat}:{lon}".encode()).hexdigest()
 
     @classmethod
@@ -190,12 +190,15 @@ class WikiFishSculpture(WikiModel):
         }
 
     def get_fields_to_display(self):
-        return {
+        res = {
             "Name": self.name,
-            "Nummer": "Unbekannt" if self.number == 1000 else self.number,
             "Adresse": self.address if self.address else "Unbekannt",
             "Gestaltet von": self.designed_by if self.designed_by else "Unbekannt",
         }
+        if self.number != -1:
+            res["Nummer"] = self.number
+        return res
+
 
 
 class WikiCulturalMonument(WikiModel):
@@ -433,13 +436,70 @@ class WikiStolperstein(WikiModel):
     timespan = models.TextField()
 
     def get_fields_to_display(self):
+        same_location_qs = (
+            self.__class__.objects
+            .filter(geometry=self.geometry)
+            .exclude(pk=self.pk)   # exclude current object
+        )
+        if same_location_qs.exists():
+            names = [self.name] + list(same_location_qs.values_list("name", flat=True))
+            combined_names = "  //  ".join(names)
+        else:
+            combined_names = self.name
+
         return {
-            "Person, Inschrift": self.name,
+            "Person, Inschrift": combined_names,
             "Beschreibung": self.description,
             "Verlegedatum": self.timespan,
             "Verlegeort": self.address,
         }
+    
+    def get_image_info(self):
+        """Returns the image info of the object and any others at the same location."""
 
+        # helper to normalize URL
+        def normalize_url(url):
+            return re.sub(r"/(\d+)px", "/500px", str(url)) if url else ""
+
+        # base object image info
+        res = {
+            "image_url": normalize_url(self.image_url),
+            "image_author_name": self.image_author_name,
+            "image_license_url": self.image_license_url,
+            "image_license_text": self.image_license_text,
+        }
+
+        # collect additional images from other objects with the same geometry
+        same_location_qs = (
+            self.__class__.objects
+            .filter(geometry=self.geometry)
+            .exclude(image_url__isnull=True)
+            .exclude(image_url__exact="")
+        )
+
+        additional_info = []
+        for obj in same_location_qs:
+            additional_info.append({
+                "url": normalize_url(obj.image_url),
+                "author_name": obj.image_author_name,
+                "license_url": obj.image_license_url,
+                "license_text": obj.image_license_text,
+            })
+
+        if additional_info:
+            res["image_additional_info"] = additional_info
+
+        return res
+    
+    @classmethod
+    def _nearby_objects_by_location(cls, curr_obj, top_n=5):
+        return (
+            cls.objects.annotate(distance=Distance("geometry", curr_obj.geometry))
+            .annotate(combined_name=WikiModel.DB_CASE_MODIFY_NAME)
+            .filter(distance__gt=0)
+            .order_by("distance")[1 : top_n + 1]
+        )
+    
 
 MODEL_CLASSES = [
     WikiFishSculpture,

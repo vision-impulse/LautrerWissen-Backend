@@ -37,39 +37,44 @@ def create_wiki_viewset(model):
                 if obj.virtual_id == pk:
                     return obj
             raise Http404(f"{model.__name__} with virtual_id '{pk}' not found")
-        
 
         def list(self, request):
             """Handles GET /api/{model_name}/"""
-            object_name, object_name_plural = "TODO", "TODO"
             objects = model.objects_for_list_view()
 
             objects = [
-                {'coordinate': (obj.geometry.y, obj.geometry.x),  # caution: openlayers expects lon, lat!
-                 'image_url': obj.image_url,
-                 'image_license_url': obj.image_license_url,
-                 'image_license_text': obj.image_license_text,
-                 'image_author_name': obj.image_author_name,
-                 'city_district_name': "Kaiserslautern Umkreis"
-                    if obj.city_district_name == "" else obj.city_district_name,
-                 'name': obj.combined_name,
-                 'id': obj.virtual_id} 
-                 for obj in objects]
+                {
+                    "coordinate": (obj.geometry.y, obj.geometry.x),
+                    "image_url": obj.image_url,
+                    "image_license_url": obj.image_license_url,
+                    "image_license_text": obj.image_license_text,
+                    "image_author_name": obj.image_author_name,
+                    "city_district_name": (
+                        "Kaiserslautern Umkreis"
+                        if obj.city_district_name == ""
+                        else obj.city_district_name
+                    ),
+                    "name": obj.combined_name,
+                    "id": obj.virtual_id,
+                }
+                for obj in objects
+            ]
 
-            return Response({
-                'objects': objects,
-                'object_name': object_name,
-                'object_name_plural': object_name_plural,
-                'url_name': "TODO",
-            })
+            return Response(
+                {
+                    "objects": objects,
+                }
+            )
 
         def retrieve(self, request, pk=None):
             """Handles GET /api/{model_name}/{id}/"""
             obj = self.get_object()
 
             serializer = get_wiki_serializer_for_model(obj, model)
-            return Response({
-                "object": serializer.data,
-            })
+            return Response(
+                {
+                    "object": serializer.data,
+                }
+            )
 
     return GenericWikiViewSet

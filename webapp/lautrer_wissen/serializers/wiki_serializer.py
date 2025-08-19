@@ -47,12 +47,12 @@ class WikiBaseObjectSerializer(
     image_info = serializers.SerializerMethodField()
     references = serializers.SerializerMethodField()
     object_type = serializers.SerializerMethodField()
-    wiki_url = serializers.SerializerMethodField()
+    wikipedia_link = serializers.SerializerMethodField()
 
     class Meta:
         fields = [
             "id",
-            "wiki_url",
+            "wikipedia_link",
             "object_type",
             "fields_to_display",
             "image_info",
@@ -65,7 +65,7 @@ class WikiBaseObjectSerializer(
     def get_id(self, obj):
         return obj.virtual_id
 
-    def get_wiki_url(self, obj):
+    def get_wikipedia_link(self, obj):
         return obj.__class__.WIKI_OBJECT_URL
 
     def get_object_type(self, obj):

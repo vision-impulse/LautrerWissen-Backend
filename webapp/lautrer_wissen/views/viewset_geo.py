@@ -136,10 +136,14 @@ def create_geo_viewset(model):
             for key, values in props.items():
                 final_props[key] = values[0] if len(values) == 1 else values
 
-            del final_props["size_radius_meters"]
-            del final_props["dashboard_url"]
-            del final_props["timefilters"]
-            del final_props["id"]
+            if "size_radius_meters" in final_props:
+                del final_props["size_radius_meters"]
+            if "dashboard_url" in final_props:
+                del final_props["dashboard_url"]
+            if "timefilters" in final_props:
+                del final_props["timefilters"]
+            if "id" in final_props:
+                del final_props["id"]
             feature["properties"] = final_props
             merged_features.append(feature)
         
@@ -153,7 +157,7 @@ def create_geo_viewset(model):
         data = serializer.data
 
         # Merge overlapping features
-        if model.__name__ == "KLSensorGrafanaDashboard":
+        if model.__name__ in ["KLSensorGrafanaDashboard", 'WikiStolperstein']:
             data = merge_features_by_geometry(data)
         return Response(data)
 
