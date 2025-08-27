@@ -14,15 +14,16 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 # Authors: Benjamin Bischke
- 
+
 import csv
 import datetime
-import os 
+import os
 import logging
 
 from django.core.management.base import BaseCommand
 from lautrer_wissen.models import DemographicData
 from settings_seedfiles import SEED_FILES
+from collections import defaultdict
 
 logger = logging.getLogger("webapp")
 
@@ -44,8 +45,9 @@ MAPPING = {
     "15": "Dansenberg",
     "16": "Hohenecken",
     "17": "Siegelbach",
-    "18": "Erfenbach"
+    "18": "Erfenbach",
 }
+
 
 class Command(BaseCommand):
     help = "Import demographic data from a CSV file."
@@ -62,7 +64,7 @@ class Command(BaseCommand):
 
         if not force and DemographicData.objects.exists():
             logger.warning(
-                "Demographic data already exist. Import will be skipped. " \
+                "Demographic data already exist. Import will be skipped. "
                 "Use python3 manage.py import_demographics --force to overwrite."
             )
             return
@@ -75,26 +77,43 @@ class Command(BaseCommand):
     def _import_demographic_data(self):
         csv_file = SEED_FILES["demographics_data_file"]
         if not os.path.exists(csv_file):
-            logger.error('File for data import not found: %s.' %(csv_file))
-            return 
+            logger.error("File for data import not found: %s." % (csv_file))
+            return
 
-        with open(csv_file, newline='', encoding='utf-8') as f:
-            reader = csv.DictReader(f, delimiter=';')
-            count = 0
+        with open(csv_file, newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f, delimiter=";")
+
+            aggregated = defaultdict(int)
+
             for row in reader:
-                stichtag_str = str(row['stichtag'])
-                stichtag_date = datetime.datetime.strptime(stichtag_str, "%Y%m%d").date()
+                reporting_date_str = str(row["stichtag"])
+                reporting_date = datetime.datetime.strptime(
+                    reporting_date_str, "%Y%m%d"
+                ).date()
 
                 DemographicData.objects.update_or_create(
-                    city_district_id=int(row['ortsbezirk_id']),
-                    city_district_name=MAPPING.get(str(int(row['ortsbezirk_id'])), "None"),
-                    age_group=row['altersgruppe_destatis'],
-                    gender=row['geschlecht'],
-                    reporting_date=stichtag_date,
-                    defaults={
-                        'number': int(row['anzahl'])
-                    }
+                    city_district_id=int(row["ortsbezirk_id"]),
+                    city_district_name=MAPPING.get(
+                        str(int(row["ortsbezirk_id"])), "None"
+                    ),
+                    age_group=row["altersgruppe_destatis"],
+                    gender=row["geschlecht"],
+                    reporting_date=reporting_date,
+                    defaults={"number": int(row["anzahl"])},
                 )
-                count += 1
-            logger.info("Demographic data (%s records) successfully imported.", count)
 
+                # --- aggregated totals across all districts ---
+                key = (row["altersgruppe_destatis"], row["geschlecht"], reporting_date)
+                aggregated[key] += int(row["anzahl"])
+
+            for (age_group, gender, reporting_date), total in aggregated.items():
+                DemographicData.objects.update_or_create(
+                    city_district_id=0,
+                    city_district_name="Gesamt Kaiserslautern",
+                    age_group=age_group,
+                    gender=gender,
+                    reporting_date=reporting_date,
+                    defaults={"number": total},
+                )
+
+            logger.info("Demographic data successfully imported.")
