@@ -17,20 +17,17 @@
  
 import csv
 import re
-import json
 import logging
+import os
 
 from django.core.management.base import BaseCommand
-from lautrer_wissen.models.geo.kl import KLFieldtestMeasurements
-import csv
-import os
-from datetime import datetime
 from django.db.models import Q
+from datetime import datetime
+from lautrer_wissen.models.geo.kl import KLFieldtestMeasurements
+from settings_seedfiles import SEED_FILES
 
-logger = logging.getLogger("django")
+logger = logging.getLogger("webapp")
 
-
-# Output columns (add 'deveui' as requested)
 columns = [
     "time", "payloadHex", "battery", "latitude", "longitude", "sats",
     "triggered", "rssi", "snr", "uplink", "downlink", "deveui", "invalid", "rawdata"
@@ -42,7 +39,6 @@ row_pattern = re.compile(r"\((.*?)\),?", re.DOTALL)
 
 def parse_row(row_str):
     """Parses a single SQL value row into Python data types."""
-    # Handle NULLs and quoted strings properly
     fields = []
     field = ''
     in_str = False
@@ -98,12 +94,42 @@ def parse_row(row_str):
 
 
 class Command(BaseCommand):
-    help = 'Import KLFieldtestMeasurements from CSV'
+    help = 'Import fieldtest measurements from a SQL-Dump (db dump by Herzlich Digital).'
 
-    def create_csv_from_original_dump(self):
-        sql_file = os.path.join(os.getenv("APP_DATA_DIR"), "initial/data/fieldtest_measurements.sql")
-        csv_file = os.path.join(os.getenv("APP_DATA_DIR"), "initial/data/data.csv")
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--force",
+            action="store_true",
+            help="Force reimport even if existing data is present",
+        )
 
+    def handle(self, *args, **options):
+        force = options["force"]
+
+        if not force and KLFieldtestMeasurements.objects.exists():
+            logger.warning(
+                "Fieldtest data already exist. Import will be skipped. "
+                "Use python3 manage.py import_fieldtests --force to overwrite."
+            )
+            return
+
+        if force:
+            logger.info("Deleting existing fieldtest data.")
+            KLFieldtestMeasurements.objects.all().delete()
+        self._import_fieldtest_data()
+
+
+    def _import_fieldtest_data(self):
+        sql_file_path = SEED_FILES["fieldtest_sql_file"]
+        csv_file_path = "./fieldtest_tmp.csv"
+        try:
+            self._create_csv_from_original_sql_dump(sql_file_path, csv_file_path)
+            self._import_measurement_from_csv_file(csv_file_path)
+            os.remove(csv_file_path)
+        except Exception as ex:
+            logger.error("Error importing fieldtest data (%s)", ex)
+
+    def _create_csv_from_original_sql_dump(self, sql_file, csv_file):
         # Read SQL file and extract data
         with open(sql_file, "r", encoding="utf-8") as f:
             sql_data = f.read()
@@ -129,59 +155,10 @@ class Command(BaseCommand):
 
         logger.info(" Extracted %s rows to %s.", len(rows), csv_file)
         return csv_file
-
-
-    def convert_sql_dump_to_csv(self):
-        """
-        Extracts the COPY data block from an SQL dump and writes it to a CSV file.
-        Assumes the COPY block is in PostgreSQL's tab-delimited format.
-        """
-        sql_dump_path = os.path.join(os.getenv("APP_DATA_DIR"), "initial/data/lautrer_wissen_klfieldtestmeasurements.sql")
-        output_csv_path = os.path.join(os.getenv("APP_DATA_DIR"), "initial/data/lautrer_wissen_klfieldtestmeasurements.csv")
-        in_copy_block = False
-        headers = [
-            "id", "time", "latitude", "longitude", "sats", "battery", "triggered",
-            "rssi", "snr", "uplink", "downlink", "created_at", "invalid",
-            "payloadHex", "rawdata", "deveui", "city_district_name",
-            "data_acquisition_date", "data_source", "insert_timestamp"
-        ]
-
-        with open(sql_dump_path, 'r', encoding='utf-8') as infile, \
-            open(output_csv_path, 'w', newline='', encoding='utf-8') as outfile:
-
-            writer = csv.DictWriter(outfile, fieldnames=headers)
-            writer.writeheader()
-
-            for line in infile:
-                if line.strip().startswith("COPY") and "lautrer_wissen_klfieldtestmeasurements" in line:
-                    in_copy_block = True
-                    continue
-
-                if in_copy_block:
-                    if line.strip() == r"\.":
-                        break  # End of COPY block
-
-                    values = line.rstrip('\n').split('\t')
-                    # Handle NULLs (PostgreSQL uses "\N")
-                    row = {
-                        key: (None if val == r"\N" else val)
-                        for key, val in zip(headers, values)
-                    }
-                    writer.writerow(row)
-
-        logger.info("[✓] Converted SQL COPY to CSV: %s", output_csv_path)
-        return output_csv_path 
-        
-
-    def handle(self, *args, **kwargs):
-        file_path = self.convert_sql_dump_to_csv()
-        self.import_measurement_from_csv_file(file_path)
-
-        file_path = self.create_csv_from_original_dump()
-        self.import_measurement_from_csv_file(file_path)
     
-    def import_measurement_from_csv_file(self, file_path):
-        with open(file_path, newline='') as csvfile:
+    def _import_measurement_from_csv_file(self, csv_file_path):
+        
+        with open(csv_file_path, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
 
             for row in reader:
@@ -204,11 +181,11 @@ class Command(BaseCommand):
                     rawdata=row['rawdata'],
                     created_at=dt
                 )
-                self.safe_create_measurement(data)
+                self._safe_create_measurement(data)
 
-        logger.info('Successfully imported data.')
+        logger.info('Successfully imported fieldtest data.')
     
-    def safe_create_measurement(self, data):
+    def _safe_create_measurement(self, data):
         """
         Create a KLFieldtestMeasurements object only if an identical one doesn't already exist.
         `data` should be a dict with keys matching model field names.

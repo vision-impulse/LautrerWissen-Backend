@@ -16,20 +16,20 @@
 # Authors: Benjamin Bischke
 
 import json
-from django.core.management.base import BaseCommand
-from lautrer_wissen.models.elections.election_results import ElectionResult, Election
 import pandas as pd
-from datetime import datetime
-from datetime import date
 import os
-
 import logging
 
-logger = logging.getLogger("django")
+from django.core.management.base import BaseCommand
+from lautrer_wissen.models.elections.election_results import ElectionResult, Election
+from datetime import datetime
+from datetime import date
+from settings_seedfiles import SEED_FILES
+
+logger = logging.getLogger("webapp")
 
 
 CITY_FILTER = "Kreisfreie Stadt Kaiserslautern"
-
 PARTIES = [
     "SPD",
     "CDU",
@@ -124,9 +124,7 @@ class CSVElectionResultRow:
         for key in all_unique_keys:
             row = {
                 "Name": key,
-                "Direktstimme": direct_votes.get(
-                    key, None
-                ),  # Use .get() with a default of np.nan for missing keys
+                "Direktstimme": direct_votes.get(key, None),
                 "Zweitstimme": secondary_votes.get(key, None),
             }
             df_data.append(row)
@@ -135,9 +133,7 @@ class CSVElectionResultRow:
         for key in all_unique_keys:
             row = {
                 "Name": key,
-                "Direktstimme": direct_stats.get(
-                    key, None
-                ),  # Use .get() with a default of np.nan for missing keys
+                "Direktstimme": direct_stats.get(key, None),
                 "Zweitstimme": secondary_stats.get(key, None),
             }
             df_data.append(row)
@@ -145,9 +141,57 @@ class CSVElectionResultRow:
 
 
 class Command(BaseCommand):
-    help = "Import a JSON layer config into the database"
+    help = "Import election results from a CSV file into the database."
 
-    def import_restult_for_district_type(self, df, district_type, election):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--force",
+            action="store_true",
+            help="Force reimport even if existing data is present",
+        )
+
+    def handle(self, *args, **options):
+        force = options["force"]
+
+        if not force and Election.objects.exists():
+            logger.warning(
+                "Election data already exist. Import will be skipped. "
+                "Use python3 manage.py import_elections --force to overwrite."
+            )
+            return
+
+        if force:
+            logger.info("Deleting existing election data.")
+            ElectionResult.objects.all().delete()
+            Election.objects.all().delete()
+        self._import_election()
+
+    def _import_election(self):
+        csv_file = SEED_FILES["election_data_file"]
+
+        election = Election.objects.create(
+            name="Bundestagswahl 2025",
+            date=date(2024, 11, 5),
+            data_source="Manual Import",
+            data_acquisition_date=date(2024, 11, 5),
+            insert_timestamp=datetime.now(),
+        )
+
+        df = pd.read_csv(csv_file, sep=";", encoding="utf-8", dtype=str)
+        df = df[df["Gemeindename"] == CITY_FILTER]
+
+        self._import_restult_for_district_type(
+            df, district_type="GEMEINDE", election=election
+        )
+        self._import_restult_for_district_type(
+            df, district_type="STADTTEIL", election=election
+        )
+        self._import_restult_for_district_type(
+            df, district_type="BRIEFWAHLBEZIRK", election=election
+        )
+        logger.info(f"Election data successfully imported.")
+
+    def _import_restult_for_district_type(self, df, district_type, election):
         df_stadtteile = df[df["Gebietsart"] == district_type]
         for index, row in df_stadtteile.iterrows():
             row = pd.DataFrame([row], index=[index])
@@ -165,34 +209,3 @@ class Command(BaseCommand):
                     }
                 ),
             )
-
-    def handle(self, *args, **kwargs):
-        csv_file = os.path.join(
-            os.getenv("APP_DATA_DIR"), "initial/data/bundestagswahl_2025.csv"
-        )
-
-        ElectionResult.objects.all().delete()
-        Election.objects.all().delete()
-
-        election = Election.objects.create(
-            name="Bundestagswahl 2025",
-            date=date(2024, 11, 5),
-            data_source="Manual Import",
-            data_acquisition_date=date(2024, 11, 5),
-            insert_timestamp=datetime.now(),
-        )
-
-        df = pd.read_csv(csv_file, sep=";", encoding="utf-8", dtype=str)
-        df = df[df["Gemeindename"] == CITY_FILTER]
-
-        self.import_restult_for_district_type(
-            df, district_type="GEMEINDE", election=election
-        )
-        self.import_restult_for_district_type(
-            df, district_type="STADTTEIL", election=election
-        )
-        self.import_restult_for_district_type(
-            df, district_type="BRIEFWAHLBEZIRK", election=election
-        )
-
-        self.stdout.write(self.style.SUCCESS(" Election imported successfully."))

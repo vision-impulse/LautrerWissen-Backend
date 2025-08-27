@@ -17,9 +17,14 @@
  
 import csv
 import datetime
+import os 
+import logging
+
 from django.core.management.base import BaseCommand
 from lautrer_wissen.models import DemographicData
-import os 
+from settings_seedfiles import SEED_FILES
+
+logger = logging.getLogger("webapp")
 
 MAPPING = {
     "1": "Innenstadt-Ost",
@@ -43,14 +48,34 @@ MAPPING = {
 }
 
 class Command(BaseCommand):
-    help = "Import demographic data from a CSV file"
+    help = "Import demographic data from a CSV file."
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--force",
+            action="store_true",
+            help="Force reimport even if existing data is present",
+        )
 
     def handle(self, *args, **options):
-        csv_file = os.path.join(os.getenv("APP_DATA_DIR"), "initial/data/demographics.csv")
+        force = options["force"]
 
-        DemographicData.objects.all().delete()
+        if not force and DemographicData.objects.exists():
+            logger.warning(
+                "Demographic data already exist. Import will be skipped. " \
+                "Use python3 manage.py import_demographics --force to overwrite."
+            )
+            return
+
+        if force:
+            logger.info("Deleting existing demographic data.")
+            DemographicData.objects.all().delete()
+        self._import_demographic_data()
+
+    def _import_demographic_data(self):
+        csv_file = SEED_FILES["demographics_data_file"]
         if not os.path.exists(csv_file):
-            self.stdout.write(self.style.ERROR(f'File not found: {csv_file}.'))
+            logger.error('File for data import not found: %s.' %(csv_file))
             return 
 
         with open(csv_file, newline='', encoding='utf-8') as f:
@@ -71,5 +96,5 @@ class Command(BaseCommand):
                     }
                 )
                 count += 1
-            self.stdout.write(self.style.SUCCESS(f'Imported {count} records successfully.'))
+            logger.info("Demographic data (%s records) successfully imported.", count)
 

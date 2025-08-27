@@ -20,11 +20,10 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 
+LOG_DIR = os.getenv("APP_LOG_DIR", "./logs")
 
-def setup_logging(log_dir="/var/log/lautrerwissen", log_file="data-importer.log", level=logging.INFO):
-    LOG_DIR = os.environ.get("LOG_DIR", "/var/log/lautrerwissen")
-
-    os.makedirs(log_dir, exist_ok=True)
+def setup_logging(log_file="data-importer.log", level=logging.INFO):
+    os.makedirs(LOG_DIR, exist_ok=True)
     log_path = os.path.join(LOG_DIR, log_file)
 
     root_logger = logging.getLogger()
