@@ -74,6 +74,7 @@ class Command(BaseCommand):
                         visible=layer_info.get("visible", False),
                         color=layer_info.get("color", "#000000"),
                         order=layer_order,
+                        legend_url=layer_info.get("legend_url", ""),
                         parent=None,
                     )
 
@@ -86,6 +87,7 @@ class Command(BaseCommand):
                             url=layersub_info["url"],
                             visible=layersub_info.get("visible", False),
                             color=layersub_info.get("color", "#000000"),
+                            legend_url=layer_info.get("legend_url", ""),
                             order=sub_order,
                         )
         logger.info("Sidebar config successfully imported.")

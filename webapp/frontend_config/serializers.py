@@ -21,16 +21,20 @@ from .models import MapLayerGroup, MapLayer
 
 class MapLayerSerializer(serializers.ModelSerializer):
     sublayers = serializers.SerializerMethodField()
+    legendurl = serializers.SerializerMethodField()
 
     class Meta:
         model = MapLayer
-        fields = ['name', 'visible', 'color', 'url', 'sublayers']
+        fields = ['name', 'visible', 'color', 'url', 'sublayers', 'legendurl']
 
     def get_sublayers(self, obj):
         sublayers = obj.sublayers.all()
         if sublayers.exists():
             return MapLayerSerializer(sublayers, many=True).data
         return []
+
+    def get_legendurl(self, obj):
+        return obj.legend_url
 
 class MapLayerGroupSerializer(serializers.ModelSerializer):
     layers = serializers.SerializerMethodField()

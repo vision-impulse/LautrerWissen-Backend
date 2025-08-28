@@ -32,10 +32,11 @@ class MapLayer(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='sublayers', on_delete=models.CASCADE)
 
     name = models.CharField(max_length=100)
-    url = models.CharField(max_length=255)
+    url = models.TextField()
     visible = models.BooleanField(default=False)
     color = models.CharField(max_length=7, default='#000000')  # Allow per-layer override
     order = models.PositiveIntegerField(default=0)
+    legend_url = models.TextField(null=True, blank=True, default="")
 
     class Meta:
         ordering = ['order']
