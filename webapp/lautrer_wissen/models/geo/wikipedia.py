@@ -62,13 +62,6 @@ class WikiModel(BaseModel, FrontendURLMixin):
     class Meta:
         abstract = True  # This makes it an abstract base class in Django
 
-    @property
-    def virtual_id(self):
-        # Create a hash from lat/lon
-        lat = self.geometry.y
-        lon = self.geometry.x
-        return hashlib.md5(f"{lat}:{lon}".encode()).hexdigest()
-
     @classmethod
     def objects_for_list_view(cls):
         objs = (
@@ -97,6 +90,7 @@ class WikiModel(BaseModel, FrontendURLMixin):
             .order_by("distance")[1 : top_n + 1]
         )
 
+    virtual_id = models.CharField(default="", max_length=255)
     geometry = models.PointField()
     image_url = models.TextField(default="")
     image_license_url = models.TextField(default="")

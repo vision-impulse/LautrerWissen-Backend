@@ -15,14 +15,16 @@
 #
 # Authors: Benjamin Bischke
 
-from ingestor.datapipe.steps.base_step import DefaultTransformStep
 import pandas as pd
 import zipfile
+import os
+import hashlib
 
+
+from ingestor.datapipe.steps.base_step import DefaultTransformStep
 from geoalchemy2.shape import from_shape
 from shapely.geometry import Point
 from datetime import datetime
-import os
 
 from ingestor.apis.wikipedia.wiki_dataframe import WikipediaDataframeColumns as WikiDFColumns
 from ingestor.utils.geo_districts import CityDistrictsDecoder
@@ -60,7 +62,8 @@ class WikiTransformStep(DefaultTransformStep):
                 del row[WikiDFColumns.ADDRESS_LOCATION.value]
                 del row[WikiDFColumns.IMAGE_FILENAME.value]
                 del row[WikiDFColumns.ADDITIONAL_IMAGE_URL_CATEGORY.value]
-
+                
+                row["virtual_id"] = hashlib.md5(f"{row["geometry"].y}:{row["geometry"].x}".encode()).hexdigest()
                 row["city_district_name"] = CityDistrictsDecoder.get_district_name_for_geometry(row["geometry"])
                 row["data_source"] = context.resource.data_source
                 row["data_acquisition_date"] = data_acquisition_date
