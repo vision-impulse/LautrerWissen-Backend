@@ -46,6 +46,8 @@ class BaseResource(models.Model):
     pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE, related_name='resources', null=True)
     data_source = models.CharField(max_length=255)
     db_model_class = models.CharField(max_length=255)
+    active = models.BooleanField(default=True)
+    
     class Meta:
         abstract = True  # Not a real DB table
 
