@@ -36,6 +36,7 @@ API_GEO_MODELS = [
     osm.OsmLeisureDance, osm.OsmDrivingSchool, osm.OsmMusicSchool, osm.OsmMiniatureGolf, osm.OsmEscapegame,
     osm.OsmZoo, osm.OsmCopyshop, osm.OsmCinema, osm.OsmCemetery, osm.OsmAmenityParking, osm.OsmBicycleParking,
     osm.OsmBicycleRepairStation, osm.OsmCarRental, osm.OsmBicycleRental, osm.OsmPostBox, osm.OsmParcelLocker,
+    osm.OsmLeisureDogPark, osm.OsmLandUseMilitary,
 
     infrastructure.ChargingStation, infrastructure.VRNBusStation, infrastructure.WLANHotspot,
     infrastructure.EmergencyPoint, infrastructure.TTNGateway,

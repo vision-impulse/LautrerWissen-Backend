@@ -457,7 +457,25 @@ class OsmSportCenterClimbing(BaseModel):
     geometry = models.GeometryField(null=True, blank=True)
 
 
+class OsmLandUseMilitary(BaseModel):
+    VISIBLE_OBJECT_NAME = "Militärfläche"
+    MAP_FIELDS = {
+        "name": "Name",
+        **BaseModel.MAP_FIELDS, 
+    }
+    name = models.CharField(max_length=255, null=True, blank=True)
+    geometry = models.GeometryField(null=True, blank=True)
 
+class OsmLeisureDogPark(BaseModel):
+    VISIBLE_OBJECT_NAME = "Hundewiese"
+    MAP_FIELDS = {
+        "name": "Name",
+        "website": "Website",
+        **BaseModel.MAP_FIELDS, 
+    }
+    name = models.CharField(max_length=255, null=True, blank=True)
+    website = models.CharField(max_length=255, null=True, blank=True)
+    geometry = models.GeometryField(null=True, blank=True)
 
 
 
