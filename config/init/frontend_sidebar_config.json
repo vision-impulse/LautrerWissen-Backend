@@ -4,14 +4,8 @@
     "color": "#F1945C",
     "layers": [
       {
-        "title": "Schulen",
-        "url": "/geo/kleducationalinstitution?Kategorie=Schule",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Kitas",
-        "url": "/geo/kleducationalinstitution?Kategorie=Kita",
+        "title": "Beratungen",
+        "url": "/geo/kleducationalinstitution?Kategorie=Beratung",
         "visible": false,
         "color": "#000000"
       },
@@ -22,8 +16,8 @@
         "color": "#000000"
       },
       {
-        "title": "Beratungen",
-        "url": "/geo/kleducationalinstitution?Kategorie=Beratung",
+        "title": "Kitas",
+        "url": "/geo/kleducationalinstitution?Kategorie=Kita",
         "visible": false,
         "color": "#000000"
       },
@@ -40,8 +34,38 @@
         "color": "#000000"
       },
       {
+        "title": "Schulen",
+        "url": "/geo/kleducationalinstitution?Kategorie=Schule",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
         "title": "Sprachschulen",
         "url": "/geo/kleducationalinstitution?Kategorie=Sprache",
+        "visible": false,
+        "color": "#000000"
+      }
+    ]
+  },
+    {
+    "title": "Bubatzkarte",
+    "color": "#000000",
+    "layers": [
+      {
+        "title": "Cannabis Konsum Verbotszonen",
+        "url": "SERVICE=WMS&layer=Cannabiskonsumverbot&URL=https://geoportal.kaiserslautern.de/cgi-bin/bubatz_wms?&SRS=EPSG:4326",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Verbot Cannabiskonsum",
+        "url": "SERVICE=WMS&layer=Bubatz_100&URL=https://geoportal.kaiserslautern.de/cgi-bin/bubatz_wms?&SRS=EPSG:4326",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Verbot Gründung von Anbauvereinigungen",
+        "url": "SERVICE=WMS&layer=Bubatz_200&URL=https://geoportal.kaiserslautern.de/cgi-bin/bubatz_wms?&SRS=EPSG:4326",
         "visible": false,
         "color": "#000000"
       }
@@ -58,44 +82,14 @@
         "color": "#000000"
       },
       {
+        "title": "Escape-Rooms",
+        "url": "/geo/osmescapegame",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
         "title": "Fussballplätze",
         "url": "/geo/osmsportsoccer",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Spielplätze",
-        "url": "/geo/osmleisureplayground",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Tennisplätze",
-        "url": "/geo/osmsporttennis",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Tanzschulen",
-        "url": "/geo/osmleisuredance",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Volleyballfelder",
-        "url": "/geo/osmvolleyball",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Minigolf",
-        "url": "/geo/osmminiaturegolf",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Schwimmbäder",
-        "url": "/geo/osmsportcenterswimming",
         "visible": false,
         "color": "#000000"
       },
@@ -112,11 +106,42 @@
         "color": "#000000"
       },
       {
-        "title": "Escape-Rooms",
-        "url": "/geo/osmescapegame",
+        "title": "Minigolf",
+        "url": "/geo/osmminiaturegolf",
         "visible": false,
         "color": "#000000"
       },
+      {
+        "title": "Schwimmbäder",
+        "url": "/geo/osmsportcenterswimming",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Spielplätze",
+        "url": "/geo/osmleisureplayground",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Tanzschulen",
+        "url": "/geo/osmleisuredance",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Tennisplätze",
+        "url": "/geo/osmsporttennis",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Volleyballfelder",
+        "url": "/geo/osmvolleyball",
+        "visible": false,
+        "color": "#000000"
+      },
+
       {
         "title": "Zoos",
         "url": "/geo/osmzoo",
@@ -136,7 +161,7 @@
         "color": "#000000"
       },
       {
-        "title": "Ehem. Brauereien",
+        "title": "Ehemalige Brauereien",
         "url": "/geo/wikibrewery",
         "visible": false,
         "color": "#000000"
@@ -148,14 +173,20 @@
         "color": "#000000"
       },
       {
-        "title": "Kulturdenkmale",
+        "title": "Kulturdenkmäler",
         "url": "/geo/wikiculturalmonument",
         "visible": false,
         "color": "#000000"
       },
       {
-        "title": "Naturdenkmale",
+        "title": "Naturdenkmäler",
         "url": "/geo/wikinaturalmonument",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Rittersteine",
+        "url": "/geo/wikiritterstein",
         "visible": false,
         "color": "#000000"
       },
@@ -168,12 +199,6 @@
       {
         "title": "Stolpersteine",
         "url": "/geo/wikistolperstein",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Rittersteine",
-        "url": "/geo/wikiritterstein",
         "visible": false,
         "color": "#000000"
       }
@@ -220,6 +245,13 @@
         "color": "#000000"
       },
       {
+        "title": "Rettungspunkte",
+        "url": "/geo/emergencypoint",
+        "visible": false,
+        "color": "#000000"
+      },
+
+      {
         "title": "Sitzbänke",
         "url": "/geo/osmamenitybench",
         "visible": false,
@@ -228,12 +260,6 @@
       {
         "title": "Wasserspender",
         "url": "/geo/osmamenitydrinkingwater",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Rettungspunkte",
-        "url": "/geo/emergencypoint",
         "visible": false,
         "color": "#000000"
       },
@@ -280,30 +306,7 @@
       }
     ]
   },
-  {
-    "title": "Bubatzkarte",
-    "color": "#000000",
-    "layers": [
-      {
-        "title": "Cannabis Konsum Verbotszonen",
-        "url": "SERVICE=WMS&layer=Cannabiskonsumverbot&URL=https://geoportal.kaiserslautern.de/cgi-bin/bubatz_wms?&SRS=EPSG:4326",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Verbot Cannabiskonsum",
-        "url": "SERVICE=WMS&layer=Bubatz_100&URL=https://geoportal.kaiserslautern.de/cgi-bin/bubatz_wms?&SRS=EPSG:4326",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
-        "title": "Verbot Gründung von Anbauvereinigungen",
-        "url": "SERVICE=WMS&layer=Bubatz_200&URL=https://geoportal.kaiserslautern.de/cgi-bin/bubatz_wms?&SRS=EPSG:4326",
-        "visible": false,
-        "color": "#000000"
-      }
-    ]
-  },
+
   {
     "title": "Planen und Bauen",
     "color": "#9575cd",
@@ -349,14 +352,14 @@
         "legend_url": "https://geo4.service24.rlp.de/attachment/legende/DTK25_Legende.png"
       },
       {
-        "title": "Einzeldenkmäler Flächen",
+        "title": "Einzeldenkmäler (Flächen)",
         "url": "SERVICE=WMS&layer=edm_flaechen&URL=https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?",
         "visible": false,
         "color": "#000000",
         "legend_url": "https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=edm_flaechen&format=image/png"
       },
       {
-        "title": "Einzeldenkmäler Punkte",
+        "title": "Einzeldenkmäler (Punkte)",
         "url": "SERVICE=WMS&layer=edm_punkte&URL=https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?",
         "visible": false,
         "color": "#000000",
@@ -389,20 +392,20 @@
     "color": "#4db6ac",
     "layers": [
       {
-        "title": "Wertstoffhöfe",
-        "url": "/geo/osmrecyclingcenter",
+        "title": "Hundekotbeutel",
+        "url": "/geo/osmvendingmachinedogtoilet",
         "visible": false,
         "color": "#000000"
       },
       {
-        "title": "Müllcontainer",
+        "title": "Recycling-Container",
         "url": "/geo/osmrecyclingcontainer",
         "visible": false,
         "color": "#000000"
       },
       {
-        "title": "Hundekotbeutel",
-        "url": "/geo/osmvendingmachinedogtoilet",
+        "title": "Wertstoffhöfe",
+        "url": "/geo/osmrecyclingcenter",
         "visible": false,
         "color": "#000000"
       }
@@ -413,14 +416,14 @@
     "color": "#f06292",
     "layers": [
       {
-        "title": "Sakralbauten",
-        "url": "/geo/wikisacralbuilding",
+        "title": "Friedhöfe",
+        "url": "/geo/osmcemetery",
         "visible": false,
         "color": "#000000"
       },
       {
-        "title": "Friedhöfe",
-        "url": "/geo/osmcemetery",
+        "title": "Sakralbauten",
+        "url": "/geo/wikisacralbuilding",
         "visible": false,
         "color": "#000000"
       }
@@ -437,12 +440,6 @@
         "color": "#000000"
       },
       {
-        "title": "Sensor-Gateways",
-        "url": "/geo/ttngateway",
-        "visible": false,
-        "color": "#000000"
-      },
-      {
         "title": "Sensor-Dashboards",
         "url": "/geo/klsensorgrafanadashboard",
         "visible": false,
@@ -451,6 +448,12 @@
       {
         "title": "Sensor-Feldstärke",
         "url": "/geo/klfieldtestmeasurements",
+        "visible": false,
+        "color": "#000000"
+      },
+      {
+        "title": "Sensor-Gateways",
+        "url": "/geo/ttngateway",
         "visible": false,
         "color": "#000000"
       }
@@ -485,7 +488,7 @@
     "color": "#4fc3f7",
     "layers": [
       {
-        "title": "Autoverleih",
+        "title": "Autovermietungen",
         "url": "/geo/osmcarrental",
         "visible": false,
         "color": "#4CAF50"
@@ -555,8 +558,8 @@
             "visible": false
           },
           {
-            "title": "Parkplätze (Öffentlich)",
-            "url": "/geo/osmamenityparking/?Zugang=Ja",
+            "title": "Parkplätze (Kunden)",
+            "url": "/geo/osmamenityparking/?Zugang__in=Kunden,Erlaubt",
             "visible": false
           },
           {
@@ -565,8 +568,8 @@
             "visible": false
           },
           {
-            "title": "Parkplätze (Kunden)",
-            "url": "/geo/osmamenityparking/?Zugang__in=Kunden,Erlaubt",
+            "title": "Parkplätze (Öffentlich)",
+            "url": "/geo/osmamenityparking/?Zugang=Ja",
             "visible": false
           },
           {
