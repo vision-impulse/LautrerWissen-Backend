@@ -29,26 +29,29 @@ import subprocess
 # --- Inlines ---
 class ResourceOSMInline(admin.StackedInline):
     model = ResourceOSM
-    extra = 1
+    extra = 0
+    can_delete = False  
 
 class ResourceWFSFileInline(admin.StackedInline):
     model = ResourceWFSFile
-    extra = 1
+    extra = 0
+    can_delete = False  
 
 class LocalResourceFileInline(admin.StackedInline):
     model = LocalResourceFile
-    extra = 1
-
+    extra = 0
+    can_delete = False  
+    
 class ResourceWikipageInline(admin.StackedInline):
     model = ResourceWikipage
-    extra = 1
+    extra = 0
+    can_delete = False  
 
 class RemoteResourceFileInline(admin.StackedInline):
     model = RemoteResourceFile
-    extra = 1
+    extra = 0
+    can_delete = False  
 
-
-# --- Custom Admins per Pipeline Type ---
 
 class BasePipelineAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'run_pipeline_button')
@@ -82,6 +85,15 @@ from .models import PipelineType
 
 @admin.register(Pipeline)
 class PipelineAdmin(BasePipelineAdmin):
+
+    readonly_fields = ("name", )
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
     def get_inline_instances(self, request, obj=None):
         if not obj:
             return []
