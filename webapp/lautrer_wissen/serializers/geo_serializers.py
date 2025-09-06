@@ -36,13 +36,12 @@ class BaseGeoSerializer(GeoFeatureModelSerializer):
                     "type": "LineString",
                     "coordinates": [list(coord) for coord in obj.geometry.coords]
                 }
-
             if obj.geometry.geom_type == "MultiPolygon":
+                largest = max(obj.geometry, key=lambda g: g.area)
                 return {
-                    "type": "MultiPolygon",
-                    "coordinates": [list(coord) for coord in obj.geometry.coords[0]]
+                    "type": "Polygon",              
+                    "coordinates": [list(coord) for coord in largest.coords[0]] 
                 }
-
             if obj.geometry.geom_type == "Polygon":
                 return {
                     "type": "Polygon",
