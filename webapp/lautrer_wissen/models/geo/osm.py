@@ -159,7 +159,7 @@ class OsmAmenityToilets(BaseModel):
 
 
 class OsmAmenityWasteBasket(BaseModel):
-    VISIBLE_OBJECT_NAME = "Mülleimer"
+    VISIBLE_OBJECT_NAME = "Abfalleimer"
     MAP_FIELDS = {
         "data_source": "Datenquelle",
         "data_acquisition_date": "Datenstand"

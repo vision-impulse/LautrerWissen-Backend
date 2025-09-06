@@ -46,7 +46,7 @@ class KLParkingLocation(BaseModel):
     MAP_FIELDS = {
         "name": "Name",
         "address": "Adresse",
-        "total_spots": "ahl Parkplätze",
+        "total_spots": "Anzahl Parkplätze",
         **BaseModel.MAP_FIELDS,
     }
 
