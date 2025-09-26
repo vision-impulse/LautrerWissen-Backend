@@ -17,14 +17,15 @@
  
 import sys
 import logging
+import os
 
 from django.core.management.base import BaseCommand
 from pipeline_manager.models import Pipeline
-
 from ingestor.datapipe.manager import PipelineManager
 from ingestor.datapipe.pipelines.base_pipeline import PipelineType
-import os
 from datetime import date
+
+logger = logging.getLogger("webapp")
 
    
 class Command(BaseCommand):
@@ -42,30 +43,27 @@ class Command(BaseCommand):
     def _get_resources_for_pipeline(self, pipeline):
         resources = []
         if hasattr(pipeline, 'osm_resources'):
-            resources.extend(pipeline.osm_resources.all())
+            resources.extend(pipeline.osm_resources.filter(active=True))
         if hasattr(pipeline, 'wfs_resources'):
-            resources.extend(pipeline.wfs_resources.all())
+            resources.extend(pipeline.wfs_resources.filter(active=True))
         if hasattr(pipeline, 'local_resources'):
-            resources.extend(pipeline.local_resources.all())
+            resources.extend(pipeline.local_resources.filter(active=True))
         if hasattr(pipeline, 'wikipage_resources'):
-            resources.extend(pipeline.wikipage_resources.all())
+            resources.extend(pipeline.wikipage_resources.filter(active=True))
         if hasattr(pipeline, 'remote_resources'):
-            resources.extend(pipeline.remote_resources.all())
-        
-        # Now you can loop over them or do processing
-        self.stdout.write(f"Found {len(resources)} total resources:")
-        for res in resources:
-            self.stdout.write(f"- {res}")
+            resources.extend(pipeline.remote_resources.filter(active=True))
         return resources
-
+    
     def handle(self, *args, **kwargs):
         name = kwargs['pipeline_name']
         pipeline = Pipeline.objects.get(name=name)
         resources = self._get_resources_for_pipeline(pipeline)
-
         data_import_folder = self._get_import_folder() 
 
         manager = PipelineManager()        
-        self.stdout.write(f"Running pipeline: {name}")
+        logger.info("Running pipeline: %s", name)
+        logger.info("Found %s total data sources:", len(resources))
+        for res in resources:
+            logger.info("Data source: %s, DB model: %s", res.ndata_source, res.db_model_class)
         manager.run_pipeline(name, resources, data_import_folder)
     
