@@ -64,6 +64,6 @@ class Command(BaseCommand):
         logger.info("Running pipeline: %s", name)
         logger.info("Found %s total data sources:", len(resources))
         for res in resources:
-            logger.info("Data source: %s, DB model: %s", res.ndata_source, res.db_model_class)
+            logger.info("Data source: %s, DB model: %s", res.data_source, res.db_model_class)
         manager.run_pipeline(name, resources, data_import_folder)
     
