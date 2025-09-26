@@ -15,7 +15,7 @@
 #
 # Authors: Benjamin Bischke
 
-FRONTEND_URL = "https://lautrer-wissen.de"
+from webapp.settings import FRONTEND_URL
 
 
 class FrontendURLMixin:
@@ -34,7 +34,6 @@ class FrontendURLMixin:
             'klsensorgrafanadashboard': "dashboards"
         }
         
-
         url_partial = route_map.get(self._meta.model_name, None)
         if url_partial is None:
             return FRONTEND_URL
