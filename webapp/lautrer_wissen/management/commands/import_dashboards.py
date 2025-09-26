@@ -60,6 +60,7 @@ class Command(BaseCommand):
                     timefilters=entry["timefilters"],
                     defaults={
                         "dashboard_url": entry["dashboard_url"],
+                        "description": entry["description"],
                         "geometry": Point(entry["lon"], entry["lat"]),
                         "size_radius_meters": entry.get("size_radius_meters", 10),
                         "timefilters": entry.get("timefilters", "täglich"),

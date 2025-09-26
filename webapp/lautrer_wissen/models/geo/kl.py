@@ -250,6 +250,7 @@ class KLSensorGrafanaDashboard(BaseModel, FrontendURLMixin):
     geometry = models.GeometryField()
     size_radius_meters = models.FloatField()
     timefilters = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
 
 
 class KLFieldtestMeasurements(BaseModel):
