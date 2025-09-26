@@ -324,7 +324,7 @@
         "color": "#000000"
       },
       {
-        "title": "Bauliche Gesamtanlagen (Denkmale)",
+        "title": "Bauliche Gesamtanlagen (Denkmäler)",
         "url": "SERVICE=WMS&layer=bga&URL=https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?",
         "visible": false,
         "color": "#000000",
@@ -430,32 +430,36 @@
     ]
   },
   {
-    "title": "Sensorik",
+    "title": "Sensorik und Umwelt",
     "color": "#33eda7",
     "layers": [
       {
         "title": "Umweltsensoren",
         "url": "/geo/klenvironmentalsensor",
         "visible": false,
-        "color": "#000000"
+        "color": "#000000",
+        "legend_url": "https://www.lautrer-wissen.de/docs/legend_sensors.pdf"
       },
       {
         "title": "Sensor-Dashboards",
         "url": "/geo/klsensorgrafanadashboard",
         "visible": false,
-        "color": "#000000"
+        "color": "#000000",
+        "legend_url": "https://www.lautrer-wissen.de/docs/legend_sensors.pdf"
       },
       {
         "title": "Sensor-Feldstärke",
         "url": "/geo/klfieldtestmeasurements",
         "visible": false,
-        "color": "#000000"
+        "color": "#000000",
+        "legend_url": "https://www.lautrer-wissen.de/docs/legend_sensors.pdf"
       },
       {
         "title": "Sensor-Gateways",
         "url": "/geo/ttngateway",
         "visible": false,
-        "color": "#000000"
+        "color": "#000000",
+        "legend_url": "https://www.lautrer-wissen.de/docs/legend_sensors.pdf"
       }
     ]
   },
