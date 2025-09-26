@@ -25,7 +25,7 @@ from pipeline_manager.models import RemoteResourceFile
 import os
 
 from ingestor.datapipe.config import load_config
-
+from settings_seedfiles import SEED_FILES
 
 class Command(BaseCommand):
     help = "Import data resources from YAML config"
@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
         if config_path is None or not os.path.exists(config_path):
             self.stdout.write(self.style.SUCCESS(f"Using default config path"))
-            config_path = os.path.join(os.getenv("CONFIG_DIR"), "init/datasources_config.yaml")
+            config_path = SEED_FILES["data_sources_config"]
             override_existing = True
 
         if not os.path.exists(config_path):
