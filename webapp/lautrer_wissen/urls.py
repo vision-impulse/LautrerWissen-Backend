@@ -22,7 +22,7 @@ from .views.viewset_geo import create_geo_viewset
 from .views.viewset_wiki import create_wiki_viewset
 from .views.viewset_events import KLLeisureEventViewSet, KLWGAEventViewSet
 from .views.viewset_events import KLCouncilEventViewSet, KLConstructionSiteViewSet
-from .views.viewset_events import DemographicDataViewSet
+from .views.viewset_events import DemographicDataViewSet, GrafanaDashboardViewSet
 from .views.viewset_elections import ElectionViewSet, ElectionResultViewSet
 from .models.events import events
 from .models import API_GEO_MODELS, API_WIKI_MODLES
@@ -51,4 +51,8 @@ router.register(r'construction-sites', KLConstructionSiteViewSet, basename='cons
 
 # Create and register viewset for demographics
 router.register(r'demographics', DemographicDataViewSet, basename='demographics')
+
+# Create and register viewset for dashboards
+router.register(r'dashboards', GrafanaDashboardViewSet, basename='dashboards')
+
 

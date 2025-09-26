@@ -29,6 +29,7 @@ from ..models.events.events import WGAEvent
 from ..models.events.events import KLCouncilEvent
 from ..models import KLConstructionSite
 from ..models import DemographicData
+from ..models import KLSensorGrafanaDashboard
 
 from datetime import datetime
 from rest_framework.response import Response
@@ -183,3 +184,13 @@ class DemographicDataViewSet(viewsets.ReadOnlyModelViewSet):
             ]
         })
 
+
+class GrafanaDashboardViewSet(viewsets.ReadOnlyModelViewSet):
+    
+    serializer_class = create_generic_serializer(KLSensorGrafanaDashboard)
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    ordering_fields = ['id',]
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        return KLSensorGrafanaDashboard.objects.all()
