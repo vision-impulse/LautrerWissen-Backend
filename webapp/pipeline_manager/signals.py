@@ -14,28 +14,22 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 # Authors: Benjamin Bischke
- 
-from django.apps import AppConfig
-from django.conf import settings
-import sys
+
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from pipeline_manager.models import PipelineSchedule
+from . import scheduler
 
 
-class PipelineManagerConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'pipeline_manager'
-    verbose_name = "Daten and Import"
-    
-    def ready(self):
-        import pipeline_manager.signals  # noqa
-        # Start scheduler only once (not in migrations!)
-        if (
-            "makemigrations" in sys.argv
-            or "migrate" in sys.argv
-            or "collectstatic" in sys.argv
-            or "shell" in sys.argv
-        ):
-            return
+@receiver(post_save, sender=PipelineSchedule)
+def update_schedule(sender, instance, **kwargs):
+    if not scheduler.scheduler:
+        return
+    scheduler.sync_schedules()
 
-        if settings.SCHEDULER_ENABLED:
-            from . import scheduler
-            scheduler.start()
+
+@receiver(post_delete, sender=PipelineSchedule)
+def delete_schedule(sender, instance, **kwargs):
+    if not scheduler.scheduler:
+        return
+    scheduler.sync_schedules()

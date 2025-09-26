@@ -79,3 +79,11 @@ class ResourceWikipage(BaseResource):
     table_indices = models.JSONField(default=list)
     table_filenames = models.JSONField(default=list)
     table_extractor_classes = models.JSONField(default=list)
+
+
+class PipelineSchedule(models.Model):
+    PIPELINE_CHOICES = [(pt.name, pt.value) for pt in PipelineType]
+
+    name = models.CharField(max_length=255, choices=PIPELINE_CHOICES, unique=True)
+    cron_expression = models.CharField(max_length=100, help_text="e.g. '0 2 * * *' for daily at 2AM")
+    is_active = models.BooleanField(default=True)

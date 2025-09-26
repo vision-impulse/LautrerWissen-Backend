@@ -16,14 +16,14 @@
 # Authors: Benjamin Bischke
  
 from django.contrib import admin
-
-from django.contrib import admin
 from django.utils.html import format_html
-from .models import Pipeline, ResourceOSM, ResourceWFSFile, LocalResourceFile, ResourceWikipage, RemoteResourceFile
 from django.utils.html import format_html
 from django.urls import path
 from django.http import HttpResponseRedirect
 import subprocess
+from .models import Pipeline, ResourceOSM, ResourceWFSFile, LocalResourceFile, ResourceWikipage, RemoteResourceFile
+from .models import PipelineType
+from .models import PipelineSchedule
 
 
 # --- Inlines ---
@@ -81,7 +81,6 @@ class BasePipelineAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/admin/'))
 
 
-from .models import PipelineType
 
 @admin.register(Pipeline)
 class PipelineAdmin(BasePipelineAdmin):
@@ -115,3 +114,17 @@ class PipelineAdmin(BasePipelineAdmin):
             inlines = [RemoteResourceFileInline]
 
         return [inline(self.model, self.admin_site) for inline in inlines]
+
+
+@admin.register(PipelineSchedule)
+class PipelineScheduleAdmin(admin.ModelAdmin):
+    list_display = ('name', 'cron_expression', 'is_active', )
+    list_editable = ('cron_expression', 'is_active')
+    search_fields = ('name',)
+
+
+admin.site._registry[PipelineSchedule].model._meta.verbose_name = "Daten Pipeline Cron-Job"
+admin.site._registry[PipelineSchedule].model._meta.verbose_name_plural = "Daten Pipeline Cron-Jobs"
+
+admin.site._registry[Pipeline].model._meta.verbose_name = "Daten Pipeline"
+admin.site._registry[Pipeline].model._meta.verbose_name_plural = "Daten Pipelines"
