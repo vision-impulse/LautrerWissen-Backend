@@ -231,15 +231,16 @@ class WikipediaDownloader(Downloader):
             "page": page_name,
             "prop": "text",
         }
-        url = "https://de.wikipedia.org/w/api.php"
-        print("Making wiki request", url)
-        response = requests.get(url, params=params)
+        url = "https://de.wikipedia.org/w/api.php?"
+        headers = {
+            "User-Agent": "Lautrer Wissen/1.0 (https://lautrer-wissen.de)" 
+        }
+        response = requests.get(url, params=params, headers=headers)
         return response
 
     @staticmethod
     @polite_request
     def _download_category_page_with_image_links(url):
-        print("Making wiki request", url)
         response = requests.get(url)
         return response
 
@@ -247,7 +248,9 @@ class WikipediaDownloader(Downloader):
     @polite_request
     def _download_license_page_with_image_info(image_name):
         url = "https://commons.wikimedia.org/wiki/File:" + image_name
-        print("Making wiki request", url)
-        response = requests.get(url)
+        headers = {
+            "User-Agent": "Lautrer Wissen/1.0 (https://lautrer-wissen.de)" 
+        }
+        response = requests.get(url, headers=headers)
         return response
 
