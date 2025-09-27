@@ -26,10 +26,12 @@ from ..pipelines.base_pipeline import BasePipeline, PipelineType
 class WifiMySpotEmperaPipeline(BasePipeline):
     """Pipeline for Wifi data (Empera and MySpot)."""
 
-    def __init__(self, resources, out_dir, logger):
-        super(WifiMySpotEmperaPipeline, self).__init__(resources, logger, out_dir)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
-        return [DownloadStepFactory.create(LocalResourceDownloader),
-                WifiTransformStep(),
-                GenericImportStep()]
+        return [
+            DownloadStepFactory.create(LocalResourceDownloader),
+            WifiTransformStep(),
+            GenericImportStep(),
+        ]

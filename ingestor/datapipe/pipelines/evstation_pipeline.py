@@ -25,11 +25,12 @@ from ..pipelines.base_pipeline import BasePipeline, PipelineType
 class EVStationPipeline(BasePipeline):
     """Pipeline for EV-station data."""
 
-    def __init__(self, resources, out_dir,  logger):
-        super(EVStationPipeline, self).__init__(resources, logger, out_dir)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
-        return [DownloadStepFactory.create(ResourceDownloader),
-                EvStationTransformStep(),
-                GenericImportStep()
+        return [
+            DownloadStepFactory.create(ResourceDownloader),
+            EvStationTransformStep(),
+            GenericImportStep(),
         ]

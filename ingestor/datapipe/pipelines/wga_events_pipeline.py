@@ -25,11 +25,12 @@ from ..pipelines.base_pipeline import BasePipeline, PipelineType
 class WGAEventPipeline(BasePipeline):
     """Pipeline for WGA-Events."""
 
-    def __init__(self, resources, out_dir, logger):
-        super(WGAEventPipeline, self).__init__(resources, logger, out_dir)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
-        return [DownloadStepFactory.create(WGAEventDownloader),
-                WGAEventTransformStep(),
-                GenericImportStep()
+        return [
+            DownloadStepFactory.create(WGAEventDownloader),
+            WGAEventTransformStep(),
+            GenericImportStep(),
         ]

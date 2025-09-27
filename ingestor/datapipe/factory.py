@@ -25,7 +25,9 @@ from ingestor.datapipe.pipelines.kl_sensors_pipeline import KLSensorsPipeline
 from ingestor.datapipe.pipelines.vrn_pipeline import VRNPipeline
 from ingestor.datapipe.pipelines.wiki_pipeline import WikipediaPipeline
 from ingestor.datapipe.pipelines.wifi_freifunk_pipeline import WifiFreifunkPipeline
-from ingestor.datapipe.pipelines.wifi_myspot_empera_pipeline import WifiMySpotEmperaPipeline
+from ingestor.datapipe.pipelines.wifi_myspot_empera_pipeline import (
+    WifiMySpotEmperaPipeline,
+)
 from ingestor.datapipe.pipelines.base_pipeline import PipelineType
 from ingestor.datapipe.pipelines.emergency_point_pipeline import EmergencyPointPipeline
 from ingestor.datapipe.pipelines.wga_events_pipeline import WGAEventPipeline
@@ -47,10 +49,12 @@ class PipelineFactory:
         cls._pipelines[name] = pipeline_cls
 
     @classmethod
-    def create_pipeline(cls, name, resources, out_dir, logger):
+    def create_pipeline(cls, name, resources, out_dir, logger, run_record=None):
         if name not in cls._pipelines:
             raise ValueError(f"Pipeline '{name}' not registered")
-        return cls._pipelines[name](resources, out_dir, logger)
+        return cls._pipelines[name](
+            resources=resources, out_dir=out_dir, logger=logger, run_record=run_record
+        )
 
 
 # Register available pipelines
@@ -58,13 +62,21 @@ PipelineFactory.register_pipeline(PipelineType.OSM.name, OSMPipeline)
 PipelineFactory.register_pipeline(PipelineType.KL_EVENTS.name, KLEventsPipeline)
 PipelineFactory.register_pipeline(PipelineType.KL_EVENTS_RIS.name, KLRisEventsPipeline)
 PipelineFactory.register_pipeline(PipelineType.KL_GEO_WFS.name, WFSPipeline)
-PipelineFactory.register_pipeline(PipelineType.KL_GEO_RESOURCES.name, KLGeoResourcePipeline)
-PipelineFactory.register_pipeline(PipelineType.WIFI_FREIFUNK.name, WifiFreifunkPipeline)
-PipelineFactory.register_pipeline(PipelineType.WIFI_LOCAL.name, WifiMySpotEmperaPipeline)
+PipelineFactory.register_pipeline(PipelineType.WGA_EVENTS.name, WGAEventPipeline)
+PipelineFactory.register_pipeline(PipelineType.TTN_GATEWAY.name, TTNGatewayPipeline)
 PipelineFactory.register_pipeline(PipelineType.VRN.name, VRNPipeline)
 PipelineFactory.register_pipeline(PipelineType.WIKIPEDIA.name, WikipediaPipeline)
 PipelineFactory.register_pipeline(PipelineType.EV_STATIONS.name, EVStationPipeline)
-PipelineFactory.register_pipeline(PipelineType.KL_SENSOR_RESOURCES.name, KLSensorsPipeline)
-PipelineFactory.register_pipeline(PipelineType.EMERGENCY_POINTS.name, EmergencyPointPipeline)
-PipelineFactory.register_pipeline(PipelineType.WGA_EVENTS.name, WGAEventPipeline)
-PipelineFactory.register_pipeline(PipelineType.TTN_GATEWAY.name, TTNGatewayPipeline)
+PipelineFactory.register_pipeline(PipelineType.WIFI_FREIFUNK.name, WifiFreifunkPipeline)
+PipelineFactory.register_pipeline(
+    PipelineType.KL_GEO_RESOURCES.name, KLGeoResourcePipeline
+)
+PipelineFactory.register_pipeline(
+    PipelineType.WIFI_LOCAL.name, WifiMySpotEmperaPipeline
+)
+PipelineFactory.register_pipeline(
+    PipelineType.KL_SENSOR_RESOURCES.name, KLSensorsPipeline
+)
+PipelineFactory.register_pipeline(
+    PipelineType.EMERGENCY_POINTS.name, EmergencyPointPipeline
+)

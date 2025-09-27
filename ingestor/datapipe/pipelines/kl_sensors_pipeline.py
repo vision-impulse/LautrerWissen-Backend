@@ -25,11 +25,12 @@ from ..pipelines.base_pipeline import BasePipeline, PipelineType
 class KLSensorsPipeline(BasePipeline):
     """Pipeline for Sensor data from MQTT-Queues."""
 
-    def __init__(self, resources, out_dir, logger):
-        super(KLSensorsPipeline, self).__init__(resources, logger, out_dir)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
-        return [DownloadStepFactory.create(MQTTInitialSensorsDownloader),
-                KLSensorsTransformStep(), 
-                GenericImportStep()
-                ]
+        return [
+            DownloadStepFactory.create(MQTTInitialSensorsDownloader),
+            KLSensorsTransformStep(),
+            GenericImportStep(),
+        ]

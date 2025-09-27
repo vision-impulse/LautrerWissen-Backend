@@ -25,10 +25,12 @@ from ..pipelines.base_pipeline import BasePipeline, PipelineType
 class KLRisEventsPipeline(BasePipeline):
     """Pipeline for RIS data."""
 
-    def __init__(self, resources, out_dir, logger):
-        super(KLRisEventsPipeline, self).__init__(resources, logger, out_dir)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
-        return [DownloadStepFactory.create(CouncilCalendarDownloader),
-                KLRisEventsTransformStep(),
-                GenericImportStep()]
+        return [
+            DownloadStepFactory.create(CouncilCalendarDownloader),
+            KLRisEventsTransformStep(),
+            GenericImportStep(),
+        ]

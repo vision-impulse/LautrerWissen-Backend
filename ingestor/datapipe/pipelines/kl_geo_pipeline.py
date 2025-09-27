@@ -26,10 +26,12 @@ from ..pipelines.base_pipeline import BasePipeline, PipelineType
 class KLGeoResourcePipeline(BasePipeline):
     """Pipeline for Geodata data."""
 
-    def __init__(self, resources, out_dir, logger):
-        super(KLGeoResourcePipeline, self).__init__(resources, logger, out_dir)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
-        return [DownloadStepFactory.create(ResourceDownloader),
-                KLGeoResourceTransformStep(),
-                GenericImportStep()]
+        return [
+            DownloadStepFactory.create(ResourceDownloader),
+            KLGeoResourceTransformStep(),
+            GenericImportStep(),
+        ]

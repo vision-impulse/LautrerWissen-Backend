@@ -25,10 +25,12 @@ from ..pipelines.base_pipeline import BasePipeline, PipelineType
 class KLEventsPipeline(BasePipeline):
     """Pipeline for Event data."""
 
-    def __init__(self, resources, out_dir, logger):
-        super(KLEventsPipeline, self).__init__(resources, logger, out_dir)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
-        return [DownloadStepFactory.create(EventCalendarDownloader),
-                KLEventsTransformStep(),
-                GenericImportStep()]
+        return [
+            DownloadStepFactory.create(EventCalendarDownloader),
+            KLEventsTransformStep(),
+            GenericImportStep(),
+        ]

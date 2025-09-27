@@ -29,9 +29,9 @@ class PipelineManager:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def run_pipeline(self, source_name, resources, out_dir):
+    def run_pipeline(self, source_name, resources, out_dir, run_record=None):
         pipeline = PipelineFactory.create_pipeline(
-            source_name, resources, out_dir, self.logger
+            source_name, resources, out_dir, self.logger, run_record
         )
         self.logger.info("Starting pipeline for data source: %s", source_name)
         result = pipeline.run()

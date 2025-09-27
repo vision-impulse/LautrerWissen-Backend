@@ -25,10 +25,12 @@ from ..pipelines.base_pipeline import BasePipeline, PipelineType
 class WFSPipeline(BasePipeline):
     """Pipeline for WFS-Service data."""
 
-    def __init__(self, resources, out_dir, logger):
-        super(WFSPipeline, self).__init__(resources, logger, out_dir)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
-        return [DownloadStepFactory.create(WFSDownloader),
-                KLWFSTransformStep(),
-                GenericImportStep()]
+        return [
+            DownloadStepFactory.create(WFSDownloader),
+            KLWFSTransformStep(),
+            GenericImportStep(),
+        ]
