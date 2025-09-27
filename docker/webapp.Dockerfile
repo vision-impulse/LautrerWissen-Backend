@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y postgresql postgresql-contrib postgresq
     && mkdir -p /lautrer_wissen_backend
 
 ENV BASE_PATH=/lautrer_wissen_backend
+ENV PYTHONPATH=/lautrer_wissen_backend
 
 COPY ../. $BASE_PATH
 
