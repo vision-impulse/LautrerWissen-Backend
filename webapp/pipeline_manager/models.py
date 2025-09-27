@@ -87,3 +87,38 @@ class PipelineSchedule(models.Model):
     name = models.CharField(max_length=255, choices=PIPELINE_CHOICES, unique=True)
     cron_expression = models.CharField(max_length=100, help_text="e.g. '0 2 * * *' for daily at 2AM")
     is_active = models.BooleanField(default=True)
+
+
+class PipelineRun(models.Model):
+    ORIGIN_CHOICES = [
+        ('manual', 'Manual'),
+        ('cronjob', 'Cron/APSscheduler'),
+        ('docker', 'Docker/CLI'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('running', 'Running'),
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    pipeline_name = models.CharField(max_length=200)
+    origin = models.CharField(max_length=20, choices=ORIGIN_CHOICES, default='manual')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    error_message = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class PipelineRunStep(models.Model):
+    run = models.ForeignKey(PipelineRun, related_name='steps', on_delete=models.CASCADE)
+    step_name = models.CharField(max_length=255)
+    status = models.CharField(max_length=20, choices=PipelineRun._meta.get_field('status').choices, default='pending')
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+    message = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ('id',)
