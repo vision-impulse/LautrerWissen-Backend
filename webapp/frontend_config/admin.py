@@ -26,3 +26,7 @@ class LayerInline(admin.TabularInline):
 class LayerGroupAdmin(admin.ModelAdmin):
     list_display = ('title', 'color', 'order')
     inlines = [LayerInline]
+
+
+admin.site._registry[MapLayerGroup].model._meta.verbose_name = "Sidebar Karte"
+admin.site._registry[MapLayerGroup].model._meta.verbose_name_plural = "Sidebar Karte"
