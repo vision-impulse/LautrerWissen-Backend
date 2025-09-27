@@ -16,28 +16,17 @@
 # Authors: Benjamin Bischke
 
 import importlib
-
-from django.db import transaction
-from django.utils.timezone import now
-from typing import List, Dict
-from django.contrib.gis.geos import GEOSGeometry
-from shapely.wkt import dumps as shapely_to_wkt
-
-import os
-import sys
-import django
 import logging
 
-# Add the Django project root to Python path (webapp is an external project)
-sys.path.append('/lautrer_wissen_data_integration/webapp')
-sys.path.append('/lautrer_wissen_data_integration')
+from typing import List, Dict
+from shapely.wkt import dumps as shapely_to_wkt
+from django.db import transaction
+from django.utils.timezone import now
+from django.contrib.gis.geos import GEOSGeometry
+from ingestor.datapipe.utils.django_integration import setup_django
 
-# Set the environment variable to point to settings
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webapp.settings')
-
-django.setup()
-
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("ingestor")
+setup_django()
 
 
 class DjangoORMUtils:
