@@ -24,6 +24,8 @@ import subprocess
 from .models import Pipeline, ResourceOSM, ResourceWFSFile, LocalResourceFile, ResourceWikipage, RemoteResourceFile
 from .models import PipelineType
 from .models import PipelineSchedule
+from .models import PipelineRun, PipelineRunStep
+
 
 
 # --- Inlines ---
@@ -75,7 +77,7 @@ class BasePipelineAdmin(admin.ModelAdmin):
         pipeline = Pipeline.objects.get(id=pipeline_id)
         
         # Launch the command async
-        subprocess.Popen(['python', 'manage.py', 'run_data_pipeline', str(pipeline.name)])
+        subprocess.Popen(['python', 'manage.py', 'run_data_pipeline', str(pipeline.name), "--caller=manual"])
 
         self.message_user(request, f"Pipeline '{pipeline.name}' is running.")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/admin/'))
@@ -121,6 +123,21 @@ class PipelineScheduleAdmin(admin.ModelAdmin):
     list_display = ('name', 'cron_expression', 'is_active', )
     list_editable = ('cron_expression', 'is_active')
     search_fields = ('name',)
+
+
+
+class PipelineRunStepInline(admin.TabularInline):
+    model = PipelineRunStep
+    readonly_fields = ('step_name', 'status', 'started_at', 'finished_at', 'message')
+    extra = 0
+    can_delete = False
+
+
+@admin.register(PipelineRun)
+class PipelineRunAdmin(admin.ModelAdmin):
+    list_display = ('pipeline_name', 'origin', 'status', 'started_at', 'finished_at')
+    readonly_fields = ( 'error_message', 'created_at')
+    inlines = [PipelineRunStepInline]
 
 
 admin.site._registry[PipelineSchedule].model._meta.verbose_name = "Daten Pipeline Cron-Job"

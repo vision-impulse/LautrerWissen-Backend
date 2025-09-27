@@ -15,15 +15,15 @@
 #
 # Authors: Benjamin Bischke
  
-import sys
 import logging
 import os
 
 from django.core.management.base import BaseCommand
-from pipeline_manager.models import Pipeline
+from pipeline_manager.models import Pipeline, PipelineRun
 from ingestor.datapipe.manager import PipelineManager
 from ingestor.datapipe.pipelines.base_pipeline import PipelineType
 from datetime import date
+from django.utils import timezone
 
 logger = logging.getLogger("webapp")
 
@@ -33,6 +33,12 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('pipeline_name', type=str)
+        parser.add_argument(
+            "--caller",
+            type=str,
+            default="manual",
+            help="Indicates who triggered the pipeline"
+        )
 
     def _get_import_folder(self):
         data_folder = os.getenv("APP_DATA_DIR", "./data/") # Fallback    
@@ -56,14 +62,30 @@ class Command(BaseCommand):
     
     def handle(self, *args, **kwargs):
         name = kwargs['pipeline_name']
+        caller = kwargs.get("caller", "manual")
+
         pipeline = Pipeline.objects.get(name=name)
         resources = self._get_resources_for_pipeline(pipeline)
         data_import_folder = self._get_import_folder() 
-
-        manager = PipelineManager()        
         logger.info("Running pipeline: %s", name)
         logger.info("Found %s total data sources:", len(resources))
         for res in resources:
             logger.info("Data source: %s, DB model: %s", res.data_source, res.db_model_class)
-        manager.run_pipeline(name, resources, data_import_folder)
-    
+
+        try:
+            pipeline_run = PipelineRun.objects.create(
+                pipeline_name=name,
+                origin=caller,
+                status='running',
+                started_at=timezone.now(),
+            )
+            manager = PipelineManager()        
+            manager.run_pipeline(name, resources, data_import_folder, pipeline_run)
+            pipeline_run.status = 'success'
+            pipeline_run.finished_at = timezone.now()
+            pipeline_run.save()
+        except Exception as exc:
+            pipeline_run.status = 'failed'
+            pipeline_run.error_message = str(exc)
+            pipeline_run.finished_at = timezone.now()
+            pipeline_run.save()

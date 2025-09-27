@@ -39,7 +39,7 @@ def run_pipeline(schedule_id):
         return
 
     logger.info("Running scheduled pipeline: %s (id=%s)", schedule.name, schedule.pk)
-    call_command("run_data_pipeline", schedule.name)
+    call_command("run_data_pipeline", schedule.name, caller="cronjob")
 
 
 def cron_trigger_from_expr(expr):
