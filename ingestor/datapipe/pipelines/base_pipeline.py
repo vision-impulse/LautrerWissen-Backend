@@ -105,7 +105,7 @@ class BasePipeline(ABC):
                             " Stopping %s due to failure.", context.out_dir
                         )
                         # stop processing resource
-                        return "error"
+                        return "failed"
                 except Exception as exc:
                     if step_record:
                         step_record.status = "failed"
@@ -114,5 +114,5 @@ class BasePipeline(ABC):
                         step_record.save(
                             update_fields=["status", "message", "finished_at"]
                         )
-                    return "error"
+                    return "failed"
         return "success"

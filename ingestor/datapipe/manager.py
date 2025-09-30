@@ -40,3 +40,4 @@ class PipelineManager:
             source_name,
             result,
         )
+        return result

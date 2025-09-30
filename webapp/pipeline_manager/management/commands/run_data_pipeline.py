@@ -80,8 +80,9 @@ class Command(BaseCommand):
                 started_at=timezone.now(),
             )
             manager = PipelineManager()        
-            manager.run_pipeline(name, resources, data_import_folder, pipeline_run)
-            pipeline_run.status = 'success'
+            result = manager.run_pipeline(name, resources, data_import_folder, pipeline_run)
+            status = 'success' if result == 'success' else 'failed'
+            pipeline_run.status = status
             pipeline_run.finished_at = timezone.now()
             pipeline_run.save()
         except Exception as exc:
