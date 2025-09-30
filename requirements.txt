@@ -9,7 +9,7 @@ gunicorn==23.0.0
 daphne==4.1.2
 channels==4.2.0
 psycopg==3.2.1
-psycopg-binary==3.2.1
+psycopg-binary==3.2.2
 channels_redis==4.2.1
 qrcode==7.4.1
 pillow==11.2.1
@@ -32,3 +32,5 @@ openpyxl==3.1.5
 asyncpg==0.30.0
 redis==5.2.1
 requests==2.32.3
+APScheduler==3.11.0
+django-apscheduler==0.7.0
