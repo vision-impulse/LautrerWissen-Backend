@@ -252,63 +252,54 @@ osm_resources:
     filename: 'osm_landuse_cemetery.geojson'
     db_model_class: OsmCemetery
     data_source: "OSM"
-  # --- Briefkästen ----
   - tags:
       amenity:
         - post_box
     filename: 'osm_amenity_post_box.geojson'
     db_model_class: OsmPostBox
     data_source: "OSM"
-  # --- Packstationen ----
   - tags:
       amenity:
         - parcel_locker
     filename: 'osm_amenity_parcel_locker.geojson'
     db_model_class: OsmParcelLocker
     data_source: "OSM"
-  # --- Wertstoffhof ----
   - tags:
       amenity:
         - recycling
     filename: 'osm_amenity_recycling_center.geojson'
     db_model_class: OsmRecyclingCenter
     data_source: "OSM"
-  #--- Container ----
   - tags:
      amenity:
        - recycling
     filename: 'osm_amenity_recycling_container.geojson'
     db_model_class: OsmRecyclingContainer
     data_source: "OSM"
-  # --- Autoverleih ----
   - tags:
       amenity:
         - car_rental
     filename: 'osm_amenity_car_rental.geojson'
     db_model_class: OsmCarRental
     data_source: "OSM"
-  # --- Parkplätze ----
   - tags:
       amenity:
         - parking
     filename: 'osm_amenity_parking.geojson'
     db_model_class: OsmAmenityParking
     data_source: "OSM"
-   #--- Fahrradreparaturstation ----
   - tags:
       amenity:
         - bicycle_repair_station
     filename: 'osm_amenity_bicycle_repair_station.geojson'
     data_source: "OSM"
     db_model_class: OsmBicycleRepairStation
-  # --- bicycle_parking ----
   - tags:
       amenity:
         - bicycle_parking
     filename: 'osm_amenity_bicycle_parking.geojson'
     db_model_class: OsmBicycleParking
     data_source: "OSM"
-  # --- Bikesharing ----
   - tags:
       amenity:
         - bicycle_rental
@@ -395,6 +386,24 @@ osm_resources:
     data_source: "OSM"
   - tags:
       leisure:
+        - sports_centre
+    filename: 'osm_leisure_sports_centre__swimming.geojson'
+    db_model_class: OsmSportCenterSwimming
+    data_source: "OSM"
+  - tags:
+      leisure:
+        - dog_park
+    filename: 'osm_leisure__dog_park.geojson'
+    db_model_class: OsmLeisureDogPark
+    data_source: "OSM"
+  - tags:
+      landuse:
+        - military
+    filename: 'osm_landuse__military.geojson'
+    db_model_class: OsmLandUseMilitary
+    data_source: "OSM"
+  - tags:
+      landuse:
         - sports_centre
     filename: 'osm_leisure_sports_centre__swimming.geojson'
     db_model_class: OsmSportCenterSwimming
