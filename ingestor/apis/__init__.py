@@ -91,13 +91,16 @@ class ResourceDownloader(Downloader):
     def _download_file_resource(self, resource_file):
         output_file = os.path.join(self.out_dir, resource_file.filename)
         url = resource_file.url
-        try:
-            self._on_resource_download_start(url)
-            result = subprocess.run(["wget", url, "-O", output_file], check=True,
-                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self._on_resource_download_start(url)
+        response = requests.get(url, stream=True)
+        if response.status_code == 200:
+            with open(output_file, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
             self._on_resource_downloaded(self.out_dir, output_file)
-        except subprocess.CalledProcessError as err:
-            self._on_resource_error(url, err.stderr.decode())
+        else:
+            self._on_resource_error(url, response.status_code)
+            raise Exception("Error downloading the resource from %s" %(url))
 
 
 class LocalResourceDownloader(Downloader):
