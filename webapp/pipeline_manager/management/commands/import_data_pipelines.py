@@ -58,7 +58,7 @@ class Command(BaseCommand):
         config = load_config(config_path)
         self.stdout.write(self.style.SUCCESS(f"Loaded config: {config_path}"))
 
-        for pipeline_type, resources in config.resources.items():
+        for pipeline_type, resources in config.pipelines.items():
             if override_existing:
                 try:
                     existing_pipeline = Pipeline.objects.get(name=pipeline_type.name)

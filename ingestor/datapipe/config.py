@@ -71,7 +71,7 @@ class ResourceWikipage(BaseResource):
 @dataclass
 class Config:
     out_dir: str
-    resources: Dict[PipelineType, List[BaseResource]] = field(default_factory=dict)
+    pipelines: Dict[PipelineType, List[BaseResource]] = field(default_factory=dict)
 
     def get_resources(self, source_type: PipelineType):
         return self.resources.get(source_type, [])
@@ -84,7 +84,7 @@ def load_config(file_path: str) -> Config:
 
     return Config(
         out_dir=data["out_dir"],
-        resources={
+        pipelines={
             PipelineType.OSM: [ResourceOSM(**res) for res in data.get("osm_resources", [])],
             PipelineType.KL_GEO_WFS: [ResourceWFSFile(**res) for res in data.get("kl_wfs_resources", [])],
             PipelineType.WIKIPEDIA: [ResourceWikipage(**res) for res in data.get("wiki_resources", [])],
