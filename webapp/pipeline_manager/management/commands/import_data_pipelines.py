@@ -51,7 +51,6 @@ class Command(BaseCommand):
         if config_path is None or not os.path.exists(config_path):
             self.stdout.write(self.style.SUCCESS(f"Using default config path"))
             config_path = SEED_FILES["data_sources_config"]
-            override_existing = True
 
         if not os.path.exists(config_path):
             return 
@@ -68,19 +67,21 @@ class Command(BaseCommand):
                 except Pipeline.DoesNotExist:
                     pass  # Nothing to delete
 
-            pipeline, _ = Pipeline.objects.get_or_create(name=pipeline_type.name)
-            for res in resources:
-                model_cls = {
-                    'ResourceOSM': ResourceOSM,
-                    'ResourceWFSFile': ResourceWFSFile,
-                    'LocalResourceFile': LocalResourceFile,
-                    'RemoteResourceFile': RemoteResourceFile,
-                    'ResourceWikipage': ResourceWikipage
-                }.get(res.__class__.__name__, None)
+            pipeline, created = Pipeline.objects.get_or_create(name=pipeline_type.name)
+            if created:
+                for res in resources:
+                    model_cls = {
+                        'ResourceOSM': ResourceOSM,
+                        'ResourceWFSFile': ResourceWFSFile,
+                        'LocalResourceFile': LocalResourceFile,
+                        'RemoteResourceFile': RemoteResourceFile,
+                        'ResourceWikipage': ResourceWikipage
+                    }.get(res.__class__.__name__, None)
 
-                if not model_cls:
-                    self.stdout.write(self.style.WARNING(f"Unknown resource type: {res}"))
-                    continue
+                    if not model_cls:
+                        self.stdout.write(self.style.WARNING(f"Unknown resource type: {res}"))
+                        continue
 
-                model_cls.objects.create(pipeline=pipeline, **res.__dict__)
-            self.stdout.write(self.style.SUCCESS(f"Created pipeline: {pipeline.name}"))
+                    model_cls.objects.create(pipeline=pipeline, **res.__dict__)
+                    self.stdout.write(self.style.SUCCESS(f"Created resource: {model_cls}"))
+                self.stdout.write(self.style.SUCCESS(f"Created pipeline: {pipeline.name}"))
