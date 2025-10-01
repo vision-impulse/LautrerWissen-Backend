@@ -21,11 +21,13 @@ set -euo pipefail
 # This script is meant to be called from within a docker container
 cd /lautrer_wissen_backend/webapp
 
+# ----------------------------------------------------------------------------------------
 # Make django migrations
 echo "Migrations..."
 python3 manage.py makemigrations
 python3 manage.py migrate
 
+# ----------------------------------------------------------------------------------------
 # Create superuser if not exists
 if [ "$DJANGO_SUPERUSER_USERNAME" ] && [ "$DJANGO_SUPERUSER_EMAIL" ] && [ "$DJANGO_SUPERUSER_PASSWORD" ]; then
     python manage.py shell << EOF
@@ -36,17 +38,26 @@ if not User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists():
 EOF
 fi
 
-python3 manage.py import_maplayer_config
-python3 manage.py import_data_pipelines
+# ----------------------------------------------------------------------------------------
+# Import seed data content (static, no API existing) (app: lautrer_wissen)
 python3 manage.py import_dashboards
 python3 manage.py import_demographics
 python3 manage.py import_elections
-python3 manage.py import_fieldtest_measurements
+python3 manage.py import_fieldtests
 
+# Import seed configuration for map sidebar (app: frontend_config)
+python3 manage.py import_maplayer_config
+
+# Import seed configuration for data pipelines (app: pipeline_manager)
+python3 manage.py import_data_pipeline_schedules
+python3 manage.py import_data_pipelines
+
+# ----------------------------------------------------------------------------------------
 # Add collect static
 echo "Collect static files..."
 python3 manage.py collectstatic --noinput -v=2
 
+# ----------------------------------------------------------------------------------------
 # Startup daphne
 echo "Start daphne as ASGI..."
-daphne -b 0.0.0.0 -p $BACKEND_PORT webapp.asgi:application
+daphne -b 0.0.0.0 -p $DJANGO_BACKEND_PORT webapp.asgi:application
