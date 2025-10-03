@@ -40,7 +40,7 @@ class Command(BaseCommand):
 
         if not force and PipelineSchedule.objects.exists():
             logger.warning(
-                "PipelineSchedule already exist. Import will be skipped. " \
+                "PipelineSchedule already exist. Import will be skipped. "
                 "Use python3 manage.py import_data_pipeline_schedules --force to overwrite."
             )
             return
@@ -52,15 +52,15 @@ class Command(BaseCommand):
 
     def _import_pipeline_schedules(self):
         config_path = SEED_FILES["data_sources_schedules_config"]
-        with open(config_path, 'r') as f:
+        with open(config_path, "r") as f:
             config = yaml.safe_load(f)
 
-        for p in config.get('pipelines', []):
+        for p in config.get("pipelines", []):
             obj, created = PipelineSchedule.objects.get_or_create(
-                name=p['name'],
-                defaults={'cron_expression': p['cron_expression'], 'is_active': True}
+                name=p["name"],
+                defaults={"cron_expression": p["cron_expression"], "is_active": True},
             )
             if created:
-                logger.info("Added schedule for: %s." %(p['name']))
+                logger.info("Added schedule for: %s.", p["name"])
             else:
-                logger.info("Schedule for %s already exists." %(p['name']))
+                logger.info("Schedule for %s already exists.", p["name"])

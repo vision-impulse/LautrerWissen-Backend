@@ -14,7 +14,10 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 # Authors: Benjamin Bischke
- 
+
+import os
+import logging
+
 from django.core.management.base import BaseCommand
 from pipeline_manager.models import Pipeline
 from pipeline_manager.models import ResourceOSM
@@ -22,41 +25,43 @@ from pipeline_manager.models import ResourceWFSFile
 from pipeline_manager.models import LocalResourceFile
 from pipeline_manager.models import ResourceWikipage
 from pipeline_manager.models import RemoteResourceFile
-import os
 
 from ingestor.datapipe.config import load_config
 from settings_seedfiles import SEED_FILES
+
+logger = logging.getLogger("webapp")
+
 
 class Command(BaseCommand):
     help = "Import data resources from YAML config"
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--pipeline_config',
+            "--pipeline_config",
             type=str,
             required=False,
-            help='Path to the pipeline config file.'
+            help="Path to the pipeline config file.",
         )
         parser.add_argument(
-            '--override_existing',
-            action='store_true',
+            "--override_existing",
+            action="store_true",
             required=False,
-            help='If set, will override existing pipeline data.'
+            help="If set, will override existing pipeline data.",
         )
 
     def handle(self, *args, **kwargs):
-        config_path = kwargs['pipeline_config']
-        override_existing = kwargs.get('override_existing', False) 
+        config_path = kwargs["pipeline_config"]
+        override_existing = kwargs.get("override_existing", False)
 
         if config_path is None or not os.path.exists(config_path):
-            self.stdout.write(self.style.SUCCESS(f"Using default config path"))
+            logger.info("Using default config path")
             config_path = SEED_FILES["data_sources_config"]
 
         if not os.path.exists(config_path):
-            return 
-        
+            return
+
         config = load_config(config_path)
-        self.stdout.write(self.style.SUCCESS(f"Loaded config: {config_path}"))
+        logger.info("Loaded config %s", config_path)
 
         for pipeline_type, pipeline_config in config.pipelines.items():
             description = pipeline_config.description
@@ -65,13 +70,12 @@ class Command(BaseCommand):
                 try:
                     existing_pipeline = Pipeline.objects.get(name=pipeline_type.name)
                     existing_pipeline.delete()  # This cascades to related resource objects
-                    self.stdout.write(self.style.WARNING(f"Deleted existing pipeline: {pipeline_type.name}"))
+                    logger.info("Deleted existing pipeline: %s", pipeline_type.name)
                 except Pipeline.DoesNotExist:
                     pass  # Nothing to delete
 
             pipeline, created = Pipeline.objects.get_or_create(
-                name=pipeline_type.name,
-                defaults={"description": description}
+                name=pipeline_type.name, defaults={"description": description}
             )
             if not created and pipeline.description != description:
                 pipeline.description = description
@@ -79,17 +83,17 @@ class Command(BaseCommand):
             if created:
                 for res in resources:
                     model_cls = {
-                        'ResourceOSM': ResourceOSM,
-                        'ResourceWFSFile': ResourceWFSFile,
-                        'LocalResourceFile': LocalResourceFile,
-                        'RemoteResourceFile': RemoteResourceFile,
-                        'ResourceWikipage': ResourceWikipage
+                        "ResourceOSM": ResourceOSM,
+                        "ResourceWFSFile": ResourceWFSFile,
+                        "LocalResourceFile": LocalResourceFile,
+                        "RemoteResourceFile": RemoteResourceFile,
+                        "ResourceWikipage": ResourceWikipage,
                     }.get(res.__class__.__name__, None)
 
                     if not model_cls:
-                        self.stdout.write(self.style.WARNING(f"Unknown resource type: {res}"))
+                        logger.warning("Unknown resource type: %s", res)
                         continue
 
                     model_cls.objects.create(pipeline=pipeline, **res.__dict__)
-                    self.stdout.write(self.style.SUCCESS(f"Created resource: {model_cls}"))
-                self.stdout.write(self.style.SUCCESS(f"Created pipeline: {pipeline.name}"))
+                    logger.info("Created resource: %s", model_cls)
+                logger.info("Created pipeline: %s", pipeline.name)
