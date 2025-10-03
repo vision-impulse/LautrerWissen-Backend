@@ -58,7 +58,9 @@ class Command(BaseCommand):
         config = load_config(config_path)
         self.stdout.write(self.style.SUCCESS(f"Loaded config: {config_path}"))
 
-        for pipeline_type, resources in config.pipelines.items():
+        for pipeline_type, pipeline_config in config.pipelines.items():
+            description = pipeline_config.description
+            resources = pipeline_config.resources
             if override_existing:
                 try:
                     existing_pipeline = Pipeline.objects.get(name=pipeline_type.name)
@@ -67,7 +69,13 @@ class Command(BaseCommand):
                 except Pipeline.DoesNotExist:
                     pass  # Nothing to delete
 
-            pipeline, created = Pipeline.objects.get_or_create(name=pipeline_type.name)
+            pipeline, created = Pipeline.objects.get_or_create(
+                name=pipeline_type.name,
+                defaults={"description": description}
+            )
+            if not created and pipeline.description != description:
+                pipeline.description = description
+                pipeline.save(update_fields=["description"])
             if created:
                 for res in resources:
                     model_cls = {

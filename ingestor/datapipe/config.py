@@ -69,35 +69,54 @@ class ResourceWikipage(BaseResource):
 
 
 @dataclass
+class PipelineConfig:
+    description: str
+    resources: List[BaseResource]
+
+@dataclass
 class Config:
     out_dir: str
-    pipelines: Dict[PipelineType, List[BaseResource]] = field(default_factory=dict)
+    pipelines: Dict[PipelineType, PipelineConfig] = field(default_factory=dict)
 
-    def get_resources(self, source_type: PipelineType):
-        return self.resources.get(source_type, [])
 
+RESOURCE_CLASS_MAP = {
+    PipelineType.KL_GEO_WFS: ResourceWFSFile,
+    PipelineType.WIKIPEDIA: ResourceWikipage,
+    PipelineType.KL_SENSOR_RESOURCES: LocalResourceFile,
+    PipelineType.EMERGENCY_POINTS: RemoteResourceFile,
+    PipelineType.EV_STATIONS: RemoteResourceFile,
+    PipelineType.KL_EVENTS: RemoteResourceFile,
+    PipelineType.KL_EVENTS_RIS:RemoteResourceFile,
+    PipelineType.KL_GEO_RESOURCES: RemoteResourceFile,
+    PipelineType.WIFI_FREIFUNK: RemoteResourceFile,
+    PipelineType.WGA_EVENTS: RemoteResourceFile,
+    PipelineType.TTN_GATEWAY: RemoteResourceFile,
+    PipelineType.VRN: RemoteResourceFile,
+    PipelineType.WIFI_LOCAL: LocalResourceFile,
+    PipelineType.OSM: ResourceOSM
+}
 
 def load_config(file_path: str) -> Config:
     """Loads pipeline configurations from YAML."""
     with open(file_path, 'r') as file:
         data = yaml.safe_load(file)
 
-    return Config(
-        out_dir=data["out_dir"],
-        pipelines={
-            PipelineType.OSM: [ResourceOSM(**res) for res in data.get("osm_resources", [])],
-            PipelineType.KL_GEO_WFS: [ResourceWFSFile(**res) for res in data.get("kl_wfs_resources", [])],
-            PipelineType.WIKIPEDIA: [ResourceWikipage(**res) for res in data.get("wiki_resources", [])],
-            PipelineType.KL_SENSOR_RESOURCES: [LocalResourceFile(**res) for res in data.get("kl_sensors_mqtt", [])],
-            PipelineType.EMERGENCY_POINTS: [RemoteResourceFile(**res) for res in data.get("emergency_point_resources", [])],
-            PipelineType.EV_STATIONS: [RemoteResourceFile(**res) for res in data.get("ev_resource", [])],
-            PipelineType.KL_EVENTS: [RemoteResourceFile(**res) for res in data.get("kl_event_calendar_resource", [])],
-            PipelineType.KL_EVENTS_RIS: [RemoteResourceFile(**res) for res in data.get("kl_event_ris_calendar_resource", [])],
-            PipelineType.KL_GEO_RESOURCES: [RemoteResourceFile(**res) for res in data.get("kl_geo_resources", [])],
-            PipelineType.VRN: [RemoteResourceFile(**res) for res in data.get("vrn_resource", [])],
-            PipelineType.WIFI_FREIFUNK: [RemoteResourceFile(**res) for res in data.get("wifi_freifunk_resource", [])],
-            PipelineType.WGA_EVENTS: [RemoteResourceFile(**res) for res in data.get("was_geht_app_resources", [])],
-            PipelineType.TTN_GATEWAY: [RemoteResourceFile(**res) for res in data.get("ttn_gateway_resource", [])],
-            PipelineType.WIFI_LOCAL: [LocalResourceFile(**res) for res in data.get("wifi_myspot_empera_resource", [])],
-        },
-    )
+    out_dir=data["out_dir"]
+    pipelines: Dict[PipelineType, PipelineConfig] = {}
+
+    for pipeline_type in PipelineType:
+        section = data.get(pipeline_type.value)
+        if not section:
+            continue  # skip missing pipelines
+
+        description = section.get("description", "")
+        resources_data = section.get("endpoints", [])
+
+        # Select resource class dynamically based on type
+        resource_cls = RESOURCE_CLASS_MAP.get(pipeline_type)
+        if not resource_cls:
+            continue
+        resources = [resource_cls(**res) for res in resources_data]
+        pipelines[pipeline_type] = PipelineConfig(description=description, resources=resources)
+
+    return Config(out_dir=out_dir, pipelines=pipelines)
