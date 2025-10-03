@@ -14,10 +14,11 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
 # Authors: Benjamin Bischke
- 
+
 from django.db import models
 
 from enum import Enum
+
 
 class PipelineType(Enum):
     KL_EVENTS = "Veranstaltungen (MIADI) Import"
@@ -42,39 +43,57 @@ class Pipeline(models.Model):
     name = models.CharField(max_length=100, choices=PIPELINE_CHOICES, unique=True)
     description = models.TextField(blank=True, null=True)
 
+
 class BaseResource(models.Model):
-    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE, related_name='resources', null=True)
+    pipeline = models.ForeignKey(
+        Pipeline, on_delete=models.CASCADE, related_name="resources", null=True
+    )
     data_source = models.CharField(max_length=255)
     db_model_class = models.CharField(max_length=255)
     active = models.BooleanField(default=True)
-    
+
     class Meta:
         abstract = True  # Not a real DB table
 
+
 class LocalResourceFile(BaseResource):
-    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE, related_name='local_resources', null=True)
+    pipeline = models.ForeignKey(
+        Pipeline, on_delete=models.CASCADE, related_name="local_resources", null=True
+    )
     filename = models.CharField(max_length=255)
 
+
 class RemoteResourceFile(BaseResource):
-    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE, related_name='remote_resources', null=True)
+    pipeline = models.ForeignKey(
+        Pipeline, on_delete=models.CASCADE, related_name="remote_resources", null=True
+    )
     filename = models.CharField(max_length=255)
     url = models.URLField()
 
+
 class ResourceOSM(BaseResource):
-    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE, related_name='osm_resources', null=True)
+    pipeline = models.ForeignKey(
+        Pipeline, on_delete=models.CASCADE, related_name="osm_resources", null=True
+    )
     tags = models.JSONField(default=dict)
     filename = models.CharField(max_length=255)
 
+
 class ResourceWFSFile(BaseResource):
-    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE, related_name='wfs_resources', null=True)
+    pipeline = models.ForeignKey(
+        Pipeline, on_delete=models.CASCADE, related_name="wfs_resources", null=True
+    )
     url = models.URLField()
     srs_name = models.CharField(max_length=100)
     layer_name = models.CharField(max_length=100)
     out_format = models.CharField(max_length=50)
     filename = models.CharField(max_length=255)
 
+
 class ResourceWikipage(BaseResource):
-    pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE, related_name='wikipage_resources')
+    pipeline = models.ForeignKey(
+        Pipeline, on_delete=models.CASCADE, related_name="wikipage_resources"
+    )
     page_name = models.CharField(max_length=255)
     table_indices = models.JSONField(default=list)
     table_filenames = models.JSONField(default=list)
@@ -85,40 +104,48 @@ class PipelineSchedule(models.Model):
     PIPELINE_CHOICES = [(pt.name, pt.value) for pt in PipelineType]
 
     name = models.CharField(max_length=255, choices=PIPELINE_CHOICES, unique=True)
-    cron_expression = models.CharField(max_length=100, help_text="e.g. '0 2 * * *' for daily at 2AM")
+    cron_expression = models.CharField(
+        max_length=100, help_text="e.g. '0 2 * * *' for daily at 2AM"
+    )
     is_active = models.BooleanField(default=True)
 
 
 class PipelineRun(models.Model):
     ORIGIN_CHOICES = [
-        ('manual', 'Manual'),
-        ('cronjob', 'Cron/APSscheduler'),
-        ('docker', 'Docker/CLI'),
+        ("manual", "Manual"),
+        ("cronjob", "Cron/APSscheduler"),
+        ("docker", "Docker/CLI"),
     ]
 
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('running', 'Running'),
-        ('success', 'Success'),
-        ('failed', 'Failed'),
-        ('cancelled', 'Cancelled'),
+        ("pending", "Pending"),
+        ("running", "Running"),
+        ("success", "Success"),
+        ("failed", "Failed"),
+        ("cancelled", "Cancelled"),
     ]
 
     pipeline_name = models.CharField(max_length=200)
-    origin = models.CharField(max_length=20, choices=ORIGIN_CHOICES, default='manual')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    log_file = models.FileField(upload_to="pipeline_logs/", null=True, blank=True)
+    origin = models.CharField(max_length=20, choices=ORIGIN_CHOICES, default="manual")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
     error_message = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
 class PipelineRunStep(models.Model):
-    run = models.ForeignKey(PipelineRun, related_name='steps', on_delete=models.CASCADE)
+    run = models.ForeignKey(PipelineRun, related_name="steps", on_delete=models.CASCADE)
     step_name = models.CharField(max_length=255)
-    status = models.CharField(max_length=20, choices=PipelineRun._meta.get_field('status').choices, default='pending')
+    status = models.CharField(
+        max_length=20,
+        choices=PipelineRun._meta.get_field("status").choices,
+        default="pending",
+    )
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
     message = models.TextField(blank=True)
 
     class Meta:
-        ordering = ('id',)
+        ordering = ("id",)

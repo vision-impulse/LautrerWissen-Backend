@@ -18,9 +18,7 @@
 import logging
 
 from ingestor.datapipe.factory import PipelineFactory
-from ingestor.utils.logging_utils import setup_logging
-
-setup_logging()
+from ingestor.utils.logging_utils import setup_run_logger
 
 
 class PipelineManager:
@@ -30,12 +28,14 @@ class PipelineManager:
         self.logger = logging.getLogger(__name__)
 
     def run_pipeline(self, source_name, resources, out_dir, run_record=None):
+        logger = setup_run_logger(run_record) if run_record else self.logger
+        logger.info("Starting pipeline for data source: %s", source_name)
+
         pipeline = PipelineFactory.create_pipeline(
-            source_name, resources, out_dir, self.logger, run_record
+            source_name, resources, out_dir, logger, run_record
         )
-        self.logger.info("Starting pipeline for data source: %s", source_name)
         result = pipeline.run()
-        self.logger.info(
+        logger.info(
             "Pipeline for data source (%s) finished with result: %s",
             source_name,
             result,
