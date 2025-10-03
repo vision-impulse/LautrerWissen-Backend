@@ -21,9 +21,11 @@ import os
 from django.core.management.base import BaseCommand
 from pipeline_manager.models import Pipeline, PipelineRun
 from ingestor.datapipe.manager import PipelineManager
-from ingestor.datapipe.pipelines.base_pipeline import PipelineType
 from datetime import date
 from django.utils import timezone
+from django.core.mail import EmailMessage
+from django.conf import settings
+
 
 logger = logging.getLogger("webapp")
 
@@ -90,3 +92,20 @@ class Command(BaseCommand):
             pipeline_run.error_message = str(exc)
             pipeline_run.finished_at = timezone.now()
             pipeline_run.save()
+        if pipeline_run.status == 'failed':
+            self._notify_admins_with_log(pipeline_run)
+
+    def _notify_admins_with_log(self, run):
+        logger.info("Send mail to admins")
+        subject = f"Pipeline {run.pipeline_name} failed"
+        body = f"Pipeline run {run.id} failed. See attached log file."
+        email = EmailMessage(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [admin[1] for admin in settings.ADMINS],
+        )
+        if run.log_file:
+            path = os.path.join(settings.PRIVATE_MEDIA_ROOT, run.log_file.name)
+            email.attach_file(path)
+        email.send(fail_silently=False)
