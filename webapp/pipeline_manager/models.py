@@ -15,10 +15,24 @@
 #
 # Authors: Benjamin Bischke
 
-from django.db import models
+import datetime
 
+from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+from croniter import croniter
 from enum import Enum
 
+
+def validate_cron_expression(value):
+    """Ensure the cron expression is valid."""
+    try:
+        # Try to create a cron iterator; it will raise ValueError if invalid
+        croniter(value, datetime.datetime.now())
+    except Exception:
+        raise ValidationError(
+            _(f"'{value}' is not a valid cron expression. Example: '0 2 * * *' for daily at 2 AM.")
+        )
 
 class PipelineType(Enum):
     KL_EVENTS = "Veranstaltungen (MIADI) Import"
@@ -105,7 +119,9 @@ class PipelineSchedule(models.Model):
 
     name = models.CharField(max_length=255, choices=PIPELINE_CHOICES, unique=True)
     cron_expression = models.CharField(
-        max_length=100, help_text="e.g. '0 2 * * *' for daily at 2AM"
+        max_length=100, 
+        help_text="e.g. '0 2 * * *' for daily at 2AM",
+        validators=[validate_cron_expression],
     )
     is_active = models.BooleanField(default=True)
 

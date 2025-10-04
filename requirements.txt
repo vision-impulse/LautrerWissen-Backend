@@ -34,3 +34,4 @@ redis==5.2.1
 requests==2.32.3
 APScheduler==3.11.0
 django-apscheduler==0.7.0
+croniter
