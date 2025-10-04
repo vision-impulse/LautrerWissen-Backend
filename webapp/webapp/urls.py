@@ -46,5 +46,6 @@ router.registry.extend(frontend_config_router.registry)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin/pipeline_manager/', include('pipeline_manager.urls')),  
     path('api/', include(router.urls)),
 ]
