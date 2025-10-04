@@ -106,6 +106,7 @@ class Command(BaseCommand):
             [admin[1] for admin in settings.ADMINS],
         )
         if run.log_file:
-            path = os.path.join(settings.PRIVATE_MEDIA_ROOT, run.log_file.name)
-            email.attach_file(path)
+            log_path = os.path.join(settings.PRIVATE_MEDIA_ROOT, run.log_file.name)
+            if os.path.exists(log_path) and os.path.isfile(log_path):
+                email.attach_file(log_path)
         email.send(fail_silently=False)
