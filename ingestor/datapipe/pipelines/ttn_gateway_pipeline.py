@@ -18,7 +18,7 @@
 from ingestor.apis import ResourceDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.ttn_gateway import TTNGatewayTransformStep
-from ..steps.database.step_import import GenericImportStep
+from ..steps.database.step_import import DatabaseImportStep
 from ..pipelines.base_pipeline import BasePipeline, PipelineType
 
 
@@ -32,5 +32,5 @@ class TTNGatewayPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(ResourceDownloader),
             TTNGatewayTransformStep(),
-            GenericImportStep(),
+            DatabaseImportStep(),
         ]

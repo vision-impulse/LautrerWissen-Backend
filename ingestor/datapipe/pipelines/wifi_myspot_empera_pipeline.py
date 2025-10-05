@@ -18,8 +18,8 @@
 from ingestor.apis import LocalResourceDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.wifi import WifiTransformStep
-from ..steps.geo.step_filter import FilterStep
-from ..steps.database.step_import import GenericImportStep
+from ..steps.geo.step_filter import GeoFilterStep
+from ..steps.database.step_import import DatabaseImportStep
 from ..pipelines.base_pipeline import BasePipeline, PipelineType
 
 
@@ -33,5 +33,5 @@ class WifiMySpotEmperaPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(LocalResourceDownloader),
             WifiTransformStep(),
-            GenericImportStep(),
+            DatabaseImportStep(),
         ]

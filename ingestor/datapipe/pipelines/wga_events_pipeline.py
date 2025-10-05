@@ -18,7 +18,7 @@
 from ingestor.apis.wga.wga_api import WGAEventDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.wga_events import WGAEventTransformStep
-from ..steps.database.step_import import GenericImportStep
+from ..steps.database.step_import import DatabaseImportStep
 from ..pipelines.base_pipeline import BasePipeline, PipelineType
 
 
@@ -32,5 +32,5 @@ class WGAEventPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(WGAEventDownloader),
             WGAEventTransformStep(),
-            GenericImportStep(),
+            DatabaseImportStep(),
         ]

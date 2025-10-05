@@ -23,10 +23,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class GenericImportStep(PipelineStep):
+class DatabaseImportStep(PipelineStep):
 
     def __init__(self):
-        super(GenericImportStep, self).__init__()
+        super(DatabaseImportStep, self).__init__()
 
     def execute(self, context):
         try:

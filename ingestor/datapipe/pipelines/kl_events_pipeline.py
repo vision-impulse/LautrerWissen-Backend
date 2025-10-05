@@ -18,7 +18,7 @@
 from ingestor.apis.miadi.event_calendar import EventCalendarDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.kl_events import KLEventsTransformStep
-from ..steps.database.step_import import GenericImportStep
+from ..steps.database.step_import import DatabaseImportStep
 from ..pipelines.base_pipeline import BasePipeline, PipelineType
 
 
@@ -32,5 +32,5 @@ class KLEventsPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(EventCalendarDownloader),
             KLEventsTransformStep(),
-            GenericImportStep(),
+            DatabaseImportStep(),
         ]

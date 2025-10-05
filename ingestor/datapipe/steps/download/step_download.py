@@ -31,10 +31,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class GenericDownloadStep(PipelineStep):
+class DownloadStep(PipelineStep):
 
     def __init__(self, downloader_class):
-        super(GenericDownloadStep, self).__init__(next_step=None)
+        super(DownloadStep, self).__init__(next_step=None)
         self.downloader_class = downloader_class
 
     def execute(self, context):
@@ -52,14 +52,14 @@ class GenericDownloadStep(PipelineStep):
 class DownloadStepFactory:
     """Factory for creating download steps dynamically based on the downloader class."""
 
-    _registry: Dict[Type, GenericDownloadStep] = (
+    _registry: Dict[Type, DownloadStep] = (
         {}
     )  # Stores {DownloaderClass: GenericDownloadStep}
 
     @classmethod
     def register(cls, downloader_class: Type):
         """Registers a downloader class."""
-        cls._registry[downloader_class] = GenericDownloadStep(downloader_class)
+        cls._registry[downloader_class] = DownloadStep(downloader_class)
 
     @classmethod
     def create(cls, downloader_class: Type):

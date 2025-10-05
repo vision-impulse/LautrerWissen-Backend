@@ -18,8 +18,8 @@
 from ingestor.apis.wikipedia.wiki_downloader import WikipediaDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.wiki import WikiTransformStep
-from ..steps.database.step_import import GenericImportStep
-from ..steps.geo.step_filter import FilterStep
+from ..steps.database.step_import import DatabaseImportStep
+from ..steps.geo.step_filter import GeoFilterStep
 from ..pipelines.base_pipeline import BasePipeline, PipelineType
 
 
@@ -33,6 +33,6 @@ class WikipediaPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(WikipediaDownloader),
             WikiTransformStep(),
-            FilterStep(),
-            GenericImportStep(),
+            GeoFilterStep(),
+            DatabaseImportStep(),
         ]

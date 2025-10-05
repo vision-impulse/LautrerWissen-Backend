@@ -17,8 +17,8 @@
 
 from ..steps.download.step_download import DownloadStepFactory, ResourceDownloader
 from ..steps.transforms.emergency import EmergencyPointTransformStep
-from ..steps.database.step_import import GenericImportStep
-from ..steps.geo.step_filter import FilterStep
+from ..steps.database.step_import import DatabaseImportStep
+from ..steps.geo.step_filter import GeoFilterStep
 from ..pipelines.base_pipeline import BasePipeline, PipelineType
 
 
@@ -32,6 +32,6 @@ class EmergencyPointPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(ResourceDownloader),
             EmergencyPointTransformStep(),
-            FilterStep(),
-            GenericImportStep(),
+            GeoFilterStep(),
+            DatabaseImportStep(),
         ]

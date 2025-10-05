@@ -18,7 +18,7 @@
 from ingestor.apis.osm.osm import OSMDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.osm import OSMTransformStep
-from ..steps.database.step_import import GenericImportStep
+from ..steps.database.step_import import DatabaseImportStep
 from ..pipelines.base_pipeline import BasePipeline, PipelineType
 
 
@@ -32,5 +32,5 @@ class OSMPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(OSMDownloader),
             OSMTransformStep(),
-            GenericImportStep(),
+            DatabaseImportStep(),
         ]

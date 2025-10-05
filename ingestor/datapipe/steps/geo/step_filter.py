@@ -24,10 +24,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class FilterStep(PipelineStep):
+class GeoFilterStep(PipelineStep):
 
     def __init__(self):
-        super(FilterStep, self).__init__(next_step=None)
+        super(GeoFilterStep, self).__init__(next_step=None)
 
     def execute(self, context):
         logger.info("Filter objects by geographic region ...")

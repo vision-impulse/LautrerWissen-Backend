@@ -18,7 +18,7 @@
 from ingestor.apis import ResourceDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.vrn import VRNBusStationTransformStep
-from ..steps.database.step_import import GenericImportStep
+from ..steps.database.step_import import DatabaseImportStep
 from ..pipelines.base_pipeline import BasePipeline, PipelineType
 
 
@@ -32,5 +32,5 @@ class VRNPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(ResourceDownloader),
             VRNBusStationTransformStep(),
-            GenericImportStep(),
+            DatabaseImportStep(),
         ]

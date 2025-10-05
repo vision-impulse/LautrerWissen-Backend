@@ -18,8 +18,8 @@
 from ingestor.apis import ResourceDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.wifi import WifiTransformStep
-from ..steps.database.step_import import GenericImportStep
-from ..steps.geo.step_filter import FilterStep
+from ..steps.database.step_import import DatabaseImportStep
+from ..steps.geo.step_filter import GeoFilterStep
 from ..pipelines.base_pipeline import BasePipeline, PipelineType
 
 
@@ -33,6 +33,6 @@ class WifiFreifunkPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(ResourceDownloader),
             WifiTransformStep(),
-            FilterStep(),
-            GenericImportStep(),
+            GeoFilterStep(),
+            DatabaseImportStep(),
         ]

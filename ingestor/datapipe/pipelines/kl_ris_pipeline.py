@@ -18,7 +18,7 @@
 from ingestor.apis.ris.council_calendar import CouncilCalendarDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.kl_ris import KLRisEventsTransformStep
-from ..steps.database.step_import import GenericImportStep
+from ..steps.database.step_import import DatabaseImportStep
 from ..pipelines.base_pipeline import BasePipeline, PipelineType
 
 
@@ -32,5 +32,5 @@ class KLRisEventsPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(CouncilCalendarDownloader),
             KLRisEventsTransformStep(),
-            GenericImportStep(),
+            DatabaseImportStep(),
         ]
