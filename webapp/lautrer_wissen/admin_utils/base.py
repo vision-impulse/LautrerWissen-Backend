@@ -17,14 +17,23 @@
 
 from django.contrib import admin
 from django.db import models
-
+from ..forms import GeoForm
+from frontend_config.utils import get_model_field_mapping
 
 class CustomAdmin(admin.ModelAdmin):
+
     def get_list_display(self, request):
-        if hasattr(self.model, 'MAP_FIELDS'):
-            return list(self.model.MAP_FIELDS.keys())
+
+        fields, _ = get_model_field_mapping(self.model)
+        if len(fields) > 0:
+            return list(fields.keys())
         else:
             return [
                 field.name for field in self.model._meta.get_fields()
                 if isinstance(field, models.Field) and not field.many_to_many and not field.one_to_many
             ]
+
+class CustomGeoAdmin(CustomAdmin):
+
+    form = GeoForm
+    exclude = ("geometry",)

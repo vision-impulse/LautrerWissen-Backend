@@ -18,8 +18,9 @@
 from django.contrib import admin
 from django.apps import apps
 from .base import CustomAdmin
+from .base import CustomGeoAdmin
 from .qr_admin import CustomAdminWithQR
-from lautrer_wissen.models import MODELS_WITH_DETAIL_PAGE
+from lautrer_wissen.models import MODELS_WITH_DETAIL_PAGE, API_GEO_MODELS
 
 
 app_models = apps.get_app_config('lautrer_wissen').get_models()
@@ -28,9 +29,10 @@ app_models = apps.get_app_config('lautrer_wissen').get_models()
 for model in app_models:
     if model in MODELS_WITH_DETAIL_PAGE:
         admin_class = type(f'{model.__name__}AdminWithQR', (CustomAdminWithQR,), {'model': model})
+    elif model in API_GEO_MODELS:
+        admin_class = type(f'{model.__name__}CustomGeoAdmin', (CustomGeoAdmin,), {'model': model})
     else:
         admin_class = type(f'{model.__name__}Admin', (CustomAdmin,), {'model': model})
-
 
     model_name = getattr(model, 'ADMIN_DISPLAY_NAME', model.__name__)
     model._meta.verbose_name = model_name
