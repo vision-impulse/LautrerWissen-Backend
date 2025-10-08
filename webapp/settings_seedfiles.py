@@ -26,6 +26,7 @@ SEED_FILES = {
     "sidebar_config": os.path.join(APP_CONFIG_DIR, "init/frontend_sidebar_config.json"),
     "data_sources_config": os.path.join(APP_CONFIG_DIR, "init/datasources_config.yaml"),
     "data_sources_schedules_config": os.path.join(APP_CONFIG_DIR, "init/datasources_schedules_config.yaml"),
+    "models_field_config": os.path.join(APP_CONFIG_DIR, "init/models_field_config.yaml"),
     
     # Seed data files
     "dashboard_data_file": os.path.join(APP_DATA_DIR, "init/dashboards.yaml"),

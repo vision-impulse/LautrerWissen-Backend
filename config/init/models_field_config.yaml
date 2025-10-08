@@ -1,0 +1,817 @@
+models:
+  - app_label: lautrer_wissen
+    model_name: EmergencyPoint
+    display_name: Rettungspunkt
+    fields:
+      - field_name: rp_nr
+        visible: true
+        display_name: "Nr. des Rettungspunktes"
+      - field_name: description
+        visible: true
+        display_name: "Beschreibung der Lage"
+      - field_name: information_sign
+        visible: true
+        display_name: "Informationsschild"
+      - field_name: originator
+        visible: true
+        display_name: "Urheber"
+
+  - app_label: lautrer_wissen
+    model_name: VRNBusStation
+    display_name: Haltestelle (Bus)
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: station_number
+        visible: true
+        display_name: "Haltestellennummer"
+      - field_name: direction
+        visible: true
+        display_name: "Richtung"
+      - field_name: lines
+        visible: true
+        display_name: "Linien"
+      - field_name: seating
+        visible: true
+        display_name: "Sitzgelegenheit"
+      - field_name: waste_bin
+        visible: true
+        display_name: "Abfallbehaelter"
+      - field_name: lighting
+        visible: true
+        display_name: "Beleuchtung"
+
+  - app_label: lautrer_wissen
+    model_name: WLANHotspot
+    display_name: WIFI-Hotspot
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: description
+        visible: true
+        display_name: "Beschreibung"
+
+  - app_label: lautrer_wissen
+    model_name: ChargingStation
+    display_name: Haltestelle (Bus)
+    fields:
+      - field_name: operator
+        visible: true
+        display_name: "Betreiber"
+      - field_name: commissioning_date
+        visible: true
+        display_name: "Datum der Inbetriebnahme"
+      - field_name: num_charging_points
+        visible: true
+        display_name: "Anzahl Ladesäulen"
+
+  - app_label: lautrer_wissen
+    model_name: TTNGateway
+    display_name: TTN Gateway
+    fields:
+      - field_name: eui
+        visible: true
+        display_name: "EUI"
+      - field_name: net_id
+        visible: true
+        display_name: "NetID"
+      - field_name: tenant_id
+        visible: true
+        display_name: "TenantId"
+      - field_name: cluster_id
+        visible: true
+        display_name: "ClusterId"
+      - field_name: antenna_count
+        visible: true
+        display_name: "Anzahl Antennen"
+      - field_name: online
+        visible: true
+        display_name: "Status"
+
+  - app_label: lautrer_wissen
+    model_name: WikiFishSculpture
+    display_name: Fischskulptur
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: number
+        visible: true
+        display_name: "Nummer"
+      - field_name: address
+        visible: true
+        display_name: "Adresse"
+
+  - app_label: lautrer_wissen
+    model_name: WikiCulturalMonument
+    display_name: Kulturdenkmal
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: description
+        visible: true
+        display_name: "Beschreibung"
+      - field_name: address
+        visible: true
+        display_name: "Adresse"
+
+  - app_label: lautrer_wissen
+    model_name: WikiNaturalMonument
+    display_name: Naturdenkmal
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: description
+        visible: true
+        display_name: "Beschreibung"
+      - field_name: address
+        visible: true
+        display_name: "Adresse"
+
+  - app_label: lautrer_wissen
+    model_name: WikiFountain
+    display_name: Brunnen
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: description
+        visible: true
+        display_name: "Beschreibung"
+      - field_name: address
+        visible: true
+        display_name: "Adresse"
+
+  - app_label: lautrer_wissen
+    model_name: WikiBrewery
+    display_name: Ehemalige Brauerei
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: address
+        visible: true
+        display_name: "Lage"
+      - field_name: timespan
+        visible: true
+        display_name: "Betrieb"
+      - field_name: description
+        visible: true
+        display_name: "Beschreibung"
+
+  - app_label: lautrer_wissen
+    model_name: WikiNaturalReserve
+    display_name: Naturschutzgebiet
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: identifier
+        visible: true
+        display_name: "Kennung"
+      - field_name: location_area
+        visible: true
+        display_name: "Kreis (Lage)"
+      - field_name: date
+        visible: true
+        display_name: "Datum"
+      - field_name: area
+        visible: true
+        display_name: "Fläche [ha]"
+      - field_name: details
+        visible: true
+        display_name: "Einzelheiten"
+
+  - app_label: lautrer_wissen
+    model_name: WikiRitterstein
+    display_name: Ritterstein
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: meaning
+        visible: true
+        display_name: "Bedeutung"
+      - field_name: number
+        visible: true
+        display_name: "Nummer"
+      - field_name: address
+        visible: true
+        display_name: "Beschreibung der Lage"
+
+  - app_label: lautrer_wissen
+    model_name: WikiSacralBuilding
+    display_name: Sakralbau
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: description
+        visible: true
+        display_name: "Anmerkungen"
+      - field_name: construction_year
+        visible: true
+        display_name: "Bauzeit"
+      - field_name: address
+        visible: true
+        display_name: "Stadtteil/Lage"
+
+  - app_label: lautrer_wissen
+    model_name: WikiStolperstein
+    display_name: Stolperstein
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Person, Inschrift"
+      - field_name: description
+        visible: true
+        display_name: "Beschreibung"
+      - field_name: timespan
+        visible: true
+        display_name: "Verlegedatum"
+      - field_name: address
+        visible: true
+        display_name: "Verlegeort"
+
+  - app_label: lautrer_wissen
+    model_name: OsmNaturalTrees
+    display_name: Baum
+    fields:
+      - field_name: genus_de
+        visible: true
+        display_name: "Baumgattung"
+      - field_name: species
+        visible: true
+        display_name: "Baumart"
+
+  - app_label: lautrer_wissen
+    model_name: OsmLeisurePlayground
+    display_name: Spielplatz
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: operator
+        visible: true
+        display_name: "Betreiber"
+
+  - app_label: lautrer_wissen
+    model_name: OsmLeisurePitch
+    display_name: Freizeitplatz
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: description
+        visible: true
+        display_name: "Beschreibung"
+      - field_name: operator
+        visible: true
+        display_name: "Betreiber"
+
+  - app_label: lautrer_wissen
+    model_name: OsmSportTennis
+    display_name: Tennisplatz
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+
+  - app_label: lautrer_wissen
+    model_name: OsmSportSoccer
+    display_name: Fußballplatz
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: website
+        visible: true
+        display_name: "Website"
+
+  - app_label: lautrer_wissen
+    model_name: OsmSportBasketball
+    display_name: Basketballplatz
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+
+  - app_label: lautrer_wissen
+    model_name: OSMAmenityBench
+    display_name: Sitzbank
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmAmenityToilets
+    display_name: Öffentliche Toilette
+    fields:
+      - field_name: opening_hours
+        visible: true
+        display_name: "Öffnungszeiten"
+      - field_name: operator
+        visible: true
+        display_name: "Betreiber"
+      - field_name: description
+        visible: true
+        display_name: "Barrierefreiheit"
+      - field_name: access
+        visible: true
+        display_name: "Zugang"
+      - field_name: fee
+        visible: true
+        display_name: "Gebühr"
+
+  - app_label: lautrer_wissen
+    model_name: OsmAmenityWasteBasket
+    display_name: Abfalleimer
+    fields:
+      - field_name: data_source
+        visible: true
+        display_name: "Datenquelle"
+      - field_name: data_acquisition_date
+        visible: true
+        display_name: "Datenstand"
+
+  - app_label: lautrer_wissen
+    model_name: OsmAmenityDrinkingWater
+    display_name: Wasserspender (Trinkwasser)
+    fields:
+      - field_name: data_source
+        visible: true
+        display_name: "Datenquelle"
+      - field_name: data_acquisition_date
+        visible: true
+        display_name: "Datenstand"
+
+  - app_label: lautrer_wissen
+    model_name: OsmParcelLocker
+    display_name: Packetstation
+    fields:
+      - field_name: operator
+        visible: true
+        display_name: "Betreiber"
+      - field_name: parcel_mail_in
+        visible: true
+        display_name: "Pakete verschicken"
+      - field_name: parcel_pickup
+        visible: true
+        display_name: "Pakete abholen"
+      - field_name: postal_code
+        visible: true
+        display_name: "Postleitzahl"
+
+  - app_label: lautrer_wissen
+    model_name: OsmPostBox
+    display_name: Briefkasten
+    fields:
+      - field_name: operator
+        visible: true
+        display_name: "Betreiber"
+      - field_name: collection_times
+        visible: true
+        display_name: "Leerung"
+
+  - app_label: lautrer_wissen
+    model_name: OsmBicycleRental
+    display_name: Fahrradvermietung
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: brand
+        visible: true
+        display_name: "Marke"
+      - field_name: operator
+        visible: true
+        display_name: "Betreiber"
+      - field_name: capacity
+        visible: true
+        display_name: "Kapazität"
+
+  - app_label: lautrer_wissen
+    model_name: OsmCarRental
+    display_name: Autovermietung
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+
+  - app_label: lautrer_wissen
+    model_name: OsmBicycleRepairStation
+    display_name: Fahrradreparatur-Station
+    fields:
+      - field_name: service_bicycle_pump
+        visible: true
+        display_name: "Pumpe vorhanden"
+      - field_name: service_bicycle_stand
+        visible: true
+        display_name: "Stand vorhanden"
+      - field_name: service_bicycle_tools
+        visible: true
+        display_name: "Werkzeug vorhanden"
+      - field_name: service_bicycle_chain_tool
+        visible: true
+        display_name: "Kettenwerkzeug vorhanden"
+      - field_name: valves
+        visible: true
+        display_name: "Ventile"
+
+  - app_label: lautrer_wissen
+    model_name: OsmRecyclingContainer
+    display_name: Recycling-Container
+    fields:
+      - field_name: operator
+        visible: true
+        display_name: "Betreiber"
+      - field_name: recycling_glass_bottles
+        visible: true
+        display_name: "Glasflaschen"
+      - field_name: recycling_clothes
+        visible: true
+        display_name: "Kleider"
+      - field_name: recycling_shoes
+        visible: true
+        display_name: "Schuhe"
+
+  - app_label: lautrer_wissen
+    model_name: OsmRecyclingCenter
+    display_name: Wertstoffhof
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: operator
+        visible: true
+        display_name: "Betreiber"
+      - field_name: opening_hours
+        visible: true
+        display_name: "Öffnungszeiten"
+      - field_name: description
+        visible: true
+        display_name: "Beschreibung"
+      - field_name: addr_street
+        visible: true
+        display_name: "Straße"
+      - field_name: addr_housenumber
+        visible: true
+        display_name: "Hausnummer"
+      - field_name: addr_postcode
+        visible: true
+        display_name: "Postleitzahl"
+
+  - app_label: lautrer_wissen
+    model_name: OsmBicycleParking
+    display_name: Fahrradabstellfläche
+    fields:
+      - field_name: capacity
+        visible: true
+        display_name: "Kapazität"
+      - field_name: covered
+        visible: true
+        display_name: "Überdacht"
+      - field_name: fee
+        visible: true
+        display_name: "Gebühr"
+
+  - app_label: lautrer_wissen
+    model_name: OsmAmenityParking
+    display_name: Parkplatz
+    fields:
+      - field_name: access
+        visible: true
+        display_name: "Zugang"
+      - field_name: capacity_disabled
+        visible: true
+        display_name: "Kapazität Behindertenparkplätze"
+      - field_name: wheelchair
+        visible: true
+        display_name: "Barrierefrei"
+
+  - app_label: lautrer_wissen
+    model_name: OsmCemetery
+    display_name: Friedhof
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmCinema
+    display_name: Kino
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmCopyshop
+    display_name: Kopiershop
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmZoo
+    display_name: Zoo
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmEscapegame
+    display_name: Escape-Room
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmMiniatureGolf
+    display_name: Minigolf
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmMusicSchool
+    display_name: Musikschule
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmDrivingSchool
+    display_name: Fahrschule
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmLeisureDance
+    display_name: Tanzschule
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: contact_webseite
+        visible: true
+        display_name: "Webseite"
+
+  - app_label: lautrer_wissen
+    model_name: OsmNatureReserve
+    display_name: Naturschutzgebiet
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+
+  - app_label: lautrer_wissen
+    model_name: OsmAdvertisingColumn
+    display_name: Litfaßsäule
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmVolleyball
+    display_name: Volleyballfeld
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmVendingMachineParkingTicket
+    display_name: Parkscheinautomat
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+
+  - app_label: lautrer_wissen
+    model_name: OsmVendingMachineDogToilet
+    display_name: Hundekotbeutel
+    fields: []
+
+  - app_label: lautrer_wissen
+    model_name: OsmSportCenterSwimming
+    display_name: Schwimmbad
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+
+  - app_label: lautrer_wissen
+    model_name: OsmSportCenterClimbing
+    display_name: Kletterhalle
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: website
+        visible: true
+        display_name: "Website"
+
+  - app_label: lautrer_wissen
+    model_name: OsmLandUseMilitary
+    display_name: Militärfläche
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+
+  - app_label: lautrer_wissen
+    model_name: OsmLeisureDogPark
+    display_name: Hundewiese
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: website
+        visible: true
+        display_name: "Website"
+
+  - app_label: lautrer_wissen
+    model_name: KLCityDistrict
+    display_name: Stadtteil
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+
+  - app_label: lautrer_wissen
+    model_name: KLParkingZone
+    display_name: Parkzone
+    fields:
+      - field_name: zone
+        visible: true
+        display_name: "Zone"
+
+  - app_label: lautrer_wissen
+    model_name: KLParkingLocation
+    display_name: Parkplatz
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: address
+        visible: true
+        display_name: "Adresse"
+      - field_name: total_spots
+        visible: true
+        display_name: "Anzahl Parkplätze"
+
+  - app_label: lautrer_wissen
+    model_name: KLVacantLot
+    display_name: Baulücke
+    fields:
+      - field_name: d4u_balk_nummer
+        visible: true
+        display_name: "Name"
+      - field_name: link
+        visible: true
+        display_name: "Link"
+      - field_name: d4u_balk_art
+        visible: true
+        display_name: "Art"
+      - field_name: d4u_balk_flstnr
+        visible: true
+        display_name: "Flurstück Nr."
+      - field_name: d4u_balk_lage
+        visible: true
+        display_name: "Flurstück Name"
+
+  - app_label: lautrer_wissen
+    model_name: KLConstructionSite
+    display_name: Baustelle
+    fields:
+      - field_name: bez
+        visible: true
+        display_name: "Titel"
+      - field_name: ort
+        visible: true
+        display_name: "Hier sind wir vor Ort"
+      - field_name: baustarttxt
+        visible: true
+        display_name: "Baubeginn"
+      - field_name: bauendetxt
+        visible: true
+        display_name: "Bauende"
+      - field_name: uml
+        visible: true
+        display_name: "Umleitung"
+      - field_name: anm
+        visible: true
+        display_name: "Das ist unsere Aufgabe "
+      - field_name: txt
+        visible: true
+        display_name: "So gehen wir vor"
+      - field_name: erfasser
+        visible: true
+        display_name: "Erfasser"
+      - field_name: ansprech
+        visible: true
+        display_name: "Ansprechpartner"
+      - field_name: email
+        visible: true
+        display_name: "E-Mail"
+
+  - app_label: lautrer_wissen
+    model_name: KLLandUsePlan
+    display_name: Baurecht
+    fields:
+      - field_name: baunvo
+        visible: true
+        display_name: "Baunvo"
+      - field_name: bez
+        visible: true
+        display_name: "Bezeichnung"
+      - field_name: satzung
+        visible: true
+        display_name: "Satzung"
+      - field_name: web
+        visible: true
+        display_name: "Web"
+
+  - app_label: lautrer_wissen
+    model_name: KLEnvironmentalSensor
+    display_name: Umweltsensor
+    fields:
+      - field_name: sensor_type
+        visible: true
+        display_name: "Sensor Typ"
+      - field_name: sensor_topic
+        visible: true
+        display_name: "WSTOPIC"
+      - field_name: data_source
+        visible: true
+        display_name: "Datenquelle"
+      - field_name: city_district_name
+        visible: true
+        display_name: "Stadtteil"
+
+  - app_label: lautrer_wissen
+    model_name: KLSculpture
+    display_name: Skulptur
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: artist
+        visible: true
+        display_name: "Künstler"
+      - field_name: year_created
+        visible: true
+        display_name: "Entstehungsjahr"
+      - field_name: source
+        visible: true
+        display_name: "Quelle"
+      - field_name: category
+        visible: true
+        display_name: "Kategorie"
+      - field_name: location_name
+        visible: true
+        display_name: "Ort"
+      - field_name: photo_url
+        visible: true
+        display_name: "Bild (URL)"
+
+  - app_label: lautrer_wissen
+    model_name: KLEducationalInstitution
+    display_name: Bildungseinrichtung
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: education_type
+        visible: true
+        display_name: "Kategorie"
+      - field_name: education_subtype
+        visible: true
+        display_name: "Unterkategorie"
+      - field_name: extended_name
+        visible: true
+        display_name: "Vollst. Name"
+      - field_name: address
+        visible: true
+        display_name: "Address"
+      - field_name: postal_code
+        visible: true
+        display_name: "PLZ"
+      - field_name: city
+        visible: true
+        display_name: "Ort"
+      - field_name: website_url
+        visible: true
+        display_name: "Webseite"
+
+  - app_label: lautrer_wissen
+    model_name: KLSensorGrafanaDashboard
+    display_name: Sensor Dashboard
+    fields:
+      - field_name: name
+        visible: true
+        display_name: "Name"
+      - field_name: size_radius_meters
+        visible: true
+        display_name: "size_radius_meters"
+      - field_name: dashboard_url
+        visible: true
+        display_name: "dashboard_url"
+      - field_name: timefilters
+        visible: true
+        display_name: "timefilters"
+
+  - app_label: lautrer_wissen
+    model_name: KLFieldtestMeasurements
+    display_name: KLFieldtestMeasurements
+    fields:
+      - field_name: rssi
+        visible: true
+        display_name: "RSSI"
+      - field_name: invalid
+        visible: true
+        display_name: "invalid"
+      - field_name: created_at
+        visible: true
+        display_name: "created_at"
