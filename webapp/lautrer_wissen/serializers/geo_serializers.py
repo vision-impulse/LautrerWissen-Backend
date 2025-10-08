@@ -19,6 +19,8 @@ from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from ..models import MODELS_WITH_DETAIL_PAGE
 
+from frontend_config.utils import get_model_field_mapping
+
 
 class BaseGeoSerializer(GeoFeatureModelSerializer):
     id = serializers.SerializerMethodField()
@@ -61,17 +63,16 @@ class BaseGeoSerializer(GeoFeatureModelSerializer):
 
     def get_properties(self, obj, request=None):
         """
-        Custom logic to format response based on MAP_FIELDS,
+        Custom logic to format response based on MapFieldConfig,
         renaming fields accordingly and handling geometry transformations.
         """
-        fields_mapping = getattr(obj.__class__, 'MAP_FIELDS', {})
-        properties = {}
+        fields_mapping, visible_object_name = get_model_field_mapping(obj.__class__)
 
-        visible_object_name = getattr(obj.__class__, 'VISIBLE_OBJECT_NAME', "")
+        properties = {}
         if visible_object_name != "":
             properties["Objektart"] = visible_object_name
 
-        # Rename and select only fields listed in MAP_FIELDS
+        # Rename and select only configured fields
         for model_field, response_field in fields_mapping.items():
             val = getattr(obj, model_field, None)
             if val is not None and val != "":

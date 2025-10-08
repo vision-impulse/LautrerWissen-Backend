@@ -29,7 +29,7 @@ from django.db import models
 import django_filters
 from rest_framework.response import Response
 import json
-
+from frontend_config.utils import get_model_field_mapping
 
 class MultiCategoryFilter(django_filters.BaseInFilter, django_filters.CharFilter):
     pass
@@ -38,8 +38,7 @@ class MultiCategoryFilter(django_filters.BaseInFilter, django_filters.CharFilter
 def create_dynamic_geo_filter(model):
     """Dynamically create a filter class based on available JSON properties."""
 
-    # Extract filterable fields from MAP_FIELDS (if defined in model)
-    fields = getattr(model, "MAP_FIELDS", {})
+    fields, _ = get_model_field_mapping(model)
     rel_fields = []
 
     def is_missing_filter(queryset, name, value, *, field_name):
