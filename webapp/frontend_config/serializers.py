@@ -22,10 +22,11 @@ from .models import MapLayerGroup, MapLayer
 class MapLayerSerializer(serializers.ModelSerializer):
     sublayers = serializers.SerializerMethodField()
     legendurl = serializers.SerializerMethodField()
+    attribution = serializers.SerializerMethodField()
 
     class Meta:
         model = MapLayer
-        fields = ['name', 'visible', 'color', 'url', 'sublayers', 'legendurl']
+        fields = ['name', 'visible', 'color', 'url', 'sublayers', 'legendurl', 'attribution']
 
     def get_sublayers(self, obj):
         sublayers = obj.sublayers.all()
@@ -35,6 +36,11 @@ class MapLayerSerializer(serializers.ModelSerializer):
 
     def get_legendurl(self, obj):
         return obj.legend_url
+    
+    def get_attribution(self, obj):
+        return {"source": obj.attribution_source, 
+                "license": obj.attribution_license,
+                "url": obj.attribution_url}
 
 class MapLayerGroupSerializer(serializers.ModelSerializer):
     layers = serializers.SerializerMethodField()

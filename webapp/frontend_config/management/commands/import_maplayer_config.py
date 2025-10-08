@@ -75,6 +75,9 @@ class Command(BaseCommand):
                         color=layer_info.get("color", "#000000"),
                         order=layer_order,
                         legend_url=layer_info.get("legend_url", ""),
+                        attribution_source=layer_info.get("attribution_source", ""),
+                        attribution_license=layer_info.get("attribution_license", ""),
+                        attribution_url=layer_info.get("attribution_url", ""),
                         parent=None,
                     )
 
@@ -89,5 +92,8 @@ class Command(BaseCommand):
                             color=layersub_info.get("color", "#000000"),
                             legend_url=layer_info.get("legend_url", ""),
                             order=sub_order,
+                            attribution_source=layer_info.get("attribution_source", ""),
+                            attribution_license=layer_info.get("attribution_license", ""),
+                            attribution_url=layer_info.get("attribution_url", ""),
                         )
         logger.info("Sidebar config successfully imported.")

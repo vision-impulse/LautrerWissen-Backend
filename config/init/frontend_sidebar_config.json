@@ -328,42 +328,60 @@
         "url": "SERVICE=WMS&layer=bga&URL=https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?",
         "visible": false,
         "color": "#000000",
-        "legend_url": "https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=bga&format=image/png"
+        "legend_url": "https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=bga&format=image/png",
+        "attribution_source": "©GeoBasis-DE / LVermGeoRP (2025)",
+        "attribution_license": "dl-de/by-2-0",
+        "attribution_url": "https://lvermgeo.rlp.de"
       },
       {
         "title": "Denkmalzonen",
         "url": "SERVICE=WMS&layer=denkmalzonen&URL=https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?",
         "visible": false,
         "color": "#000000",
-        "legend_url": "https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=denkmalzonen&format=image/png"
+        "legend_url": "https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=denkmalzonen&format=image/png",
+        "attribution_source": "©GeoBasis-DE / LVermGeoRP (2025)",
+        "attribution_license": "dl-de/by-2-0",
+        "attribution_url": "https://lvermgeo.rlp.de"
       },
       {
         "title": "Digitale Topographische Karte (DTK5)",
         "url": "SERVICE=WMS&layer=rp_dtk5&URL=https://geo4.service24.rlp.de/wms/dtk5_rp.fcgi?",
         "visible": false,
         "color": "#000000",
-        "legend_url": "https://geo4.service24.rlp.de/attachment/legende/DTK5_Legende.png"
+        "legend_url": "https://geo4.service24.rlp.de/attachment/legende/DTK5_Legende.png",
+        "attribution_source": "©GeoBasis-DE / LVermGeoRP (2025)",
+        "attribution_license": "dl-de/by-2-0",
+        "attribution_url": "https://lvermgeo.rlp.de"
       },
       {
         "title": "Digitale Topographische Karte (DTK25)",
         "url": "SERVICE=WMS&layer=rp_dtk25&URL=https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi?",
         "visible": false,
         "color": "#000000",
-        "legend_url": "https://geo4.service24.rlp.de/attachment/legende/DTK25_Legende.png"
+        "legend_url": "https://geo4.service24.rlp.de/attachment/legende/DTK25_Legende.png",
+        "attribution_source": "©GeoBasis-DE / LVermGeoRP (2025)",
+        "attribution_license": "dl-de/by-2-0",
+        "attribution_url": "https://lvermgeo.rlp.de"
       },
       {
         "title": "Einzeldenkmäler (Flächen)",
         "url": "SERVICE=WMS&layer=edm_flaechen&URL=https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?",
         "visible": false,
         "color": "#000000",
-        "legend_url": "https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=edm_flaechen&format=image/png"
+        "legend_url": "https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=edm_flaechen&format=image/png",
+        "attribution_source": "©GeoBasis-DE / LVermGeoRP (2025)",
+        "attribution_license": "dl-de/by-2-0",
+        "attribution_url": "https://lvermgeo.rlp.de"
       },
       {
         "title": "Einzeldenkmäler (Punkte)",
         "url": "SERVICE=WMS&layer=edm_punkte&URL=https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?",
         "visible": false,
         "color": "#000000",
-        "legend_url": "https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=edm_punkte&format=image/png"
+        "legend_url": "https://www.geoportal.rlp.de/owsproxy/00000000000000000000000000000000/9c9d7fe2c25527a5cb22cf9ca2266d26?version=1.1.1&service=WMS&request=GetLegendGraphic&layer=edm_punkte&format=image/png",
+        "attribution_source": "©GeoBasis-DE / LVermGeoRP (2025)",
+        "attribution_license": "dl-de/by-2-0",
+        "attribution_url": "https://lvermgeo.rlp.de"
       },
       {
         "title": "Flächennutzungsplan",

@@ -37,6 +37,9 @@ class MapLayer(models.Model):
     color = models.CharField(max_length=7, default='#000000')  # Allow per-layer override
     order = models.PositiveIntegerField(default=0)
     legend_url = models.TextField(null=True, blank=True, default="")
+    attribution_source = models.CharField(max_length=255, default="", blank=True, null=True)
+    attribution_license = models.CharField(max_length=255, default="", blank=True, null=True)
+    attribution_url = models.CharField(max_length=255, default="", blank=True, null=True)
 
     class Meta:
         ordering = ['order']
