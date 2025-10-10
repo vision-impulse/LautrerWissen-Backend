@@ -44,5 +44,5 @@ class FrontendURLMixin:
 
     def get_frontend_url_name(self):
         if self._meta.model_name == 'klsensorgrafanadashboard':
-            return "Mehr erfahren (%s)" %(self.timefilters)
+            return "Datenfilter (%s)" %(self.timefilters)
         return "Mehr erfahren"
