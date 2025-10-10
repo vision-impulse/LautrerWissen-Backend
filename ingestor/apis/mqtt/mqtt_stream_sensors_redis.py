@@ -27,6 +27,7 @@ import redis
 from zoneinfo import ZoneInfo
 import logging
 
+from json import JSONDecodeError
 
 MQTT_BROKER = os.getenv("MQTT_BROKER")
 MQTT_PORT = os.getenv("MQTT_PORT")
@@ -63,22 +64,28 @@ class MQTTSensorConsumer():
         client.subscribe("#")
 
     def on_message(self, client, userdata, message):
-        topic = message.topic
-        if topic.startswith("geo") and "sensor" in topic:
-            raw = message.payload.decode()
-            data = json.loads(raw)
-            if "latitude" in data and "longitude" in data:
-                logger.info("Writing to redis_cache on %s", topic)
-                try:
-                    dt = datetime.fromtimestamp(int(data["time"]) / 1000, tz=ZoneInfo("Europe/Berlin"))
-                    data["time"] = dt.strftime("%Y-%m-%d %H:%M:%S")
-                except Exception as e:
-                    logger.error("Error converting timestamp %s", e)
-                    pass
-                logger.info("Writing to redis_cache data %s", data)
-                updated_data = json.dumps(data)
-                self.redis_cache.hset('sensor_data', topic, updated_data)
-                self.redis_cache.publish(topic, updated_data) 
+        try:
+            topic = message.topic
+            if topic.startswith("geo") and "sensor" in topic:
+                raw = message.payload.decode()
+                data = json.loads(raw)
+                if "latitude" in data and "longitude" in data:
+                    logger.info("Writing to redis_cache on %s", topic)
+                    try:
+                        dt = datetime.fromtimestamp(int(data["time"]) / 1000, tz=ZoneInfo("Europe/Berlin"))
+                        data["time"] = dt.strftime("%Y-%m-%d %H:%M:%S")
+                    except Exception as e:
+                        logger.error("Error converting timestamp %s", e)
+                        pass
+                    logger.info("Writing to redis_cache data %s", data)
+                    updated_data = json.dumps(data)
+                    self.redis_cache.hset('sensor_data', topic, updated_data)
+                    self.redis_cache.publish(topic, updated_data) 
+        except ValueError as value_error: # JSONDecodeError
+            logger.warning("Decoding Error for message %s", value_error, exc_info=True)
+        except Exception as e:
+            logger.error("Parse Error: %s", e, exc_info=True)
+
                 
     def run(self):
         self.client.tls_set()
