@@ -21,23 +21,6 @@ from datetime import datetime
 from ingestor.datapipe.utils.django_integration import get_django_model
 
 
-class PipelineType(Enum):
-    KL_EVENTS = "KL_EVENTS"
-    KL_EVENTS_RIS = "KL_EVENTS_RIS"
-    KL_GEO_WFS = "WFS"
-    KL_GEO_RESOURCES = "GEO"
-    KL_SENSOR_RESOURCES = "SENSORS"
-    EV_STATIONS = "EV_STATIONS"
-    VRN = "VRN"
-    OSM = "OSM"
-    WIFI_FREIFUNK = "WIFI_FREIFUNK"
-    WIFI_LOCAL = "WIFI_LOCAL"
-    WIKIPEDIA = "WIKIPEDIA"
-    EMERGENCY_POINTS = "EMERGENCY_POINTS"
-    WGA_EVENTS = "WGA_EVENTS"
-    TTN_GATEWAY = "TTN_GATEWAY"
-
-
 class PipelineContext:
     """Holds information about a specific feature being processed."""
 

@@ -28,7 +28,7 @@ from ingestor.datapipe.pipelines.wifi_freifunk_pipeline import WifiFreifunkPipel
 from ingestor.datapipe.pipelines.wifi_myspot_empera_pipeline import (
     WifiMySpotEmperaPipeline,
 )
-from ingestor.datapipe.pipelines.base_pipeline import PipelineType
+from ingestor.datapipe.pipelines.base_pipeline_types import PipelineType
 from ingestor.datapipe.pipelines.emergency_point_pipeline import EmergencyPointPipeline
 from ingestor.datapipe.pipelines.wga_events_pipeline import WGAEventPipeline
 from ingestor.datapipe.pipelines.ttn_gateway_pipeline import TTNGatewayPipeline
