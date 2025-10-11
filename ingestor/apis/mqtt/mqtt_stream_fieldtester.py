@@ -16,33 +16,23 @@
 # Authors: Benjamin Bischke
 
 
-from paho.mqtt import client as mqtt_client
-from datetime import datetime
 import json
 import asyncio
 import asyncpg
 import json
 import threading
-import time
 import os
 import logging
-import re
 
-
-MQTT_BROKER = os.getenv("MQTT_BROKER")
-MQTT_PORT = os.getenv("MQTT_PORT")
-MQTT_USERNAME = os.getenv("MQTT_USERNAME")
-MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
-MQTT_TOPIC_SELECTOR = os.getenv("MQTT_TOPIC_SELECTOR", "")
+from ingestor.apis.mqtt.mqtt_stream_consumer import MQTTConsumer
 
 DB_NAME = os.getenv('DATABASE_NAME')
 DB_USER = os.getenv('DATABASE_USER')
 DB_PASSWORD = os.getenv('DATABASE_PASSWORD')
 DB_HOST = os.getenv('DATABASE_HOST')
 DB_PORT = os.getenv('DATABASE_PORT')
-
 DB_DSN = "postgresql://%s:%s@%s:%s/%s" %(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
-TABLENAME = "lautrer_wissen_klfieldtestmeasurements"
+DB_TABLENAME = "lautrer_wissen_klfieldtestmeasurements"
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +75,7 @@ class SensorDBHandler:
         try:
             conn = await asyncpg.connect(dsn=self.dsn)
             query = f"""
-                INSERT INTO {TABLENAME} (
+                INSERT INTO {DB_TABLENAME} (
                     time, latitude, longitude, sats, battery, triggered, rssi, snr, uplink, downlink, created_at
                 ) VALUES (
                     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW()
@@ -106,53 +96,29 @@ class SensorDBHandler:
 
 
 
-class MQTTFieldtesterConsumer():
+class MQTTFieldtesterConsumer(MQTTConsumer):
 
     IDLE_TIMEOUT = 1
 
     def __init__(self):
         super(MQTTFieldtesterConsumer, self).__init__()
-        self.broker = MQTT_BROKER
-        self.port = int(MQTT_PORT)
-        self.username = MQTT_USERNAME
-        self.pasw = MQTT_PASSWORD
-        self.start_time = time.time()
-        self.client = mqtt_client.Client()
-        self.compiled_patterns = [re.compile(p.strip()) for p in MQTT_TOPIC_SELECTOR.split(",") if p.strip()]
         self.db_handler = SensorDBHandler(DB_DSN)
-        
         # Start the background flusher in a separate thread
         self.loop = asyncio.get_event_loop()
         threading.Thread(target=self.start_background_loop, daemon=True).start()
-
-    def topic_matches(self, topic: str) -> bool:
-        return any(p.search(topic) for p in self.compiled_patterns)
 
     def start_background_loop(self):
         asyncio.set_event_loop(self.loop)
         self.loop.run_until_complete(self.db_handler.background_flusher())
 
-    def on_connect(self, client, userdata, flags, rc):
-        if rc != 0:
-            logger.error("Failed to connect to MQTT Broker %s!", self.broker)
-            return
-        logger.info("Connected to MQTT Broker %s!", self.broker)
-        client.subscribe("#")
-
-    def on_message(self, client, userdata, message):
-        topic = message.topic
-        if self.topic_matches(topic):
+    def on_topic_message_received(self, client, userdata, message, topic):
+        try:
             raw = message.payload.decode()
             logger.info("[MQTT] Writing to PostgreSQL from topic: %s", topic)
             asyncio.run_coroutine_threadsafe(self.db_handler.handle_message(raw), self.loop)
-
-    def run(self):
-        self.client.tls_set()
-        self.client.enable_logger()
-        self.client.username_pw_set(self.username, self.pasw)
-        self.client.on_connect = self.on_connect
-        self.client.on_message = self.on_message
-        self.client.connect(self.broker, self.port, 60)
-        self.client.loop_forever()
-
+        except ValueError as value_error: # JSONDecodeError
+            logger.warning("Decoding Error for message %s", value_error, exc_info=True)
+        except Exception as e:
+            logger.error("Error: %s", e, exc_info=True)
+    
 
