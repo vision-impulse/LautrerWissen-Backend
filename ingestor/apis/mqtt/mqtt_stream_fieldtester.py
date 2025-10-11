@@ -26,12 +26,14 @@ import threading
 import time
 import os
 import logging
+import re
 
 
 MQTT_BROKER = os.getenv("MQTT_BROKER")
 MQTT_PORT = os.getenv("MQTT_PORT")
 MQTT_USERNAME = os.getenv("MQTT_USERNAME")
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
+MQTT_TOPIC_SELECTOR = os.getenv("MQTT_TOPIC_SELECTOR", "")
 
 DB_NAME = os.getenv('DATABASE_NAME')
 DB_USER = os.getenv('DATABASE_USER')
@@ -116,12 +118,15 @@ class MQTTFieldtesterConsumer():
         self.pasw = MQTT_PASSWORD
         self.start_time = time.time()
         self.client = mqtt_client.Client()
-
+        self.compiled_patterns = [re.compile(p.strip()) for p in MQTT_TOPIC_SELECTOR.split(",") if p.strip()]
         self.db_handler = SensorDBHandler(DB_DSN)
         
         # Start the background flusher in a separate thread
         self.loop = asyncio.get_event_loop()
         threading.Thread(target=self.start_background_loop, daemon=True).start()
+
+    def topic_matches(self, topic: str) -> bool:
+        return any(p.search(topic) for p in self.compiled_patterns)
 
     def start_background_loop(self):
         asyncio.set_event_loop(self.loop)
@@ -136,7 +141,7 @@ class MQTTFieldtesterConsumer():
 
     def on_message(self, client, userdata, message):
         topic = message.topic
-        if "fieldtester" in topic:
+        if self.topic_matches(topic):
             raw = message.payload.decode()
             logger.info("[MQTT] Writing to PostgreSQL from topic: %s", topic)
             asyncio.run_coroutine_threadsafe(self.db_handler.handle_message(raw), self.loop)

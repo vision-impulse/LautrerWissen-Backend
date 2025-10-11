@@ -23,6 +23,7 @@ import json
 import time
 import yaml
 import os
+import re
 import redis
 from zoneinfo import ZoneInfo
 import logging
@@ -33,13 +34,13 @@ MQTT_BROKER = os.getenv("MQTT_BROKER")
 MQTT_PORT = os.getenv("MQTT_PORT")
 MQTT_USERNAME = os.getenv("MQTT_USERNAME")
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
+MQTT_TOPIC_SELECTOR = os.getenv("MQTT_TOPIC_SELECTOR", "")
 
 REDIS_HOST = os.getenv("REDIS_HOST")
 REDIS_HOSTNAME = "redis"
 REDIS_PORT = 6379
 
 logger = logging.getLogger(__name__)
-
 
 class MQTTSensorConsumer():
 
@@ -54,7 +55,11 @@ class MQTTSensorConsumer():
         self.start_time = time.time()
         self.client = mqtt_client.Client()
         self.redis_cache = redis.Redis(host=REDIS_HOSTNAME, port=REDIS_PORT, decode_responses=True)
-        
+        self.compiled_patterns = [re.compile(p.strip()) for p in MQTT_TOPIC_SELECTOR.split(",") if p.strip()]
+
+    def topic_matches(self, topic: str) -> bool:
+        return any(p.search(topic) for p in self.compiled_patterns)
+
     def on_connect(self, client, userdata, flags, rc):
         if rc != 0:
             logger.error("Failed to connect to MQTT Broker! %s", MQTT_BROKER)
@@ -66,7 +71,7 @@ class MQTTSensorConsumer():
     def on_message(self, client, userdata, message):
         try:
             topic = message.topic
-            if topic.startswith("geo") and "sensor" in topic:
+            if self.topic_matches(topic):
                 raw = message.payload.decode()
                 data = json.loads(raw)
                 if "latitude" in data and "longitude" in data:
