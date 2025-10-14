@@ -20,7 +20,7 @@ from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.wifi import WifiTransformStep
 from ..steps.database.step_import import DatabaseImportStep
 from ..steps.geo.step_filter import GeoFilterStep
-from ..pipelines.base_pipeline import BasePipeline, PipelineType
+from ..pipelines.base_pipeline import BasePipeline
 
 
 class WifiFreifunkPipeline(BasePipeline):

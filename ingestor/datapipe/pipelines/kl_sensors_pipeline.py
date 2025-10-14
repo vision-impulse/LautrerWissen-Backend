@@ -19,7 +19,7 @@ from ingestor.apis.mqtt.mqtt_static_sensors import MQTTInitialSensorsDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.kl_sensors import KLSensorsTransformStep
 from ..steps.database.step_import import DatabaseImportStep
-from ..pipelines.base_pipeline import BasePipeline, PipelineType
+from ..pipelines.base_pipeline import BasePipeline
 
 
 class KLSensorsPipeline(BasePipeline):

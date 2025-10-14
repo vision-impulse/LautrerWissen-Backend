@@ -19,7 +19,7 @@ from ingestor.apis.osm.osm import OSMDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.osm import OSMTransformStep
 from ..steps.database.step_import import DatabaseImportStep
-from ..pipelines.base_pipeline import BasePipeline, PipelineType
+from ..pipelines.base_pipeline import BasePipeline
 
 
 class OSMPipeline(BasePipeline):

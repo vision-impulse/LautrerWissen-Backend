@@ -19,7 +19,7 @@ from ingestor.apis.ris.council_calendar import CouncilCalendarDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.kl_ris import KLRisEventsTransformStep
 from ..steps.database.step_import import DatabaseImportStep
-from ..pipelines.base_pipeline import BasePipeline, PipelineType
+from ..pipelines.base_pipeline import BasePipeline
 
 
 class KLRisEventsPipeline(BasePipeline):

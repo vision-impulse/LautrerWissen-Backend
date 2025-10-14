@@ -19,7 +19,7 @@ from ingestor.apis.wfs.wfs import WFSDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.kl_wfs import KLWFSTransformStep
 from ..steps.database.step_import import DatabaseImportStep
-from ..pipelines.base_pipeline import BasePipeline, PipelineType
+from ..pipelines.base_pipeline import BasePipeline
 
 
 class WFSPipeline(BasePipeline):
