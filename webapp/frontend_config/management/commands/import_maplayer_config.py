@@ -62,7 +62,7 @@ class Command(BaseCommand):
                     title=group_data["title"],
                     defaults={
                         "color": group_data.get("color", "#CCCCCC"),
-                        "order": group_order,
+                        "order": group_data.get("order", group_order),
                     },
                 )
 
@@ -73,7 +73,7 @@ class Command(BaseCommand):
                         url=layer_info["url"],
                         visible=layer_info.get("visible", False),
                         color=layer_info.get("color", "#000000"),
-                        order=layer_order,
+                        order=layer_info.get("order", layer_order),
                         legend_url=layer_info.get("legend_url", ""),
                         attribution_source=layer_info.get("attribution_source", ""),
                         attribution_license=layer_info.get("attribution_license", ""),
@@ -91,7 +91,7 @@ class Command(BaseCommand):
                             visible=layersub_info.get("visible", False),
                             color=layersub_info.get("color", "#000000"),
                             legend_url=layer_info.get("legend_url", ""),
-                            order=sub_order,
+                            order=layer_info.get("order", sub_order),
                             attribution_source=layer_info.get("attribution_source", ""),
                             attribution_license=layer_info.get("attribution_license", ""),
                             attribution_url=layer_info.get("attribution_url", ""),
