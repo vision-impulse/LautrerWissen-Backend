@@ -18,6 +18,7 @@
 from abc import abstractmethod
 
 from rest_framework import serializers
+from frontend_config.utils import get_model_field_mapping
 
 
 def get_wiki_serializer_for_model(obj, model):
@@ -75,7 +76,12 @@ class WikiBaseObjectSerializer(
         return obj.get_image_info()
 
     def get_fields_to_display(self, obj):
-        return obj.get_fields_to_display()
+        mapping, _ = get_model_field_mapping(obj.__class__)
+        display_data = {}
+        for model_field, display_name in mapping.items():
+            value = getattr(obj, model_field, None)
+            display_data[display_name] = value
+        return display_data
 
     def get_references(self, obj):
         return list(obj.get_references())

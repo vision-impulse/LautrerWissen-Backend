@@ -30,65 +30,14 @@ import hashlib
 
 class WikiModel(BaseModel, FrontendURLMixin):
 
+    class Meta:
+        abstract = True  # This makes it an abstract base class in Django
+
+
     MAP_FIELDS = {
         "name": "Name",
         **BaseModel.MAP_FIELDS,
     }
-
-    DB_CASE_MODIFY_NAME = Case(
-        When(
-            name__in=[
-                "Wohnhaus",
-                "Wohnhäuser",
-                "Gasthaus",
-                "Wohn- und Geschäftshaus",
-                "Wohn- und Geschäftshäuser",
-                "Villa",
-                "Stadtbefestigung",
-                "Kriegerdenkmal",
-            ],
-            then=Concat(
-                F("name"),
-                Value(" ("),
-                F("address"),
-                Value(")"),
-                output_field=CharField(),
-            ),
-        ),
-        default=F("name"),
-        output_field=CharField(),  # Ensure the output is consistently CharField
-    )
-
-    class Meta:
-        abstract = True  # This makes it an abstract base class in Django
-
-    @classmethod
-    def objects_for_list_view(cls):
-        objs = (
-            cls.objects.annotate(has_image=Length("image_url"))
-            .annotate(combined_name=WikiModel.DB_CASE_MODIFY_NAME)
-            .order_by("-has_image", "name")
-        )
-        return objs
-
-    @classmethod
-    def nearby_objects_as_dict(cls, curr_obj, top_n=5):
-        return [
-            {
-                "distance": str(round(obj.distance.km, 3)).replace(".", ","),
-                "id": obj.virtual_id,
-                "name": obj.combined_name,
-            }
-            for obj in cls._nearby_objects_by_location(curr_obj, top_n)
-        ]
-
-    @classmethod
-    def _nearby_objects_by_location(cls, curr_obj, top_n=5):
-        return (
-            cls.objects.annotate(distance=Distance("geometry", curr_obj.geometry))
-            .annotate(combined_name=WikiModel.DB_CASE_MODIFY_NAME)
-            .order_by("distance")[1 : top_n + 1]
-        )
 
     virtual_id = models.CharField(default="", max_length=255)
     geometry = models.PointField()
@@ -103,6 +52,82 @@ class WikiModel(BaseModel, FrontendURLMixin):
     image_additional_license_urls = models.TextField(default="")
     image_additional_license_texts = models.TextField(default="")
 
+
+    @classmethod
+    def _db_case_modify_name(cls):
+        """
+        Dynamically build a CASE expression for name/address formatting,
+        safely skipping missing fields.
+        """
+        # Check which fields exist on this model
+        has_name = "name" in [f.name for f in cls._meta.get_fields()]
+        has_address = "address" in [f.name for f in cls._meta.get_fields()]
+
+        # Define base field for default fallback
+        base_field = F("name") if has_name else Value("")
+
+        if has_name and has_address:
+            return Case(
+                When(
+                    name__in=[
+                        "Wohnhaus",
+                        "Wohnhäuser",
+                        "Gasthaus",
+                        "Wohn- und Geschäftshaus",
+                        "Wohn- und Geschäftshäuser",
+                        "Villa",
+                        "Stadtbefestigung",
+                        "Kriegerdenkmal",
+                    ],
+                    then=Concat(
+                        F("name"),
+                        Value(" ("),
+                        F("address"),
+                        Value(")"),
+                        output_field=CharField(),
+                    ),
+                ),
+                default=base_field,
+                output_field=CharField(),
+            )
+
+        # Only 'name' exists
+        elif has_name:
+            return F("name")
+
+        # No name/address → just empty string
+        else:
+            return Value("")
+
+    @classmethod
+    def objects_for_list_view(cls):
+        DB_CASE_MODIFY_NAME = cls._db_case_modify_name()
+        objs = (
+            cls.objects.annotate(has_image=Length("image_url"))
+            .annotate(combined_name=DB_CASE_MODIFY_NAME)
+            .order_by("-has_image", "name")
+        )
+        return objs
+
+    @classmethod
+    def nearby_objects_as_dict(cls, curr_obj, top_n=5):
+        return [
+            {
+                "distance": str(round(obj.distance.km, 3)).replace(".", ","),
+                "id": obj.virtual_id,
+                "name": getattr(obj, "combined_name", obj.name), # Try to use combined name from SQL, as fallback use name!
+            }
+            for obj in cls._nearby_objects_by_location(curr_obj, top_n)
+        ]
+
+    @classmethod
+    def _nearby_objects_by_location(cls, curr_obj, top_n=5):
+        DB_CASE_MODIFY_NAME = cls._db_case_modify_name()
+        return (
+            cls.objects.annotate(distance=Distance("geometry", curr_obj.geometry))
+            .annotate(combined_name=DB_CASE_MODIFY_NAME)
+            .order_by("distance")[1 : top_n + 1]
+        )
     def get_references(self):
         return [
             {"ref": ref, "link": link}
@@ -152,7 +177,23 @@ class WikiModel(BaseModel, FrontendURLMixin):
         return res
 
 
-class WikiFishSculpture(WikiModel):
+class WikiFormatMixin(models.Model):
+    """Abstract mixin that formats the address transparently."""
+
+    class Meta:
+        abstract = True
+
+    def __getattribute__(self, name):
+        if name == "address":
+            value = super().__getattribute__(name)
+            return value if value else "Unbekannt"
+        if name == "description":
+            value = super().__getattribute__(name)
+            return str(value).replace(" .", ".")
+        return super().__getattribute__(name)
+
+
+class WikiFishSculpture(WikiModel, WikiFormatMixin):
 
     WIKI_OBJECT_URL = "https://de.wikipedia.org/wiki/Liste_der_%C3%B6ffentlichen_Fischskulpturen_in_Kaiserslautern"
     VISIBLE_OBJECT_NAME = "Fischskulptur"
@@ -162,37 +203,23 @@ class WikiFishSculpture(WikiModel):
         "address": "Adresse",
         **BaseModel.MAP_FIELDS,
     }
-    address = models.TextField()
     name = models.TextField()
     designed_by = models.TextField()
     address_past = models.TextField()
     number = models.IntegerField()
+    address = models.TextField(blank=True, null=True)
+
+    def __getattribute__(self, name):
+        if name == "number":
+            value = object.__getattribute__(self, name)
+            return value if value != -1 else ""
+        if name == "designed_by":
+            value = super().__getattribute__(name)
+            return value if value else "Unbekannt"
+        return object.__getattribute__(self, name)
 
     def get_references(self):
         return []  # No references for fish sculptures
-
-    def get_image_info(self):
-        return {
-            "image_url": (
-                re.sub(r"/(\d+)px", "/480px", str(self.image_url))
-                if self.image_url
-                else ""
-            ),
-            "image_author_name": self.image_author_name,
-            "image_license_url": self.image_license_url,
-            "image_license_text": self.image_license_text,
-        }
-
-    def get_fields_to_display(self):
-        res = {
-            "Name": self.name,
-            "Adresse": self.address if self.address else "Unbekannt",
-            "Gestaltet von": self.designed_by if self.designed_by else "Unbekannt",
-        }
-        if self.number != -1:
-            res["Nummer"] = self.number
-        return res
-
 
 
 class WikiCulturalMonument(WikiModel):
@@ -203,22 +230,15 @@ class WikiCulturalMonument(WikiModel):
     MAP_FIELDS = {
         "name": "Name",
         "description": "Beschreibung",
+        "construction_year": "Baujahr",
         "address": "Adresse",
         **BaseModel.MAP_FIELDS,
     }
-    address = models.TextField()
     name = models.TextField()
-    description = models.TextField()
     construction_year = models.TextField()
-
-    def get_fields_to_display(self):
-        return {
-            "Name": self.name,
-            "Baujahr": self.construction_year,
-            "Beschreibung": str(self.description).replace(" .", "."),
-            "Adresse": self.address if self.address else "Unbekannt",
-        }
-
+    address = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True) 
+    
 
 class WikiNaturalMonument(WikiModel):
     WIKI_OBJECT_URL = (
@@ -231,17 +251,10 @@ class WikiNaturalMonument(WikiModel):
         "address": "Adresse",
         **BaseModel.MAP_FIELDS,
     }
-    address = models.TextField()
     name = models.TextField()
-    description = models.TextField()
     id_no = models.TextField()
-
-    def get_fields_to_display(self):
-        return {
-            "Name": self.name,
-            "Beschreibung": str(self.description).replace(" .", "."),
-            "Adresse": self.address if self.address else "Unbekannt",
-        }
+    address = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True) 
 
 
 class WikiFountain(WikiModel):
@@ -255,16 +268,9 @@ class WikiFountain(WikiModel):
         "address": "Adresse",
         **BaseModel.MAP_FIELDS,
     }
-    address = models.TextField()
     name = models.TextField()
-    description = models.TextField()
-
-    def get_fields_to_display(self):
-        return {
-            "Name": self.name,
-            "Beschreibung": str(self.description).replace(" .", "."),
-            "Adresse": self.address if self.address else "Unbekannt",
-        }
+    address = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True) 
 
 
 class WikiBrewery(WikiModel):
@@ -279,18 +285,10 @@ class WikiBrewery(WikiModel):
         "description": "Beschreibung",
         **BaseModel.MAP_FIELDS,
     }
-    address = models.TextField()
     name = models.TextField()
-    description = models.TextField()
     timespan = models.TextField()
-
-    def get_fields_to_display(self):
-        return {
-            "Name": self.name,
-            "Lage": self.address,
-            "Betrieb": self.timespan,
-            "Beschreibung": str(self.description).replace(" .", "."),
-        }
+    address = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True) 
 
 
 class WikiNaturalReserve(WikiModel):
@@ -314,52 +312,6 @@ class WikiNaturalReserve(WikiModel):
     date = models.TextField()
     identifier = models.TextField()
 
-    DB_CASE_MODIFY_NAME = Case(
-        When(
-            name__in=[
-                "Wohnhaus",
-                "Wohnhäuser",
-                "Gasthaus",
-                "Wohn- und Geschäftshaus",
-                "Wohn- und Geschäftshäuser",
-                "Villa",
-                "Stadtbefestigung",
-                "Kriegerdenkmal",
-            ],
-            then=Concat(F("name"), Value(" ("), Value(")"), output_field=CharField()),
-        ),
-        default=F("name"),
-        output_field=CharField(),  # Ensure the output is consistently CharField
-    )
-
-    @classmethod
-    def objects_for_list_view(cls):
-        objs = (
-            cls.objects.annotate(has_image=Length("image_url"))
-            .annotate(combined_name=WikiNaturalReserve.DB_CASE_MODIFY_NAME)
-            .order_by("-has_image", "name")
-        )
-        return objs
-
-    @classmethod
-    def _nearby_objects_by_location(cls, curr_obj, top_n=5):
-        return (
-            cls.objects.annotate(distance=Distance("geometry", curr_obj.geometry))
-            .annotate(combined_name=WikiNaturalReserve.DB_CASE_MODIFY_NAME)
-            .order_by("distance")[1 : top_n + 1]
-        )
-
-    def get_fields_to_display(self):
-        return {
-            "Name": self.name,
-            "Kennung": self.identifier,
-            "Kreis (Lage)": self.location_area,
-            "Datum": self.date,
-            "Fläche [ha]": self.area,
-            "Einzelheiten": self.details,
-        }
-
-
 class WikiRitterstein(WikiModel):
     WIKI_OBJECT_URL = (
         "https://de.wikipedia.org/wiki/Liste_von_Brunnen_in_Kaiserslautern"
@@ -372,18 +324,10 @@ class WikiRitterstein(WikiModel):
         "address": "Beschreibung der Lage",
         **BaseModel.MAP_FIELDS,
     }
-    address = models.TextField()
     name = models.TextField()
     meaning = models.TextField()
     number = models.TextField()
-
-    def get_fields_to_display(self):
-        return {
-            "Name": self.name,
-            "Nummer": self.number,
-            "Bedeutung": self.meaning,
-            "Beschreibung der Lage": self.address,
-        }
+    address = models.TextField(blank=True, null=True)
 
 
 class WikiSacralBuilding(WikiModel):
@@ -398,18 +342,10 @@ class WikiSacralBuilding(WikiModel):
         "address": "Stadtteil/Lage",
         **BaseModel.MAP_FIELDS,
     }
-    address = models.TextField()
     name = models.TextField()
-    description = models.TextField()
     construction_year = models.TextField()
-
-    def get_fields_to_display(self):
-        return {
-            "Name": self.name,
-            "Anmerkungen": self.description,
-            "Bauzeit": self.construction_year,
-            "Stadtteil/Lage": self.address,
-        }
+    address = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True) 
 
 
 class WikiStolperstein(WikiModel):
@@ -424,30 +360,27 @@ class WikiStolperstein(WikiModel):
         "address": "Verlegeort",
         **BaseModel.MAP_FIELDS,
     }
-    address = models.TextField()
     name = models.TextField()
-    description = models.TextField()
     timespan = models.TextField()
+    address = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True) 
 
-    def get_fields_to_display(self):
-        same_location_qs = (
-            self.__class__.objects
-            .filter(geometry=self.geometry)
-            .exclude(pk=self.pk)   # exclude current object
-        )
-        if same_location_qs.exists():
-            names = [self.name] + list(same_location_qs.values_list("name", flat=True))
-            combined_names = "  //  ".join(names)
-        else:
-            combined_names = self.name
+    def __getattribute__(self, name):
+        if name == "name":
+            value = object.__getattribute__(self, name)
+            same_location_qs = (
+                self.__class__.objects
+                .filter(geometry=self.geometry)
+                .exclude(pk=self.pk)   # exclude current object
+            )
+            if same_location_qs.exists():
+                names = [value] + list(same_location_qs.values_list("name", flat=True))
+                combined_names = "  //  ".join(names)
+            else:
+                combined_names = value
+            return combined_names
+        return object.__getattribute__(self, name)
 
-        return {
-            "Person, Inschrift": combined_names,
-            "Beschreibung": self.description,
-            "Verlegedatum": self.timespan,
-            "Verlegeort": self.address,
-        }
-    
     def get_image_info(self):
         """Returns the image info of the object and any others at the same location."""
 
@@ -487,9 +420,10 @@ class WikiStolperstein(WikiModel):
     
     @classmethod
     def _nearby_objects_by_location(cls, curr_obj, top_n=5):
+        DB_CASE_MODIFY_NAME = cls._db_case_modify_name()
         return (
             cls.objects.annotate(distance=Distance("geometry", curr_obj.geometry))
-            .annotate(combined_name=WikiModel.DB_CASE_MODIFY_NAME)
+            .annotate(combined_name=DB_CASE_MODIFY_NAME)
             .filter(distance__gt=0)
             .order_by("distance")[1 : top_n + 1]
         )
