@@ -67,8 +67,8 @@ class EvStationTransformStep(DefaultTransformStep):
 
         result = []
         for idx, row in df.iterrows():
-            row['geometry'] = Point(float(row['longitude'].replace(',', '.')),
-                                    float(row['latitude'].replace(',', '.')))
+            row['geometry'] = Point(float(str(row['longitude']).replace(',', '.')),
+                                    float(str(row['latitude']).replace(',', '.')))
             del row["longitude"]
             del row["latitude"]
 
