@@ -6,6 +6,7 @@ djangorestframework==3.15.2
 djangorestframework_gis==1.1
 django-filter==24.3
 gunicorn==23.0.0
+autobahn==23.6.2
 daphne==4.1.2
 channels==4.2.0
 psycopg==3.2.1
@@ -34,4 +35,4 @@ redis==5.2.1
 requests==2.32.3
 APScheduler==3.11.0
 django-apscheduler==0.7.0
-croniter
+croniter==6.0.0
