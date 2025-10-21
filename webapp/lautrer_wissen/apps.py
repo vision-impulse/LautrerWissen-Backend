@@ -21,4 +21,4 @@ from django.apps import AppConfig
 class LautrerWissenConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'lautrer_wissen'
-    verbose_name = "Modelle"
+    verbose_name = "Daten-Modelle"
