@@ -1,3 +1,8 @@
+common_fields:
+  data_source: "Datenquelle"
+  city_district_name: "Stadtteil"
+  data_acquisition_date: "Aktualisiert am"
+  
 models:
   - app_label: lautrer_wissen
     model_name: EmergencyPoint

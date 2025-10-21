@@ -47,6 +47,7 @@ python3 manage.py import_fieldtests
 
 # Import seed configuration for map sidebar (app: frontend_config)
 python3 manage.py import_maplayer_config
+python3 manage.py import_model_field_config
 
 # Import seed configuration for data pipelines (app: pipeline_manager)
 python3 manage.py import_data_pipeline_schedules

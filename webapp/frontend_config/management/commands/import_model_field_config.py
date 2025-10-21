@@ -22,6 +22,7 @@ import logging
 from django.core.management.base import BaseCommand
 from frontend_config.model_field_config import ModelConfig, ModelFieldConfig
 from settings_seedfiles import SEED_FILES
+from django.apps import apps
 
 
 logger = logging.getLogger("webapp")
@@ -35,10 +36,21 @@ class Command(BaseCommand):
         with open(model_field_config_fp, "r") as f:
             data = yaml.safe_load(f)
 
+        common_fields = data.get("common_fields", {})
+
         for m in data.get("models", []):
+            app_label = m["app_label"]
+            model_name = m["model_name"].lower()
+            
+            try:
+                model_class = apps.get_model(app_label, model_name)
+            except LookupError:
+                logger.warning(f"Model %s.%s not found, skipping.", app_label, model_name)
+                continue
+
             model_cfg, _ = ModelConfig.objects.update_or_create(
-                app_label=m["app_label"],
-                model_name=m["model_name"].lower(),
+                app_label=app_label,
+                model_name=model_name,
                 defaults={"object_display_name": m.get("display_name")},
             )
 
@@ -51,4 +63,16 @@ class Command(BaseCommand):
                         "display_name": f_cfg.get("display_name"),
                     },
                 )
+
+            model_field_names = {f.name for f in model_class._meta.get_fields()}
+            for field_name, display_name in common_fields.items():
+                if field_name in model_field_names:
+                    ModelFieldConfig.objects.update_or_create(
+                        model_config=model_cfg,
+                        field_name=field_name,
+                        defaults={
+                            "visible": True,  # default visible for common fields
+                            "display_name": display_name,
+                        },
+                    )
         logger.info("Imported model configurations successfully")
