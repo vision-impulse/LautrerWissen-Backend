@@ -19,7 +19,9 @@ import time
 import os
 import re
 import logging
+import threading
 
+from typing import Optional
 from paho.mqtt import client as mqtt_client
 from abc import ABC, abstractmethod
 
@@ -30,6 +32,23 @@ MQTT_PORT = os.getenv("MQTT_PORT")
 MQTT_USERNAME = os.getenv("MQTT_USERNAME")
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
 MQTT_TOPIC_SELECTOR = os.getenv("MQTT_TOPIC_SELECTOR", "*")
+MQTT_HEARTBEAT_FILE_PATH = os.getenv("MQTT_HEARTBEAT_FILE_PATH", "/logs/heartbeat.log") 
+MQTT_HEARTBEAT_INTERVAL = int(os.getenv("MQTT_HEARTBEAT_INTERVAL", 60*10))
+
+
+def write_heartbeat_file(file_path: str = MQTT_HEARTBEAT_FILE_PATH):
+    """
+    Writes the current Unix timestamp to a file which acts as a 'heartbeat' for external monitoring.
+    """
+    try:
+        # Overwrite the file with the new timestamp
+        with open(file_path, 'w') as f:
+            f.write(str(time.time()))
+        return None
+    except Exception as e:
+        logger.error("ERROR: Could not securely write heartbeat file %s: %s", file_path, e)
+        return e
+
 
 class MQTTConsumer(ABC):
     
@@ -50,6 +69,7 @@ class MQTTConsumer(ABC):
         pass
 
     def run(self):
+        self._start_heartbeat_writer()
         self.client.tls_set()
         self.client.enable_logger()
         self.client.username_pw_set(self.username, self.pasw)
@@ -57,6 +77,14 @@ class MQTTConsumer(ABC):
         self.client.on_message = self._on_message
         self.client.connect(self.broker, self.port, 60)
         self.client.loop_forever()
+
+    def _start_heartbeat_writer(self):
+        def heartbeat_loop():
+            while True:
+                write_heartbeat_file()
+                time.sleep(MQTT_HEARTBEAT_INTERVAL)
+        self.heartbeat_thread = threading.Thread(target=heartbeat_loop, daemon=True)
+        self.heartbeat_thread.start()
 
     def _matches_topics(self, topic: str) -> bool:
         return any(p.search(topic) for p in self.compiled_patterns)
