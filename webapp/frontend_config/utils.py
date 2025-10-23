@@ -33,10 +33,10 @@ def get_model_field_mapping(model_class):
     - Missing or invalid field configs
     - Falls back to class defaults cleanly
     """
+
     app_label = "lautrer_wissen"
     model_name = model_class._meta.model_name
 
-    # Fallbacks
     visible_object_name = getattr(model_class, "VISIBLE_OBJECT_NAME", "")
     base_map_fields = getattr(model_class, "MAP_FIELDS", {})
     mapping = base_map_fields.copy()
@@ -47,13 +47,9 @@ def get_model_field_mapping(model_class):
             .prefetch_related("fields")
         )
 
-        count = configs.count()
-        if count == 0:
+        if not configs.exists():
             logger.debug(f"No ModelConfig found for {app_label}.{model_name}; using defaults.")
             return mapping, visible_object_name
-
-        if count > 1:
-            logger.warning(f"Multiple ModelConfig entries for {app_label}.{model_name}; using the first one.")
 
         config = configs.first()
 
@@ -75,13 +71,7 @@ def get_model_field_mapping(model_class):
                     field_conf.display_name
                     or mapping.get(field_conf.field_name, field_conf.field_name)
                 )
-
-    except (ObjectDoesNotExist, AttributeError) as e:
-        logger.error(f"Error loading ModelConfig for {app_label}.{model_name}: {e}")
-        # fallback to defaults
-
     except Exception as e:
-        logger.exception(f"Unexpected error while building field mapping for {app_label}.{model_name}: {e}")
-        # fallback to defaults
+        logger.exception(f"Error loading ModelConfig for {app_label}.{model_name}: {e}")
 
     return mapping, visible_object_name
