@@ -32,6 +32,8 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR "/lautrer_wissen_data_integration"
 
+ENV PYTHONPATH=/lautrer_wissen_data_integration
+
 RUN if [ -e requirements.txt ]; then \
         echo "Installing python packages in requirements.txt..."; \
         pip install --no-cache-dir -r requirements.txt; \
