@@ -15,7 +15,7 @@
 #
 # Authors: Benjamin Bischke
 
-FROM python:3.12
+FROM python:3.12-slim
 
 RUN apt-get update && apt-get install -y postgresql postgresql-contrib postgresql-client-common gdal-bin libproj-dev \
     sudo \
