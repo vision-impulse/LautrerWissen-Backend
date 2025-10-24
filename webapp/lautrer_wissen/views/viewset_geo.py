@@ -24,7 +24,6 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet, CharFilter, BooleanFilter
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django.db.models import Q
-# Custom filter for JSON field
 from django.db import models
 import django_filters
 from rest_framework.response import Response
@@ -36,60 +35,80 @@ class MultiCategoryFilter(django_filters.BaseInFilter, django_filters.CharFilter
 
 
 def create_dynamic_geo_filter(model):
-    """Dynamically create a filter class based on available JSON properties."""
+    """
+    Return a FilterSet class for `model` that builds filters lazily on instantiation.
+    This avoids DB access at import time and avoids async/sync ORM issues.
+    """
 
-    fields, _ = get_model_field_mapping(model)
-    rel_fields = []
+    class DynamicGeoFilter(FilterSet):
+        # Provide a Meta placeholder; we'll set .model after class creation.
+        class Meta:
+            model = None
+            fields = []
 
-    def is_missing_filter(queryset, name, value, *, field_name):
-        if value:                      # ?field__missing=true
-            return queryset.filter(
-                models.Q(**{f"{field_name}__isnull": True}) |
-                models.Q(**{f"{field_name}": ""})
-            )
-        else:                          # ?field__missing=false
-            return queryset.exclude(
-                models.Q(**{f"{field_name}__isnull": True}) |
-                models.Q(**{f"{field_name}": ""})
-            )
-    # Define dynamic filter methods
-    filter_methods = {}
-    for model_field_name, public_field_name in fields.items():
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
 
-        model_field = model._meta.get_field(model_field_name)
+            # Compute mapping lazily (per-request time).
+            try:
+                fields_map, _visible_name = get_model_field_mapping(model)
+            except Exception:
+                fields_map = getattr(model, "MAP_FIELDS", {}) or {}
 
-        if not isinstance(model_field, (models.DateField, models.DateTimeField)):
-            rel_fields.append(public_field_name)
+            rel_fields = []
 
-            filter_methods[public_field_name] = CharFilter(field_name=model_field_name, lookup_expr="iexact")
+            def is_missing_filter(queryset, name, value, *, field_name):
+                if value: # ?field__missing=true
+                    return queryset.filter(
+                        models.Q(**{f"{field_name}__isnull": True}) | models.Q(**{f"{field_name}": ""})
+                    )
+                else: # ?field__missing=false
+                    return queryset.exclude(
+                        models.Q(**{f"{field_name}__isnull": True}) | models.Q(**{f"{field_name}": ""})
+                    )
+                
+            # Attach dynamic filters to this instance
+            for model_field_name, public_field_name in fields_map.items():
+                try:
+                    model_field = model._meta.get_field(model_field_name)
+                except Exception:
+                    # field not present in the model, skip it
+                    continue
 
-            # Define a custom "not equal" filter function (e.g., `?access__ne=Kunden`)
-            def ne_filter(queryset, name, value, field_name=model_field_name):
-                # Make sure to exclude where model_field_name matches value
-                return queryset.exclude(**{field_name: value})
+                if isinstance(model_field, (models.DateField, models.DateTimeField)):
+                    continue
+        
+                rel_fields.append(public_field_name)
+
+                self.filters[public_field_name] = CharFilter(field_name=model_field_name, lookup_expr="iexact")
+
+                # Define a custom "not equal" filter function (e.g., `?access__ne=Kunden`)
+                def ne_filter(queryset, name, value, field_name=model_field_name):
+                    # Make sure to exclude where model_field_name matches value
+                    return queryset.exclude(**{field_name: value})
+                
+                self.filters[f"{public_field_name}__ne"] = CharFilter(method=ne_filter)
+                self.filters[f"{public_field_name}__in"] = MultiCategoryFilter(field_name=model_field_name,
+                                                                                lookup_expr='in')
+                
+                self.filters[f"{public_field_name}__gte"] = django_filters.NumberFilter(
+                        field_name=model_field_name, lookup_expr="gte")
             
-            filter_methods[f"{public_field_name}__ne"] = CharFilter(method=ne_filter)
-            filter_methods[f"{public_field_name}__in"] = MultiCategoryFilter(field_name=model_field_name,
-                                                                             lookup_expr='in')
-            filter_methods[f"{public_field_name}__gte"] = django_filters.NumberFilter(
-                    field_name=model_field_name, lookup_expr="gte")
-         
-            filter_methods[f"{public_field_name}__missing"] = BooleanFilter(
-                method=lambda qs, name, value, field_name=model_field_name: 
-                   is_missing_filter(qs, name, value, field_name=field_name)
-        )
+                self.filters[f"{public_field_name}__missing"] = BooleanFilter(
+                    method=lambda qs, name, value, field_name=model_field_name: 
+                    is_missing_filter(qs, name, value, field_name=field_name)
+                )
 
-    # Dynamically create the filter class
-    filter_class = type(
-        f"{model.__name__}Filter",  # Dynamic class name
-        (FilterSet,),  # Inherit from FilterSet
-        {
-            **filter_methods,  # Add filter fields and methods
-            "Meta": type("Meta", (), {"model": model, "fields": rel_fields}),  # Meta class
-        }
-    )
+            # Update Meta.fields so introspection / docs see them
+            try:
+                self._meta.fields = rel_fields
+            except Exception:
+                pass
 
-    return filter_class
+    # Safely set Meta.model and Meta.fields after class creation
+    DynamicGeoFilter.Meta.model = model
+    DynamicGeoFilter.Meta.fields = []  # we populate runtime filters in __init__
+    return DynamicGeoFilter
 
 
 def create_geo_viewset(model):
