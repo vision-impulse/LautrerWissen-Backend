@@ -17,12 +17,14 @@
 
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.base import JobLookupError
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
 from django.utils import timezone
 from django.core.management import call_command
 from pipeline_manager.models import PipelineSchedule
 from django.db import OperationalError
+
 import logging
 
 
@@ -48,13 +50,6 @@ def cron_trigger_from_expr(expr):
     expr = expr.strip()
     return CronTrigger.from_crontab(expr)
 
-
-def _parse_cron_expression(expr):
-    """Convert a cron string like '0 2 * * *' to APScheduler kwargs."""
-    minute, hour, day, month, day_of_week = expr.split()
-    return dict(minute=minute, hour=hour, day=day, month=month, day_of_week=day_of_week)
-
-
 def sync_schedules():
     """Fully resync APScheduler jobs with PipelineSchedule DB table."""
     global scheduler
@@ -79,7 +74,7 @@ def sync_schedules():
             scheduler.add_job(
                 run_pipeline,
                 trigger=trigger,
-                id=f"pipeline_{sched.name}",
+                id=f"pipeline_{sched.pk}",
                 args=[sched.pk],
                 replace_existing=True,
                 name=f"pipeline:{sched.name}"
@@ -89,6 +84,49 @@ def sync_schedules():
             logger.error("Failed to add job for %s: %s", sched.name, e)
 
     logger.info("Schedule sync complete. Total jobs: %d", len(scheduler.get_jobs()) - 1)
+
+
+def sync_single_schedule(instance):
+    """Sync or update APScheduler job for a single PipelineSchedule instance."""
+    global scheduler
+    if scheduler is None:
+        logger.error("Scheduler not initialized; cannot sync single schedule.")
+        return
+
+    job_id = f"pipeline_{instance.pk}"
+
+    # Remove existing job for this instance (if exists)
+    try:
+        scheduler.remove_job(job_id)
+    except JobLookupError:
+        pass  # fine if job didn't exist
+
+    # Only add if it's active
+    if instance.is_active:
+        try:
+            trigger = cron_trigger_from_expr(instance.cron_expression)
+            scheduler.add_job(
+                run_pipeline,
+                trigger=trigger,
+                id=job_id,
+                args=[instance.pk],
+                replace_existing=True,
+                name=f"pipeline:{instance.name}"
+            )
+            logger.info("Updated job for pipeline %s (%s)", instance.name, instance.cron_expression)
+        except Exception as e:
+            logger.error("Failed to update job for %s: %s", instance.name, e)
+    else:
+        logger.info("Removed job for inactive pipeline %s", instance.name)
+
+
+def remove_single_schedule(instance):
+    job_id = f"pipeline_{instance.pk}"
+    try:
+        scheduler.remove_job(job_id)
+        logger.info("Removed job for deleted pipeline %s", instance.pk)
+    except JobLookupError:
+        pass
 
 
 def start():

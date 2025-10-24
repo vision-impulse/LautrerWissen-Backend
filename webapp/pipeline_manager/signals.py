@@ -25,11 +25,11 @@ from . import scheduler
 def update_schedule(sender, instance, **kwargs):
     if not scheduler.scheduler:
         return
-    scheduler.sync_schedules()
+    scheduler.sync_single_schedule(instance)
 
 
 @receiver(post_delete, sender=PipelineSchedule)
-def delete_schedule(sender, instance, **kwargs):
-    if not scheduler.scheduler:
+def remove_schedule(sender, instance, **kwargs):
+    if not scheduler:
         return
-    scheduler.sync_schedules()
+    scheduler.remove_single_schedule(instance)
