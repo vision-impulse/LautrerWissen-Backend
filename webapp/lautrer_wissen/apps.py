@@ -22,3 +22,13 @@ class LautrerWissenConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'lautrer_wissen'
     verbose_name = "Daten-Modelle"
+
+    def ready(self):
+        from django.apps import apps
+        from django.conf import settings
+
+        icons = getattr(settings, "JAZZMIN_SETTINGS", {}).get("icons", {})
+        icons["lautrer_wissen"] = "fas fa-database"
+        for model in apps.get_app_config("lautrer_wissen").get_models():
+            icons[f"lautrer_wissen.{model.__name__}"] = "fas fa-table"
+        settings.JAZZMIN_SETTINGS["icons"] = icons
