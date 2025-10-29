@@ -29,9 +29,44 @@ from .model_field_config import ModelConfig, ModelFieldConfig
 from .models import MapLayerGroup, MapLayer
 
 
-class LayerInline(admin.TabularInline):
+class LayerInline(admin.StackedInline):
     model = MapLayer
-    extra = 1
+    extra = 0
+    readonly_fields = ("display_id",)
+    
+    def display_id(self, obj):
+        return obj.id if obj and obj.id else "—"
+    display_id.short_description = "ID"
+
+    fieldsets = (
+        (None, {
+            'fields': ('display_id', 'name', 'parent', 'order')
+        }),
+        ('Appearance', {
+            'classes': ('collapse',),
+            'fields': ('color', 'legend_url'),
+        }),
+        ('Attribution', {
+            'classes': ('collapse',),
+            'fields': ('attribution_source', 'attribution_license', 'attribution_url'),
+        }),
+        ('Technical', {
+            'classes': ('collapse',),
+            'fields': ('url',),
+        }),
+    )
+    
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        field = super().formfield_for_foreignkey(db_field, request, **kwargs)
+        if db_field.name == "parent":
+            try:
+                # Get the current group ID from the URL
+                # /admin/frontend_config/maplayergroup/<group_id>/change/
+                group_id = request.resolver_match.kwargs.get('object_id')
+                field.queryset = field.queryset.filter(group_id=group_id)
+            except Exception:
+                pass
+        return field
 
 
 @admin.register(MapLayerGroup)
@@ -146,8 +181,8 @@ class ModelConfigAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context)
 
 
-admin.site._registry[MapLayerGroup].model._meta.verbose_name = "Sidebar Karte"
-admin.site._registry[MapLayerGroup].model._meta.verbose_name_plural = "Sidebar Karte"
+admin.site._registry[MapLayerGroup].model._meta.verbose_name = "Kartenlayer"
+admin.site._registry[MapLayerGroup].model._meta.verbose_name_plural = "Kartenlayer"
 
 admin.site._registry[ModelConfig].model._meta.verbose_name = (
     "Daten-Modelle"
