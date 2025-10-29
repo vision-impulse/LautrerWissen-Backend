@@ -16,8 +16,25 @@
 # Authors: Benjamin Bischke
 
 from django.apps import AppConfig
+from django.conf import settings
+import sys
 
 class MonitoringConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'monitoring'
     verbose_name = "System-Monitoring"
+
+    def ready(self):
+        if (
+            "makemigrations" in sys.argv
+            or "migrate" in sys.argv
+            or "collectstatic" in sys.argv
+            or "shell" in sys.argv
+        ):
+            return
+
+        if settings.SCHEDULER_ENABLED:
+            from django.dispatch import receiver
+
+            from . import scheduler
+            scheduler.start()
