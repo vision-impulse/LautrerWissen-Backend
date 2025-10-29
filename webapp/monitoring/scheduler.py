@@ -45,7 +45,7 @@ def start():
 
     m_scheduler.add_job(
         sync_docker_job,
-        trigger=CronTrigger(minute="*/1"),
+        trigger=CronTrigger(minute="*/10"),
         id="sync_docker_status",
         replace_existing=True,
         name="Sync Docker status from log file"
