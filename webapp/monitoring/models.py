@@ -17,6 +17,20 @@
 
 from django.db import models
 
+
+class DockerContainerStatus(models.Model):
+
+    class Meta:
+        managed = True
+        verbose_name = "Docker Containers"
+        verbose_name_plural = "Docker Containers"
+
+    name = models.CharField(max_length=100, unique=True)
+    status = models.CharField(max_length=50, blank=True)
+    log_file = models.CharField(max_length=500, blank=True, null=True)
+    last_updated = models.DateTimeField(auto_now=True, blank=True)
+
+
 class MonitoringDashboard(models.Model):
     class Meta:
         managed = False  # no table

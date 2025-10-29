@@ -23,7 +23,10 @@ from django.utils.html import format_html
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
-from monitoring.models import MonitoringDashboard
+from .models import MonitoringDashboard
+from .models import DockerContainerStatus
+from django.http import FileResponse, HttpResponseNotFound
+from django.urls import reverse
 
 from . import views
 
@@ -63,4 +66,47 @@ class MonitoringDashboardAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None): return False
     def has_change_permission(self, request, obj=None): return False
 
+
+@admin.register(DockerContainerStatus)
+class DockerContainerStatusAdmin(admin.ModelAdmin):
+    list_display = ("name", "status", "last_updated", "download_log_link")
+    readonly_fields = ("last_updated","name", "status", "download_log_link")
+
+    def get_urls(self):
+        """Add a custom URL for downloading the log file"""
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "download-log/<int:object_id>/",
+                self.admin_site.admin_view(self.download_log_view),
+                name="dockercontainerstatus_download_log",
+            ),
+        ]
+        return custom_urls + urls
+
+    def download_log_link(self, obj):
+        """Show a clickable link in admin list view"""
+        if not obj or not obj.log_file:
+            return "-"
+        url = reverse("admin:dockercontainerstatus_download_log", args=[obj.pk])
+        return format_html('<a class="button" href="{}">Download</a>', url)
+
+    download_log_link.short_description = "Log File"
+    download_log_link.allow_tags = True
+
+    def download_log_view(self, request, object_id):
+        """Serve the log file for download"""
+        obj = self.get_object(request, object_id)
+        if not obj:
+            return HttpResponseNotFound("Object not found")
+
+        log_path = obj.log_file  # should be an absolute file path
+        if not log_path or not os.path.exists(log_path):
+            return HttpResponseNotFound("Log file not found")
+
+        return FileResponse(open(log_path, "rb"), as_attachment=True, filename=os.path.basename(log_path))
+
     
+    def has_add_permission(self, request): return False
+    def has_delete_permission(self, request, obj=None): return False
+    def has_change_permission(self, request, obj=None): return False
