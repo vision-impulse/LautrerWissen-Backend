@@ -25,7 +25,8 @@ RUN apt-get update && apt-get install -y postgresql postgresql-contrib postgresq
     && ln /usr/bin/python3 /usr/bin/python \
     && mkdir -p /lautrer_wissen_data_integration
 
-COPY ../. /lautrer_wissen_data_integration
+COPY ../ingestor /lautrer_wissen_data_integration/ingestor
+COPY ../requirements.txt /lautrer_wissen_data_integration/requirements.txt
 
 ENV GDAL_CONFIG=/usr/bin/gdal-config
 ENV PYTHONUNBUFFERED=1

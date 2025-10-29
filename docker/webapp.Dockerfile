@@ -29,7 +29,9 @@ RUN apt-get update && apt-get install -y postgresql postgresql-contrib postgresq
 ENV BASE_PATH=/lautrer_wissen_backend
 ENV PYTHONPATH=/lautrer_wissen_backend
 
-COPY ../. $BASE_PATH
+COPY ../webapp $BASE_PATH/webapp
+COPY ../ingestor $BASE_PATH/ingestor
+COPY ../requirements.txt $BASE_PATH/requirements.txt
 
 RUN if [ -e $BASE_PATH/requirements.txt ]; then \
         echo "Installing python packages in requirements.txt..."; \
