@@ -16,6 +16,7 @@
 # Authors: Benjamin Bischke
  
 from django.db import models
+from django.core.exceptions import ValidationError
 
 
 class MapLayerGroup(models.Model):
@@ -43,4 +44,7 @@ class MapLayer(models.Model):
 
     class Meta:
         ordering = ['order']
-
+    
+    def clean(self):
+        if self.parent and self.parent.parent:
+            raise ValidationError("You can only assign one level of parent (no nested sublayers).")
