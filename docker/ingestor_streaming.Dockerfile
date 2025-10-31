@@ -25,7 +25,6 @@ RUN apt-get update && apt-get install -y postgresql postgresql-contrib postgresq
     && ln /usr/bin/python3 /usr/bin/python \
     && mkdir -p /lautrer_wissen_data_integration
 
-COPY ../ingestor /lautrer_wissen_data_integration/ingestor
 COPY ../requirements.txt /lautrer_wissen_data_integration/requirements.txt
 
 ENV GDAL_CONFIG=/usr/bin/gdal-config
@@ -42,6 +41,8 @@ RUN if [ -e requirements.txt ]; then \
     else \
         echo "requirements.txt not found!"; \
     fi
+
+COPY ../ingestor /lautrer_wissen_data_integration/ingestor
 
 ENTRYPOINT ["python", "-u"]
 CMD ["ingestor/run_streaming_sensors.py"  "--sensor", "sensors"]  # Default script

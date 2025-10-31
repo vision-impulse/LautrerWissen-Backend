@@ -29,8 +29,6 @@ RUN apt-get update && apt-get install -y postgresql postgresql-contrib postgresq
 ENV BASE_PATH=/lautrer_wissen_backend
 ENV PYTHONPATH=/lautrer_wissen_backend
 
-COPY ../webapp $BASE_PATH/webapp
-COPY ../ingestor $BASE_PATH/ingestor
 COPY ../requirements.txt $BASE_PATH/requirements.txt
 
 RUN if [ -e $BASE_PATH/requirements.txt ]; then \
@@ -39,5 +37,8 @@ RUN if [ -e $BASE_PATH/requirements.txt ]; then \
     else \
         echo "requirements.txt not found!"; \
     fi
+
+COPY ../webapp $BASE_PATH/webapp
+COPY ../ingestor $BASE_PATH/ingestor
 
 ENTRYPOINT ["/bin/bash", "/lautrer_wissen_backend/webapp/entrypoint.sh"]
