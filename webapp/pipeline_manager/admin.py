@@ -223,10 +223,10 @@ class PipelineRunAdmin(admin.ModelAdmin):
 
 
 admin.site._registry[PipelineSchedule].model._meta.verbose_name = (
-    "Pipeline Cron-Job"
+    "Cron-Job"
 )
 admin.site._registry[PipelineSchedule].model._meta.verbose_name_plural = (
-    "Pipeline Cron-Jobs"
+    "Cron-Jobs"
 )
 
 admin.site._registry[Pipeline].model._meta.verbose_name = "Pipeline"
