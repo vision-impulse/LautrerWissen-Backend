@@ -1,0 +1,67 @@
+{
+    "services": [
+        {
+            "name": "MQTT Fieldstrength Ingester",
+            "type": "heartbeat",
+            "path": "/logs/components/mqtt-fieldstrength-ingester/heartbeat.log",
+            "max_delay_minutes": 2,
+            "log_path": "/logs/components/mqtt-sensor-ingester/mqtt-fieldstrength-ingester.log"
+        },
+        {
+            "name": "MQTT Sensor Ingester",
+            "type": "heartbeat",
+            "path": "/logs/components/mqtt-sensor-ingester/heartbeat.log",
+            "max_delay_minutes": 10,
+            "log_path": "/logs/components/mqtt-sensor-ingester/mqtt-sensor-ingester.log"
+        },
+        {
+            "name": "LautrerWissen Sensor Caching (Redis)",
+            "hostname": "redis",
+            "port": 6379,
+            "type": "tcp",
+            "log_path": "/logs/components/core-redis/redis.log"
+        },
+        {
+            "name": "LautrerWissen Database (PostGIS)",
+            "hostname": "database",
+            "port": 5432,
+            "type": "tcp",
+            "log_path": "/logs/components/core-postgis/postgis.log"
+        },
+        {
+            "name": "LautrerWissen Frontend (NextJS)",
+            "hostname": "frontend",
+            "port": 3000,
+            "type": "tcp",
+            "log_path": "/logs/components/core-frontend/frontend.log"
+        },
+        {
+            "name": "LautrerWissen Backend (Django)",
+            "hostname": "backend",
+            "port": 8002,
+            "type": "tcp",
+            "log_path": "/logs/components/core-backend/backend.log"
+        },
+        {
+            "name": "Plausible Events DB (ClickHouse)",
+            "hostname": "plausible-events-db",
+            "port": 8123,
+            "type": "tcp",
+            "log_path": "/logs/components/TODO"
+        },
+        {
+            "name": "Plausible Analytics App",
+            "hostname": "plausible-analytics",
+            "port": 6789,
+            "type": "tcp",
+            "log_path": "/logs/components/TODO"
+        },
+        {
+            "name": "Plausible Postgres DB",
+            "hostname": "plausible-db",
+            "port": 5432,
+            "type": "tcp",
+            "log_path": "/logs/components/TODO"
+        }
+    ]
+}
