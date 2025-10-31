@@ -20,6 +20,14 @@ from django.db import models
 from ..forms import GeoForm
 from frontend_config.utils import get_model_field_mapping
 
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
+from django.contrib.auth.admin import GroupAdmin
+from django import forms
+
+
 class CustomAdmin(admin.ModelAdmin):
 
     def get_list_display(self, request):
@@ -37,3 +45,21 @@ class CustomGeoAdmin(CustomAdmin):
 
     form = GeoForm
     exclude = ("geometry",)
+
+
+class CustomAdminMixin:
+    class Media:
+        css = {
+            'all': ('admin/custom_admin.css',)
+        }
+
+admin.site.unregister(User)
+@admin.register(User)
+class CustomUserAdmin(CustomAdminMixin, UserAdmin):
+    pass
+
+admin.site.unregister(Group)
+@admin.register(Group)
+class CustomGroupAdmin(CustomAdminMixin, GroupAdmin):
+    pass
+

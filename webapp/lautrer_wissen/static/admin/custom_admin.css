@@ -1,0 +1,20 @@
+
+
+/* Ensure full row gets highlighted */
+.filtered select option {
+    display: block;
+    width: 100%;
+}
+
+.selector select {
+    width: 100% !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    display: block !important;
+}
+
+/* Expand permissions select box column from col-sm-7 → col-sm-9 */
+.field-permissions.col-sm-7 {
+    flex: 0 0 75% !important;  
+    max-width: 75% !important;
+}
