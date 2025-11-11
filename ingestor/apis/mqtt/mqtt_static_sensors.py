@@ -66,22 +66,28 @@ class MQTTInitialSensorsDownloader(Downloader):
         with open(self.out_fp, "w") as f:
             yaml.dump(yaml_data, f, sort_keys=False)
 
+    def sensor_has_valid_gps_position(self, sensor_data):
+        return ("latitude" in sensor_data and sensor_data["latitude"] is not None and \
+                "longitude" in sensor_data and sensor_data["longitude"] is not None)
+
     def on_message(self, client, userdata, message):
         elapsed = time.time() - self.start_time
         if elapsed >= MQTTInitialSensorsDownloader.IDLE_TIMEOUT:
             self.client.disconnect()
-            
         topic = message.topic
-        raw = message.payload.decode()
-        data = json.loads(raw)
-        self.logger.info("Analyzing topic %s", topic)
-        if topic.startswith("geo") and "sensor" in topic:
-            if "latitude" in data and "longitude" in data:
-                self.available_sensors[topic] = {
-                    "topic": topic,
-                    "sensor_latitude": data["latitude"],
-                    "sensor_longitude": data["longitude"],
-                }
+        try:
+            raw = message.payload.decode()
+            data = json.loads(raw)
+            self.logger.info("Analyzing topic %s", topic)
+            if topic.startswith("geo") and "sensor" in topic:
+                if self.sensor_has_valid_gps_position(data):
+                    self.available_sensors[topic] = {
+                        "topic": topic,
+                        "sensor_latitude": data["latitude"],
+                        "sensor_longitude": data["longitude"],
+                    }
+        except Exception as e:
+            self.logger.error("Parse Error: %s", e, exc_info=True)
 
     def perform_download(self):
         self.client.tls_set()
