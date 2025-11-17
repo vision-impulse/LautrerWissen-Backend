@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 class KLSensorsTransformStep(DefaultTransformStep):
-    """OSM-specific transform step."""
+    """Sensor-specific transform step."""
 
     SENSOR_TYPES = [
         ('weather', 'Wetterstation'),
@@ -44,6 +44,7 @@ class KLSensorsTransformStep(DefaultTransformStep):
         ('moisture', 'Feuchtigkeit'),
         ('particle_temp', 'Luftqualität & Temperatur'),
         ('temperature_multi', 'Temperatur'),
+        ('flood', 'Wasserpegel'),
     ]
 
     def __init__(self):
