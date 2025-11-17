@@ -72,76 +72,40 @@ class KLWFSTransformStep(DefaultTransformStep):
     def __init__(self):
         super(KLWFSTransformStep, self).__init__()
         self.model_handlers = {
-            "kl_wfs_building_area_sites.geojson": KLWFSTransformStep._transform_vacant_lot,
-            "kl_wfs_construction_sites_ongoing.geojson": KLWFSTransformStep._transform_construction_site,
-            "kl_wfs_building_right_sites.geojson": KLWFSTransformStep._transform_land_use_plan,
-            "kl_wfs_education_sites.geojson": KLWFSTransformStep._transform_educational_institution,
-            "kl_wfs_sculptures.geojson": KLWFSTransformStep._transform_sculpture,
+            "KLVacantLot": KLWFSTransformStep._transform_vacant_lot,
+            "KLConstructionSite": KLWFSTransformStep._transform_construction_site,
+            "KLLandUsePlan": KLWFSTransformStep._transform_land_use_plan,
+            "KLEducationalInstitution": KLWFSTransformStep._transform_educational_institution,
+            "KLSculpture": KLWFSTransformStep._transform_sculpture,
         }
 
     def transform(self, context, db_model, data_acquisition_date):
         download_file = os.path.join(context.out_dir, context.resource.filename)
-        transform_func = self.model_handlers.get(context.resource.filename)
-        if not transform_func:
-            raise ValueError(f"Unsupported model: {db_model}")
 
-        result = []
         with open(download_file) as f:
             geojson_data = json.load(f)
             features = geojson_data['features']
-            for feature in features:
+        
+        return self.apply_transform_function(features, db_model, data_acquisition_date, context)
+
+    def apply_transform_function(self, features, db_model, data_acquisition_date, context):
+        result = []
+        transform_func = self.model_handlers.get(db_model.__name__, None)
+        if transform_func is None:
+            logger.info("Unsupported model: %s", db_model)
+
+        for feature in features:
+            transformed_data = {}
+            if transform_func is not None:
                 transformed_data = transform_func(feature, db_model)
-                if transformed_data:
-                    transformed_data["city_district_name"] = CityDistrictsDecoder.get_district_name_for_geometry(transformed_data["geometry"])
-                    transformed_data["data_source"] = context.resource.data_source
-                    transformed_data["data_acquisition_date"] = data_acquisition_date
-                    result.append(transformed_data)
+
+            geometry = KLWFSTransformStep._convert_geometry(feature['geometry'])    
+            transformed_data["geometry"] = geometry
+            transformed_data["city_district_name"] = CityDistrictsDecoder.get_district_name_for_geometry(geometry)
+            transformed_data["data_source"] = context.resource.data_source
+            transformed_data["data_acquisition_date"] = data_acquisition_date
+            result.append(transformed_data)
         return result
-
-    @staticmethod
-    def _transform_vacant_lot(feature, db_model):
-        properties = feature['properties']
-        geom_shape = KLWFSTransformStep._convert_geometry(feature['geometry'])
-
-        fields = KLWFSTransformStep._extract_fields(properties, db_model)
-
-        fields['geometry'] = geom_shape
-        return fields
-
-    @staticmethod
-    def _transform_construction_site(feature, db_model):
-        properties = feature['properties']
-        fields = KLWFSTransformStep._extract_fields(properties, db_model)
-        fields['geometry'] = shape(feature["geometry"])
-        fields['baustart'] = parse_date(fields["baustart"])
-        fields['bauende'] = parse_date(fields["bauende"])
-        return fields
-
-
-    @staticmethod
-    def _transform_land_use_plan(feature, db_model):
-        properties = feature['properties']
-        fields = KLWFSTransformStep._extract_fields(properties, db_model)
-        fields['geometry'] = shape(feature["geometry"])
-        fields["kl_id"] = fields.pop('id', None)  # Rename 'id' to 'kl_id' safely
-        return fields
-
-
-    @staticmethod
-    def _transform_sculpture(feature, db_model):
-        properties = feature['properties']
-        properties = KLWFSTransformStep.map_properties(properties, KLWFSTransformStep.SCULPTURE_MAP)
-        fields = KLWFSTransformStep._extract_fields(properties, db_model)
-        fields['geometry'] = shape(feature["geometry"])
-        return fields
-
-    @staticmethod
-    def _transform_educational_institution(feature, db_model):
-        properties = feature['properties']
-        properties = KLWFSTransformStep.map_properties(properties, KLWFSTransformStep.EDUCATIONAL_INSTITUTION_MAP)
-        fields = KLWFSTransformStep._extract_fields(properties, db_model)
-        fields['geometry'] = shape(feature["geometry"])
-        return fields
 
     @staticmethod
     def map_properties(properties, mapping):
@@ -157,12 +121,58 @@ class KLWFSTransformStep(DefaultTransformStep):
             if field.name in row
         }
         return fields
-
+    
     @staticmethod
     def _convert_geometry(geometry):
-        """Extracts and converts geometry to a Django-compatible format."""
-        coordinates_2d = [
-            [[x[0], x[1]] for x in ring] for ring in geometry["coordinates"]
-        ]
-        polygon_2d = Polygon(coordinates_2d[0])  # Assuming a single ring
-        return polygon_2d
+        """
+        Extracts and converts geometry to a Django-compatible format.
+        If geometry is a Polygon, convert to 2D polygon (drop Z if present).
+        Otherwise, fall back to shapely.shape().
+        """
+        geom_type = geometry.get("type")
+
+        if geom_type == "Polygon":
+            # Drop Z dimension if present
+            coordinates_2d = [
+                [[coord[0], coord[1]] for coord in ring]
+                for ring in geometry.get("coordinates", [])
+            ]
+
+            # Assuming a single ring (outer boundary)
+            return Polygon(coordinates_2d[0])
+
+        # Fallback for other geometry types
+        return shape(geometry)
+
+    # ------------------------------------------------------------------------------------------
+    # Specific handlers for model transformation
+
+    @staticmethod
+    def _transform_vacant_lot(feature, db_model):
+        fields = KLWFSTransformStep._extract_fields(feature['properties'], db_model)
+        return fields
+
+    @staticmethod
+    def _transform_construction_site(feature, db_model):
+        fields = KLWFSTransformStep._extract_fields(feature['properties'], db_model)
+        fields['baustart'] = parse_date(fields["baustart"])
+        fields['bauende'] = parse_date(fields["bauende"])
+        return fields
+
+    @staticmethod
+    def _transform_land_use_plan(feature, db_model):
+        fields = KLWFSTransformStep._extract_fields(feature['properties'], db_model)
+        fields["kl_id"] = fields.pop('id', None)  # Rename 'id' to 'kl_id' safely
+        return fields
+
+    @staticmethod
+    def _transform_sculpture(feature, db_model):
+        properties = KLWFSTransformStep.map_properties(feature['properties'], KLWFSTransformStep.SCULPTURE_MAP)
+        fields = KLWFSTransformStep._extract_fields(properties, db_model)
+        return fields
+
+    @staticmethod
+    def _transform_educational_institution(feature, db_model):
+        properties = KLWFSTransformStep.map_properties(feature['properties'], KLWFSTransformStep.EDUCATIONAL_INSTITUTION_MAP)
+        fields = KLWFSTransformStep._extract_fields(properties, db_model)
+        return fields

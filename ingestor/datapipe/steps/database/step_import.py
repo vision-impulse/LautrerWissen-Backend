@@ -69,5 +69,5 @@ class DatabaseImportStep(PipelineStep):
             logger.info("Successfully imported data")
             return True
         except Exception as e:
-            logger.error(f"Import failed for %s: %s", context.resource, exc_info=True)
+            logger.error("Import failed for %s", context.resource, exc_info=True)
             return False

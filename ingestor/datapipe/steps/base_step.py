@@ -56,6 +56,6 @@ class DefaultTransformStep(PipelineStep):
             context.set_data("rows", rows)
             return True
         except Exception as e:
-            logger.error("TransformStep failed for %s, (%s)", context.resource, exc_info=True)
+            logger.error("TransformStep failed for %s", context.resource, exc_info=True)
             raise Exception(e)
             return False
