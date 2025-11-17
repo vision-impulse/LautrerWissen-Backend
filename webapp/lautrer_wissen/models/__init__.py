@@ -24,6 +24,7 @@ from .elections.election_results import *
 from .demographics.demographic_data import *
 
 from .geo import osm, wikipedia, kl, infrastructure
+from .base_model import GenericGeoModel
 
 API_GEO_MODELS = [
     osm.OsmLeisurePlayground, osm.OsmLeisurePitch, osm.OsmSportTennis, osm.OsmSportBasketball,
@@ -44,6 +45,8 @@ API_GEO_MODELS = [
     kl.KLVacantLot, kl.KLParkingZone, kl.KLParkingLocation, kl.KLConstructionSite,
     kl.KLLandUsePlan, kl.KLEnvironmentalSensor, kl.KLCityDistrict, kl.KLSculpture, kl.KLEducationalInstitution, 
     kl.KLFieldtestMeasurements, kl.KLSensorGrafanaDashboard,
+
+    GenericGeoModel
 ]
 
 API_WIKI_MODLES = [

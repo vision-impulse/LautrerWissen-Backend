@@ -17,14 +17,15 @@
 
 from enum import Enum
 from dataclasses import dataclass, field
-from typing import List, Dict, Type
+from typing import List, Dict, Type, Optional
 
 
-@dataclass
+@dataclass(kw_only=True)
 class BaseResource:
     """Base class for all resources, containing common attributes."""
     data_source: str
     db_model_class: str
+    db_model_class_type: Optional[str] = None  
 
 
 @dataclass

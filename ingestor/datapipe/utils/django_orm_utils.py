@@ -24,6 +24,7 @@ from django.db import transaction
 from django.utils.timezone import now
 from django.contrib.gis.geos import GEOSGeometry
 from ingestor.datapipe.utils.django_integration import setup_django
+from typing import List, Dict, Callable
 
 logger = logging.getLogger("ingestor")
 setup_django()
@@ -40,9 +41,14 @@ class DjangoORMUtils:
         """
         ext_module = importlib.import_module(DjangoORMUtils.DJANGO_MODEL_PACKAGE)
         return getattr(ext_module, model_name)
-    
+
     @staticmethod
-    def bulk_insert_and_cleanup(django_model, db_model_rows: List[Dict], batch_size: int = 5000):
+    def bulk_insert_and_cleanup(
+        django_model,
+        db_model_rows: List[Dict],
+        modify_model_fields_func: Callable = None,
+        batch_size: int = 5000,
+    ):
         """
         Efficiently inserts records in bulk and removes outdated records using Django ORM.
 
@@ -58,29 +64,74 @@ class DjangoORMUtils:
         data_source = db_model_rows[0].get("data_source")
 
         # Prepare Django model instances
-        model_fields = [field.name for field in django_model._meta.fields if field.name not in ["id", "insert_timestamp"]]
+        model_fields = [
+            field.name
+            for field in django_model._meta.fields
+            if field.name not in ["id", "insert_timestamp"]
+        ]
+
+        if modify_model_fields_func:
+            db_model_rows = modify_model_fields_func(db_model_rows)
+            logger.info(db_model_rows)
 
         for row in db_model_rows:
             if "geometry" in row:
-                row["geometry"] = GEOSGeometry(shapely_to_wkt(row["geometry"]))  # convert shapely object
+                row["geometry"] = GEOSGeometry(
+                    shapely_to_wkt(row["geometry"])
+                )  # convert shapely object
 
         new_records = [
-            django_model(**{
-                **{field: row.get(field) for field in model_fields},
-                "insert_timestamp": insert_ts
-            })
+            django_model(
+                **{
+                    **{field: row.get(field) for field in model_fields},
+                    "insert_timestamp": insert_ts,
+                }
+            )
             for row in db_model_rows
         ]
 
         # Bulk insert using Django ORM
         for i in range(0, len(new_records), batch_size):
-            django_model.objects.bulk_create(new_records[i:i + batch_size], batch_size=batch_size)
+            django_model.objects.bulk_create(
+                new_records[i : i + batch_size], batch_size=batch_size
+            )
             logger.info("Inserted new records...")
 
         # Delete outdated records
         with transaction.atomic():
-            queryset = django_model.objects.filter(data_source=data_source).exclude(insert_timestamp=insert_ts)
+            if django_model.__name__ == "GenericGeoModel":
+                
+                if len(new_records) > 0:
+                    # Filter rows matching the data_source but with a different insert timestamp
+
+                    queryset = django_model.objects.filter(data_source=data_source).exclude(
+                        insert_timestamp=insert_ts
+                    )
+                    # Only keep rows of the same type as objects in the queryset
+                    #types_to_delete = queryset.values_list('type', flat=True).distinct()
+                    types_to_delete = [record.type for record in new_records]
+                    queryset = queryset.filter(type__in=types_to_delete)
+                    #queryset = queryset.filter(type__in=new_records[0]["type"])
+
+                    deleted_count, _ = queryset.delete()
+                    logger.info("Deleted %s outdated GenericGeoModel records of matching types.", deleted_count)
+            else:
+                # Original logic for other models
+                queryset = django_model.objects.filter(data_source=data_source).exclude(
+                    insert_timestamp=insert_ts
+                )
+                queryset |= django_model.objects.filter(data_source__isnull=True)
+                queryset |= django_model.objects.filter(data_source="")
+                deleted_count, _ = queryset.delete()
+                logger.info("Deleted %s outdated records.", deleted_count)
+        
+        """
+        with transaction.atomic():
+            queryset = django_model.objects.filter(data_source=data_source).exclude(
+                insert_timestamp=insert_ts
+            )
             queryset |= django_model.objects.filter(data_source__isnull=True)
             queryset |= django_model.objects.filter(data_source="")
             deleted_count, _ = queryset.delete()
             logger.info("Deleted %s outdated records.", deleted_count)
+        """

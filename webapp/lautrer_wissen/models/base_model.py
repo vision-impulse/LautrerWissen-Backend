@@ -33,3 +33,15 @@ class BaseModel(models.Model):
         "city_district_name": "Stadtteil",
         "data_acquisition_date": "Aktualisiert am ",
     }
+
+
+class GenericGeoModel(BaseModel):
+
+    name = models.CharField(max_length=255, null=True, blank=True)
+    type = models.CharField(max_length=255, blank=False, db_index=True)
+    geometry = models.GeometryField(null=True, blank=True)
+    
+    MAP_FIELDS = {
+        "name": "Name",
+        "type": "model_type",
+    }

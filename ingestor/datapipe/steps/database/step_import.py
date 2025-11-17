@@ -23,6 +23,23 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+from copy import deepcopy
+from typing import List, Dict
+
+def add_model_type(model_type: str):
+    """
+    Returns a function that will add {"type": model_type} to each row dict.
+    The transformer returns a NEW list with new dicts (deepcopied).
+    """
+    def transform(rows: List[Dict]) -> List[Dict]:
+        out = []
+        for row in rows:
+            r = deepcopy(row)
+            r["type"] = model_type
+            out.append(r)
+        return out
+    return transform
+
 class DatabaseImportStep(PipelineStep):
 
     def __init__(self):
@@ -36,11 +53,17 @@ class DatabaseImportStep(PipelineStep):
             )
             db_model_name = context.resource.db_model_class
             db_model_rows = context.get_data("rows")
+            db_model_class_type = context.resource.db_model_class_type
+
+            transform_func = None
+            if db_model_class_type and db_model_name == "GenericGeoModel":
+                transform_func = add_model_type(db_model_class_type)
 
             logger.info("Importing data: %s", context.resource)
             DjangoORMUtils.bulk_insert_and_cleanup(
                 django_model=DjangoORMUtils.get_django_model_class(db_model_name),
                 db_model_rows=db_model_rows,
+                modify_model_fields_func=transform_func,
                 batch_size=5000,
             )
             logger.info("Successfully imported data")

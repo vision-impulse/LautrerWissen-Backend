@@ -64,6 +64,7 @@ class BaseResource(models.Model):
     )
     data_source = models.CharField(max_length=255)
     db_model_class = models.CharField(max_length=255)
+    db_model_class_type = models.CharField(max_length=255, blank=True, null=True)
     active = models.BooleanField(default=True)
 
     class Meta:
