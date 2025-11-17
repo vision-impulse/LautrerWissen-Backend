@@ -16,7 +16,7 @@ qrcode==7.4.1
 pillow==11.2.1
 reportlab==4.4.1
 django-jazzmin==3.0.1
-pandas
+pandas==2.2.3
 beautifulsoup4==4.13.3
 GeoAlchemy2==0.15.2
 geopandas==1.0.0
