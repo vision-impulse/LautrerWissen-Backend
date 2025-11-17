@@ -19,6 +19,7 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from datetime import datetime
 from ingestor.datapipe.utils.django_integration import get_django_model
+from django.utils import timezone
 
 
 class PipelineContext:
@@ -73,7 +74,7 @@ class BasePipeline(ABC):
                             run=self.run_record,
                             step_name=step.__class__.__name__,
                             status="running",
-                            started_at=datetime.now(),
+                            started_at=timezone.now(),
                         )
                     except Exception as e:
                         self.logger.warning(f"Could not log step in DB: {e}")
@@ -81,7 +82,7 @@ class BasePipeline(ABC):
                     success = step.execute(context)
                     if step_record:
                         step_record.status = "success" if success else "failed"
-                        step_record.finished_at = datetime.now()
+                        step_record.finished_at = timezone.now()
                         step_record.save(update_fields=["status", "finished_at"])
                     if not success:
                         self.logger.error(
@@ -93,7 +94,7 @@ class BasePipeline(ABC):
                     if step_record:
                         step_record.status = "failed"
                         step_record.message = str(exc)
-                        step_record.finished_at = datetime.now()
+                        step_record.finished_at = timezone.now()
                         step_record.save(
                             update_fields=["status", "message", "finished_at"]
                         )
