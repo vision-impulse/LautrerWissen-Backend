@@ -42,18 +42,18 @@ class OSMTransformStep(DefaultTransformStep):
         gdf = gpd.read_file(download_file)
 
         gdf = gdf[gdf.geometry.type.isin(["Point", "Polygon", "MultiPolygon"])]
-
-        if context.resource.filename == "osm_amenity_recycling_center.geojson":
+        
+        if db_model.__name__ == "OsmRecyclingCenter":
             gdf = gdf[gdf['recycling_type'] == 'centre']
-        if context.resource.filename == "osm_amenity_recycling_container.geojson":
+        elif db_model.__name__ == "OsmRecyclingContainer":
             gdf = gdf[gdf['recycling_type'] == 'container']
-        if context.resource.filename == "osm_leisure_sports_centre__climbing.geojson":
+        elif db_model.__name__ == "OsmSportCenterClimbing":
             gdf = gdf[gdf['sport'] == 'climbing']
-        if context.resource.filename == "osm_leisure_sports_centre__swimming.geojson":
+        elif db_model.__name__ == "OsmSportCenterSwimming":
             gdf = gdf[gdf['sport'] == 'swimming']
-        if context.resource.filename == "osm_amenity_vending_machine__parking_ticket.geojson":
+        elif db_model.__name__ == "OsmVendingMachineParkingTicket":
             gdf = gdf[gdf['vending'] == 'parking_tickets']
-        if context.resource.filename == "osm_amenity_vending_machine__excrement_bag.geojson":
+        elif db_model.__name__ == "OsmVendingMachineDogToilet":
             gdf = gdf[gdf['vending'] == 'excrement_bags']
 
         rows_as_dict = gdf.to_dict(orient='records')

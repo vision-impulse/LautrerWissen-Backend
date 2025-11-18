@@ -15,14 +15,16 @@
 #
 # Authors: Benjamin Bischke
 
-from ingestor.datapipe.steps.base_step import DefaultTransformStep
-from datetime import datetime
-import pandas as pd
-from datetime import datetime
-import json
-from shapely.geometry import shape, mapping, Polygon, MultiPolygon
 import os
+import json
+import logging
+import pandas as pd
+
+from ingestor.datapipe.steps.base_step import DefaultTransformStep
 from ingestor.utils.geo_districts import CityDistrictsDecoder
+from shapely.geometry import shape, mapping, Polygon, MultiPolygon
+
+logger = logging.getLogger(__name__)
 
 
 class KLGeoResourceTransformStep(DefaultTransformStep):
@@ -30,16 +32,17 @@ class KLGeoResourceTransformStep(DefaultTransformStep):
     def __init__(self):
         super(KLGeoResourceTransformStep, self).__init__()
         self.model_handlers = {
-            "kl_parking_locations.geojson": KLGeoResourceTransformStep._transform_parking_location,
-            "kl_parking_zones.geojson": KLGeoResourceTransformStep._transform_parking_zone,
-            "kl_city_districts.geojson": KLGeoResourceTransformStep._transform_city_district
+            "KLParkingLocation": KLGeoResourceTransformStep._transform_parking_location,
+            "KLParkingZone": KLGeoResourceTransformStep._transform_parking_zone,
+            "KLCityDistrict": KLGeoResourceTransformStep._transform_city_district
         }
 
     def transform(self, context, db_model, data_acquisition_date):
         download_file = os.path.join(context.out_dir, context.resource.filename)
-        transform_func = self.model_handlers.get(context.resource.filename)
-        if not transform_func:
-            raise ValueError(f"Unsupported model: {db_model}")
+        transform_func = self.model_handlers.get(db_model.__name__, None)
+        if transform_func is None:
+            logger.info("Unsupported model: %s", db_model)
+            return []
 
         result = []
         with open(download_file) as f:

@@ -29,10 +29,32 @@ from datetime import datetime
 from ingestor.apis.wikipedia.wiki_dataframe import WikipediaDataframeColumns as WikiDFColumns
 from ingestor.utils.geo_districts import CityDistrictsDecoder
 
+import logging
+logger = logging.getLogger(__name__)
+
+
+def parse_int_or_default(value, default=-1):
+    if value is None:
+        return default
+
+    if isinstance(value, (int, float)):
+        return int(value)
+
+    if isinstance(value, str):
+        value = value.strip()
+        if value == "":
+            return default
+        try:
+            return int(float(value))
+        except ValueError:
+            return default
+    return default
+
 
 class WikiTransformStep(DefaultTransformStep):
 
     def transform(self, context, db_model, data_acquisition_date):
+        isFishSculptureModel = db_model.__name__ == 'WikiFishSculpture'
 
         result = []
         for fn in context.resource.table_filenames:
@@ -49,11 +71,10 @@ class WikiTransformStep(DefaultTransformStep):
                 loc = tuple(list(row[WikiDFColumns.ADDRESS_LOCATION.value]))
                 row["geometry"] = Point(loc[1], loc[0])  # lng, lat
 
-                if context.resource.table_filenames[0] == "wiki_fish_sculptures.csv":
+                if isFishSculptureModel:
+                    row["number"] = parse_int_or_default(row["number"], 9999)
                     row["address"] = row["address_name"]
                     del row["address_name"]
-                    if row["number"] == "":
-                        row["number"] = -1
                 else:
                     row["address"] = row[WikiDFColumns.ADDRESS_TEXT.value]# "loc_address_text"
 
