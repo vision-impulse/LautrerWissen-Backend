@@ -20,12 +20,79 @@ from ..base_model import BaseModel
 
 
 class OsmBaseLocation(BaseModel):
+    geometry = models.GeometryField(null=True, blank=True)
+    
+    class Meta:
+        abstract = True
+
+
+class OsmBaseLocationNamed(BaseModel):
     name = models.CharField(max_length=255, null=True, blank=True)
     website = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
 
     class Meta:
         abstract = True
+
+
+class OsmAdvertisingColumn(OsmBaseLocation):
+    VISIBLE_OBJECT_NAME = "Litfaßsäule"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OsmVolleyball(OsmBaseLocation):
+    VISIBLE_OBJECT_NAME = "Volleyballfeld"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OsmVendingMachineDogToilet(OsmBaseLocation):
+    VISIBLE_OBJECT_NAME = "Hundekotbeutel"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OSMAmenityBench(OsmBaseLocation):
+    VISIBLE_OBJECT_NAME = "Sitzbank"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OsmCemetery(OsmBaseLocationNamed):
+    VISIBLE_OBJECT_NAME = "Friedhof"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OsmCinema(OsmBaseLocationNamed):
+    VISIBLE_OBJECT_NAME = "Kino"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OsmCopyshop(OsmBaseLocationNamed):
+    VISIBLE_OBJECT_NAME = "Kopiershop"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OsmZoo(OsmBaseLocationNamed):
+    VISIBLE_OBJECT_NAME = "Zoo"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OsmEscapegame(OsmBaseLocationNamed):
+    VISIBLE_OBJECT_NAME = "Escape-Room"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OsmMiniatureGolf(OsmBaseLocationNamed):
+    VISIBLE_OBJECT_NAME = "Minigolf"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OsmMusicSchool(OsmBaseLocationNamed):
+    VISIBLE_OBJECT_NAME = "Musikschule"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
+
+
+class OsmDrivingSchool(OsmBaseLocationNamed):
+    VISIBLE_OBJECT_NAME = "Fahrschule"
+    MAP_FIELDS = BaseModel.MAP_FIELDS
 
 
 class OsmNaturalTrees(BaseModel):
@@ -58,7 +125,6 @@ class OsmLeisurePlayground(BaseModel):
         "operator": "Betreiber",
         **BaseModel.MAP_FIELDS, 
     }
-
     access = models.CharField(max_length=255, null=True, blank=True)
     leisure = models.CharField(max_length=255, null=True, blank=True)
     wheelchair = models.CharField(max_length=255, null=True, blank=True)
@@ -79,7 +145,6 @@ class OsmLeisurePitch(BaseModel):
         "operator": "Betreiber",
         **BaseModel.MAP_FIELDS, 
     }
-
     access = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -93,7 +158,6 @@ class OsmSportTennis(BaseModel):
         "name": "Name",
         **BaseModel.MAP_FIELDS, 
     }
-
     name = models.CharField(max_length=255, null=True, blank=True)
     website = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField()
@@ -112,23 +176,16 @@ class OsmSportSoccer(BaseModel):
     access = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField()
 
+
 class OsmSportBasketball(BaseModel):
     VISIBLE_OBJECT_NAME = "Basketballplatz"
     MAP_FIELDS = {
         "name": "Name",
         **BaseModel.MAP_FIELDS, 
     }
-
     sport = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField()
-
-
-class OSMAmenityBench(BaseModel):
-    VISIBLE_OBJECT_NAME = "Sitzbank"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-    geometry = models.GeometryField(null=True, blank=True)
 
 
 class OsmAmenityToilets(BaseModel):
@@ -141,7 +198,6 @@ class OsmAmenityToilets(BaseModel):
         "fee": "Gebühr",
         **BaseModel.MAP_FIELDS, 
     }
-
     access = models.CharField(max_length=255, null=True, blank=True)
     fee = models.CharField(max_length=255, null=True, blank=True)
     payment_coins = models.CharField(max_length=255, null=True, blank=True)
@@ -164,7 +220,6 @@ class OsmAmenityWasteBasket(BaseModel):
         "data_source": "Datenquelle",
         "data_acquisition_date": "Datenstand"
     }
-
     waste_basket_count = models.IntegerField(null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
 
@@ -189,7 +244,6 @@ class OsmParcelLocker(BaseModel):
         "postal_code": "Postleitzahl",
         **BaseModel.MAP_FIELDS, 
     }
-
     brand = models.CharField(max_length=255, null=True, blank=True)
     operator = models.CharField(max_length=255, null=True, blank=True)
     parcel_mail_in = models.CharField(max_length=255, null=True, blank=True)
@@ -221,7 +275,6 @@ class OsmBicycleRental(BaseModel):
         "capacity": "Kapazität",
         **BaseModel.MAP_FIELDS, 
     }
-
     brand = models.CharField(max_length=255, null=True, blank=True)
     operator = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
@@ -237,7 +290,6 @@ class OsmCarRental(BaseModel):
         "name": "Name",
         **BaseModel.MAP_FIELDS, 
     }
-
     brand = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
@@ -253,7 +305,6 @@ class OsmBicycleRepairStation(BaseModel):
         "valves": "Ventile",
         **BaseModel.MAP_FIELDS, 
     }
-
     service_bicycle_pump = models.CharField(max_length=255, null=True, blank=True)
     service_bicycle_stand = models.CharField(max_length=255, null=True, blank=True)
     service_bicycle_tools = models.CharField(max_length=255, null=True, blank=True)
@@ -265,14 +316,12 @@ class OsmBicycleRepairStation(BaseModel):
 class OsmRecyclingContainer(BaseModel):
     VISIBLE_OBJECT_NAME = "Recycling-Container"
     MAP_FIELDS = {
-        #"recycling_glass": "Glas",
         "operator": "Betreiber",
         "recycling_glass_bottles": "Glasflaschen",
         "recycling_clothes": "Kleider",
         "recycling_shoes": "Schuhe",
         **BaseModel.MAP_FIELDS, 
     }
-
     recycling_glass = models.CharField(max_length=255, null=True, blank=True)
     recycling_glass_bottles = models.CharField(max_length=255, null=True, blank=True)
     recycling_type = models.CharField(max_length=255, null=True, blank=True)
@@ -294,7 +343,6 @@ class OsmRecyclingCenter(BaseModel):
         "addr_postcode": "Postleitzahl",
         **BaseModel.MAP_FIELDS, 
     }
-
     operator = models.CharField(max_length=255, null=True, blank=True)
     opening_hours = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -315,7 +363,6 @@ class OsmBicycleParking(BaseModel):
         "fee": "Gebühr",
         **BaseModel.MAP_FIELDS, 
     }
-
     bicycle_parking = models.CharField(max_length=255, null=True, blank=True)
     capacity = models.CharField(max_length=255, null=True, blank=True)
     covered = models.CharField(max_length=255, null=True, blank=True)
@@ -325,14 +372,12 @@ class OsmBicycleParking(BaseModel):
 
 class OsmAmenityParking(BaseModel):
     VISIBLE_OBJECT_NAME = "Parkplatz"
-
     MAP_FIELDS = {
         "access": "Zugang",
         "capacity_disabled": "Kapazität Behindertenparkplätze",
         "wheelchair": "Barrierefrei",
         **BaseModel.MAP_FIELDS, 
     }
-
     access = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     wheelchair = models.CharField(max_length=255, null=True, blank=True)
@@ -342,46 +387,6 @@ class OsmAmenityParking(BaseModel):
     geometry = models.GeometryField(null=True, blank=True)
 
 
-class OsmCemetery(OsmBaseLocation):
-    VISIBLE_OBJECT_NAME = "Friedhof"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-
-class OsmCinema(OsmBaseLocation):
-    VISIBLE_OBJECT_NAME = "Kino"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-
-class OsmCopyshop(OsmBaseLocation):
-    VISIBLE_OBJECT_NAME = "Kopiershop"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-
-class OsmZoo(OsmBaseLocation):
-    VISIBLE_OBJECT_NAME = "Zoo"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-
-class OsmEscapegame(OsmBaseLocation):
-    VISIBLE_OBJECT_NAME = "Escape-Room"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-
-class OsmMiniatureGolf(OsmBaseLocation):
-    VISIBLE_OBJECT_NAME = "Minigolf"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-
-class OsmMusicSchool(OsmBaseLocation):
-    VISIBLE_OBJECT_NAME = "Musikschule"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-
-class OsmDrivingSchool(OsmBaseLocation):
-    VISIBLE_OBJECT_NAME = "Fahrschule"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-
 class OsmLeisureDance(BaseModel):
     VISIBLE_OBJECT_NAME = "Tanzschule"
     MAP_FIELDS = {
@@ -389,11 +394,11 @@ class OsmLeisureDance(BaseModel):
         "contact_webseite": "Webseite",
         **BaseModel.MAP_FIELDS, 
     }
-
     name = models.CharField(max_length=255, null=True, blank=True)
     dance_teaching = models.CharField(max_length=10, null=True, blank=True)
     contact_webseite = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
+
 
 class OsmNatureReserve(BaseModel):
     VISIBLE_OBJECT_NAME = "Naturschutzgebiet"
@@ -404,17 +409,6 @@ class OsmNatureReserve(BaseModel):
     name = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
 
-class OsmAdvertisingColumn(BaseModel):
-    VISIBLE_OBJECT_NAME = "Litfaßsäule"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-    geometry = models.GeometryField(null=True, blank=True)
-
-class OsmVolleyball(BaseModel):
-    VISIBLE_OBJECT_NAME = "Volleyballfeld"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-
-    geometry = models.GeometryField(null=True, blank=True)
 
 class OsmVendingMachineParkingTicket(BaseModel):
     VISIBLE_OBJECT_NAME = "Parkscheinautomat"
@@ -426,11 +420,6 @@ class OsmVendingMachineParkingTicket(BaseModel):
     operator = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
 
-class OsmVendingMachineDogToilet(BaseModel):
-    VISIBLE_OBJECT_NAME = "Hundekotbeutel"
-    MAP_FIELDS = BaseModel.MAP_FIELDS
-    
-    geometry = models.GeometryField(null=True, blank=True)
 
 class OsmSportCenterSwimming(BaseModel):
     VISIBLE_OBJECT_NAME = "Schwimmbad"
@@ -438,10 +427,10 @@ class OsmSportCenterSwimming(BaseModel):
         "name": "Name",
         **BaseModel.MAP_FIELDS, 
     }
-
     sport = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
+
 
 class OsmSportCenterClimbing(BaseModel):
     VISIBLE_OBJECT_NAME = "Kletterhalle"
@@ -450,7 +439,6 @@ class OsmSportCenterClimbing(BaseModel):
         "website": "Website",
         **BaseModel.MAP_FIELDS, 
     }
-
     sport = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     website = models.CharField(max_length=255, null=True, blank=True)
@@ -466,6 +454,7 @@ class OsmLandUseMilitary(BaseModel):
     name = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
 
+
 class OsmLeisureDogPark(BaseModel):
     VISIBLE_OBJECT_NAME = "Hundewiese"
     MAP_FIELDS = {
@@ -476,6 +465,3 @@ class OsmLeisureDogPark(BaseModel):
     name = models.CharField(max_length=255, null=True, blank=True)
     website = models.CharField(max_length=255, null=True, blank=True)
     geometry = models.GeometryField(null=True, blank=True)
-
-
-
