@@ -128,7 +128,7 @@ class PipelineAdmin(BasePipelineAdmin):
         inlines = []
         if obj.name == PipelineType.OSM.name:
             inlines = [ResourceOSMInline]
-        elif obj.name == PipelineType.KL_GEO_WFS.name:
+        elif obj.name == PipelineType.GEO_WFS.name:
             inlines = [ResourceWFSFileInline]
         elif obj.name == PipelineType.WIKIPEDIA.name:
             inlines = [ResourceWikipageInline]
@@ -140,10 +140,10 @@ class PipelineAdmin(BasePipelineAdmin):
             PipelineType.WIFI_FREIFUNK.name,
             PipelineType.VRN.name,
             PipelineType.EV_STATIONS.name,
-            PipelineType.KL_EVENTS.name,
-            PipelineType.KL_GEO_RESOURCES.name,
+            PipelineType.EVENTS_MIADI.name,
+            PipelineType.EXTERNAL_GEO_RESOURCES.name,
             PipelineType.EMERGENCY_POINTS.name,
-            PipelineType.KL_EVENTS_RIS.name,
+            PipelineType.EVENTS_RIS.name,
         ]:
             inlines = [RemoteResourceFileInline]
 
