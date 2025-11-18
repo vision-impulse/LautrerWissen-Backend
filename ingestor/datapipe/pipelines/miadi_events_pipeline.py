@@ -15,22 +15,22 @@
 #
 # Authors: Benjamin Bischke
 
-from ingestor.apis.wfs.wfs import WFSDownloader
+from ingestor.apis.miadi.event_calendar import EventCalendarDownloader
 from ..steps.download.step_download import DownloadStepFactory
-from ..steps.transforms.kl_wfs import KLWFSTransformStep
+from ..steps.transforms.miadi_events import MiadiEventsTransformStep
 from ..steps.database.step_import import DatabaseImportStep
-from ..pipelines.base_pipeline import BasePipeline
+from .base_pipeline import BasePipeline
 
 
-class WFSPipeline(BasePipeline):
-    """Pipeline for WFS-Service data."""
+class MiadiEventsPipeline(BasePipeline):
+    """Pipeline for Event data (Miadi API)."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
         return [
-            DownloadStepFactory.create(WFSDownloader),
-            KLWFSTransformStep(),
+            DownloadStepFactory.create(EventCalendarDownloader),
+            MiadiEventsTransformStep(),
             DatabaseImportStep(),
         ]

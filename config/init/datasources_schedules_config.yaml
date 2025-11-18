@@ -1,19 +1,19 @@
 pipelines:
-  - name: KL_EVENTS
+  - name: EVENTS_MIADI
     cron_expression: "0 1 * * *"
-  - name: KL_EVENTS_RIS
+  - name: EVENTS_RIS
     cron_expression: "1 1 * * *"
-  - name: WGA_EVENTS
+  - name: EVENTS_WGA
     cron_expression: "2 1 * * *"
   - name: TTN_GATEWAY
     cron_expression: "3 1 * * *"
   - name: WIFI_FREIFUNK
     cron_expression: "4 1 * * *"
-  - name: KL_SENSOR_RESOURCES
+  - name: MQTT_SENSOR_RESOURCES
     cron_expression: "5 1 * * *"
-  - name: KL_GEO_RESOURCES
+  - name: EXTERNAL_GEO_RESOURCES
     cron_expression: "6 1 * * *"
-  - name: KL_GEO_WFS
+  - name: GEO_WFS
     cron_expression: "8 1 * * *"
   - name: OSM
     cron_expression: "10 1 * * *"

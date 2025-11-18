@@ -21,29 +21,18 @@ import pandas as pd
 import os
 
 
-class KLEventsTransformStep(DefaultTransformStep):
+class RisEventsTransformStep(DefaultTransformStep):
 
     def transform(self, context, db_model, data_acquisition_date):
         download_file = os.path.join(context.out_dir, context.resource.filename)
         result = []
-
         df = pd.read_csv(download_file, sep=";")
         df = df.drop(columns=['Unnamed: 0', 'index'])
         rows_as_dict = df.to_dict(orient='records')
         for row in rows_as_dict:
-            row["event_id"] = row["id"]
-            row["dstart"] = datetime.strptime(row["dstart"], '%d.%m.%Y %H:%M:%S')
-            row["dend"] = datetime.strptime(row["dend"], '%d.%m.%Y %H:%M:%S')
-            row["created"] = datetime.strptime(row["created"], '%d.%m.%Y %H:%M:%S')
-            row["updated"] = datetime.strptime(row["updated"], '%d.%m.%Y %H:%M:%S')
-            row = {k: self._clean_nan(v) for k, v in row.items()}
-
+            row["date"] = datetime.strptime(row["date"], "%d.%m.%Y").date()
             row["city_district_name"] = ""  # check
             row["data_source"] = context.resource.data_source
             row["data_acquisition_date"] = data_acquisition_date
             result.append(row)
         return result
-
-    def _clean_nan(self, value):
-        return None if pd.isna(value) else value
-

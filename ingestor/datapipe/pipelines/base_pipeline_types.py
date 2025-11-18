@@ -70,31 +70,31 @@ class ResourceWikipage(BaseResource):
 class PipelineType(Enum):
     OSM = "osm_pipeline"
     WIKIPEDIA = "wiki_pipeline"
-    KL_GEO_WFS = "kl_wfs_pipeline"
-    KL_SENSOR_RESOURCES = "kl_sensors_mqtt_pipeline"
+    GEO_WFS = "kl_wfs_pipeline"
+    MQTT_SENSOR_RESOURCES = "kl_sensors_mqtt_pipeline"
     EMERGENCY_POINTS = "emergency_point_pipeline"
     EV_STATIONS = "ev_pipeline"
-    KL_EVENTS = "kl_event_calendar_pipeline"
-    KL_EVENTS_RIS = "kl_event_ris_calendar_pipeline"
-    KL_GEO_RESOURCES = "kl_geo_pipeline"
+    EXTERNAL_GEO_RESOURCES = "kl_geo_pipeline"
+    EVENTS_MIADI = "kl_event_calendar_pipeline"
+    EVENTS_RIS = "kl_event_ris_calendar_pipeline"
+    EVENTS_WGA = "was_geht_app_pipeline"
     WIFI_FREIFUNK = "wifi_freifunk_pipeline"
     WIFI_LOCAL = "wifi_myspot_empera_pipeline"
-    WGA_EVENTS = "was_geht_app_pipeline"
     TTN_GATEWAY = "ttn_gateway_pipeline"
     VRN = "vrn_pipeline"
 
 
 PIPELINE_RESOURCE_MAP = {
-    PipelineType.KL_GEO_WFS: ResourceWFSFile,
+    PipelineType.GEO_WFS: ResourceWFSFile,
     PipelineType.WIKIPEDIA: ResourceWikipage,
-    PipelineType.KL_SENSOR_RESOURCES: LocalResourceFile,
+    PipelineType.MQTT_SENSOR_RESOURCES: LocalResourceFile,
     PipelineType.EMERGENCY_POINTS: RemoteResourceFile,
     PipelineType.EV_STATIONS: RemoteResourceFile,
-    PipelineType.KL_EVENTS: RemoteResourceFile,
-    PipelineType.KL_EVENTS_RIS:RemoteResourceFile,
-    PipelineType.KL_GEO_RESOURCES: RemoteResourceFile,
+    PipelineType.EVENTS_MIADI: RemoteResourceFile,
+    PipelineType.EVENTS_RIS:RemoteResourceFile,
+    PipelineType.EXTERNAL_GEO_RESOURCES: RemoteResourceFile,
     PipelineType.WIFI_FREIFUNK: RemoteResourceFile,
-    PipelineType.WGA_EVENTS: RemoteResourceFile,
+    PipelineType.EVENTS_WGA: RemoteResourceFile,
     PipelineType.TTN_GATEWAY: RemoteResourceFile,
     PipelineType.VRN: RemoteResourceFile,
     PipelineType.WIFI_LOCAL: LocalResourceFile,

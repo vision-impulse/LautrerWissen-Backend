@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 SENSOR_TYPE_CONFIG_PATH = "/config/init/sensor_types.yaml"
 
 
-class KLSensorsTransformStep(DefaultTransformStep):
+class MQTTSensorsTransformStep(DefaultTransformStep):
     """Sensor-specific transform step."""
 
     SENSOR_TYPES = [
@@ -50,7 +50,7 @@ class KLSensorsTransformStep(DefaultTransformStep):
     ]
 
     def __init__(self):
-        super(KLSensorsTransformStep, self).__init__()
+        super(MQTTSensorsTransformStep, self).__init__()
         self.sensor_type_map = self._load_sensor_type_map()
 
     def transform(self, context, db_model, data_acquisition_date):

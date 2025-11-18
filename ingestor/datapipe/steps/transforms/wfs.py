@@ -41,7 +41,7 @@ def parse_date(construction_str: str) -> date | None:
         return None
 
 
-class KLWFSTransformStep(DefaultTransformStep):
+class WFSTransformStep(DefaultTransformStep):
     """WFS-specific transform step."""
 
     EDUCATIONAL_INSTITUTION_MAP = {
@@ -70,13 +70,13 @@ class KLWFSTransformStep(DefaultTransformStep):
     }
 
     def __init__(self):
-        super(KLWFSTransformStep, self).__init__()
+        super(WFSTransformStep, self).__init__()
         self.model_handlers = {
-            "KLVacantLot": KLWFSTransformStep._transform_vacant_lot,
-            "KLConstructionSite": KLWFSTransformStep._transform_construction_site,
-            "KLLandUsePlan": KLWFSTransformStep._transform_land_use_plan,
-            "KLEducationalInstitution": KLWFSTransformStep._transform_educational_institution,
-            "KLSculpture": KLWFSTransformStep._transform_sculpture,
+            "KLVacantLot": WFSTransformStep._transform_vacant_lot,
+            "KLConstructionSite": WFSTransformStep._transform_construction_site,
+            "KLLandUsePlan": WFSTransformStep._transform_land_use_plan,
+            "KLEducationalInstitution": WFSTransformStep._transform_educational_institution,
+            "KLSculpture": WFSTransformStep._transform_sculpture,
         }
 
     def transform(self, context, db_model, data_acquisition_date):
@@ -99,7 +99,7 @@ class KLWFSTransformStep(DefaultTransformStep):
             if transform_func is not None:
                 transformed_data = transform_func(feature, db_model)
 
-            geometry = KLWFSTransformStep._convert_geometry(feature['geometry'])    
+            geometry = WFSTransformStep._convert_geometry(feature['geometry'])    
             transformed_data["geometry"] = geometry
             transformed_data["city_district_name"] = CityDistrictsDecoder.get_district_name_for_geometry(geometry)
             transformed_data["data_source"] = context.resource.data_source
@@ -137,7 +137,6 @@ class KLWFSTransformStep(DefaultTransformStep):
                 [[coord[0], coord[1]] for coord in ring]
                 for ring in geometry.get("coordinates", [])
             ]
-
             # Assuming a single ring (outer boundary)
             return Polygon(coordinates_2d[0])
 
@@ -149,30 +148,30 @@ class KLWFSTransformStep(DefaultTransformStep):
 
     @staticmethod
     def _transform_vacant_lot(feature, db_model):
-        fields = KLWFSTransformStep._extract_fields(feature['properties'], db_model)
+        fields = WFSTransformStep._extract_fields(feature['properties'], db_model)
         return fields
 
     @staticmethod
     def _transform_construction_site(feature, db_model):
-        fields = KLWFSTransformStep._extract_fields(feature['properties'], db_model)
+        fields = WFSTransformStep._extract_fields(feature['properties'], db_model)
         fields['baustart'] = parse_date(fields["baustart"])
         fields['bauende'] = parse_date(fields["bauende"])
         return fields
 
     @staticmethod
     def _transform_land_use_plan(feature, db_model):
-        fields = KLWFSTransformStep._extract_fields(feature['properties'], db_model)
+        fields = WFSTransformStep._extract_fields(feature['properties'], db_model)
         fields["kl_id"] = fields.pop('id', None)  # Rename 'id' to 'kl_id' safely
         return fields
 
     @staticmethod
     def _transform_sculpture(feature, db_model):
-        properties = KLWFSTransformStep.map_properties(feature['properties'], KLWFSTransformStep.SCULPTURE_MAP)
-        fields = KLWFSTransformStep._extract_fields(properties, db_model)
+        properties = WFSTransformStep.map_properties(feature['properties'], WFSTransformStep.SCULPTURE_MAP)
+        fields = WFSTransformStep._extract_fields(properties, db_model)
         return fields
 
     @staticmethod
     def _transform_educational_institution(feature, db_model):
-        properties = KLWFSTransformStep.map_properties(feature['properties'], KLWFSTransformStep.EDUCATIONAL_INSTITUTION_MAP)
-        fields = KLWFSTransformStep._extract_fields(properties, db_model)
+        properties = WFSTransformStep.map_properties(feature['properties'], WFSTransformStep.EDUCATIONAL_INSTITUTION_MAP)
+        fields = WFSTransformStep._extract_fields(properties, db_model)
         return fields

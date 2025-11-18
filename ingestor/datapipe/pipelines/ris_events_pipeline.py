@@ -15,22 +15,22 @@
 #
 # Authors: Benjamin Bischke
 
-from ingestor.apis.miadi.event_calendar import EventCalendarDownloader
+from ingestor.apis.ris.council_calendar import CouncilCalendarDownloader
 from ..steps.download.step_download import DownloadStepFactory
-from ..steps.transforms.kl_events import KLEventsTransformStep
+from ..steps.transforms.ris_events import RisEventsTransformStep
 from ..steps.database.step_import import DatabaseImportStep
-from ..pipelines.base_pipeline import BasePipeline
+from .base_pipeline import BasePipeline
 
 
-class KLEventsPipeline(BasePipeline):
-    """Pipeline for Event data."""
+class RisEventsPipeline(BasePipeline):
+    """Pipeline for RIS data."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
         return [
-            DownloadStepFactory.create(EventCalendarDownloader),
-            KLEventsTransformStep(),
+            DownloadStepFactory.create(CouncilCalendarDownloader),
+            RisEventsTransformStep(),
             DatabaseImportStep(),
         ]

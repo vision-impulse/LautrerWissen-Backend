@@ -15,22 +15,22 @@
 #
 # Authors: Benjamin Bischke
 
-from ingestor.apis.mqtt.mqtt_static_sensors import MQTTInitialSensorsDownloader
+from ingestor.apis.wfs.wfs import WFSDownloader
 from ..steps.download.step_download import DownloadStepFactory
-from ..steps.transforms.kl_sensors import KLSensorsTransformStep
+from ..steps.transforms.wfs import WFSTransformStep
 from ..steps.database.step_import import DatabaseImportStep
-from ..pipelines.base_pipeline import BasePipeline
+from .base_pipeline import BasePipeline
 
 
-class KLSensorsPipeline(BasePipeline):
-    """Pipeline for Sensor data from MQTT-Queues."""
+class WFSPipeline(BasePipeline):
+    """Pipeline for WFS-Service data."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
         return [
-            DownloadStepFactory.create(MQTTInitialSensorsDownloader),
-            KLSensorsTransformStep(),
+            DownloadStepFactory.create(WFSDownloader),
+            WFSTransformStep(),
             DatabaseImportStep(),
         ]

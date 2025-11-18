@@ -35,15 +35,15 @@ def validate_cron_expression(value):
         )
 
 class PipelineType(Enum):
-    KL_EVENTS = "Veranstaltungen (MIADI) Import"
-    WGA_EVENTS = "Veranstaltungen (Was Geht App?) Import"
-    KL_EVENTS_RIS = "Ratsveranstaltungen (RSS) Import"
-    KL_GEO_WFS = "Geodaten WFS Import"
-    KL_GEO_RESOURCES = "Geodaten Import"
-    KL_SENSOR_RESOURCES = "Sensor (MQTT) Import"
+    EVENTS_MIADI = "Veranstaltungen (MIADI) Import"
+    EVENTS_WGA = "Veranstaltungen (Was Geht App?) Import"
+    EVENTS_RIS = "Ratsveranstaltungen (RSS) Import"
+    EXTERNAL_GEO_RESOURCES = "Geodaten Import"
+    EV_STATIONS = "E-Ladestationen Import"
+    GEO_WFS = "Geodaten WFS Import"
+    MQTT_SENSOR_RESOURCES = "Sensor (MQTT) Import"
     WIFI_FREIFUNK = "Wifi Freifunk Import"
     WIFI_LOCAL = "Wifi (lokale Daten) Import"
-    EV_STATIONS = "E-Ladestationen Import"
     VRN = "VRN Haltestellen Import"
     OSM = "Open Street Map Import"
     WIKIPEDIA = "Wikipedia Import"

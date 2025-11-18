@@ -27,14 +27,14 @@ from shapely.geometry import shape, mapping, Polygon, MultiPolygon
 logger = logging.getLogger(__name__)
 
 
-class KLGeoResourceTransformStep(DefaultTransformStep):
+class ExternalGeoResourceTransformStep(DefaultTransformStep):
 
     def __init__(self):
-        super(KLGeoResourceTransformStep, self).__init__()
+        super(ExternalGeoResourceTransformStep, self).__init__()
         self.model_handlers = {
-            "KLParkingLocation": KLGeoResourceTransformStep._transform_parking_location,
-            "KLParkingZone": KLGeoResourceTransformStep._transform_parking_zone,
-            "KLCityDistrict": KLGeoResourceTransformStep._transform_city_district
+            "KLParkingLocation": ExternalGeoResourceTransformStep._transform_parking_location,
+            "KLParkingZone": ExternalGeoResourceTransformStep._transform_parking_zone,
+            "KLCityDistrict": ExternalGeoResourceTransformStep._transform_city_district
         }
 
     def transform(self, context, db_model, data_acquisition_date):
@@ -76,7 +76,7 @@ class KLGeoResourceTransformStep(DefaultTransformStep):
         properties = feature['properties']
         return {
             "zone": properties['ZONE'],
-            "geometry": KLGeoResourceTransformStep._convert_geometry(feature['geometry'])
+            "geometry": ExternalGeoResourceTransformStep._convert_geometry(feature['geometry'])
         }
 
     @staticmethod
@@ -84,7 +84,7 @@ class KLGeoResourceTransformStep(DefaultTransformStep):
         properties = feature['properties']
         return {
             "name": properties['Name'],
-            "geometry": KLGeoResourceTransformStep._convert_geometry(feature['geometry'])
+            "geometry": ExternalGeoResourceTransformStep._convert_geometry(feature['geometry'])
         }
 
     @staticmethod

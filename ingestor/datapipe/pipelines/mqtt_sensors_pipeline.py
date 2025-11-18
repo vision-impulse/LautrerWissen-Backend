@@ -15,22 +15,22 @@
 #
 # Authors: Benjamin Bischke
 
-from ingestor.apis.ris.council_calendar import CouncilCalendarDownloader
+from ingestor.apis.mqtt.mqtt_static_sensors import MQTTInitialSensorsDownloader
 from ..steps.download.step_download import DownloadStepFactory
-from ..steps.transforms.kl_ris import KLRisEventsTransformStep
+from ..steps.transforms.mqtt_sensors import MQTTSensorsTransformStep
 from ..steps.database.step_import import DatabaseImportStep
-from ..pipelines.base_pipeline import BasePipeline
+from .base_pipeline import BasePipeline
 
 
-class KLRisEventsPipeline(BasePipeline):
-    """Pipeline for RIS data."""
+class MQTTSensorsPipeline(BasePipeline):
+    """Pipeline for importing sensor data from MQTT-Queues."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def build_pipeline(self):
         return [
-            DownloadStepFactory.create(CouncilCalendarDownloader),
-            KLRisEventsTransformStep(),
+            DownloadStepFactory.create(MQTTInitialSensorsDownloader),
+            MQTTSensorsTransformStep(),
             DatabaseImportStep(),
         ]

@@ -18,12 +18,12 @@
 
 from ingestor.apis import ResourceDownloader
 from ..steps.download.step_download import DownloadStepFactory
-from ..steps.transforms.kl_geo import KLGeoResourceTransformStep
+from ..steps.transforms.external_geodata import ExternalGeoResourceTransformStep
 from ..steps.database.step_import import DatabaseImportStep
-from ..pipelines.base_pipeline import BasePipeline
+from .base_pipeline import BasePipeline
 
 
-class KLGeoResourcePipeline(BasePipeline):
+class ExternalGeoResourcePipeline(BasePipeline):
     """Pipeline for Geodata data."""
 
     def __init__(self, *args, **kwargs):
@@ -32,6 +32,6 @@ class KLGeoResourcePipeline(BasePipeline):
     def build_pipeline(self):
         return [
             DownloadStepFactory.create(ResourceDownloader),
-            KLGeoResourceTransformStep(),
+            ExternalGeoResourceTransformStep(),
             DatabaseImportStep(),
         ]
