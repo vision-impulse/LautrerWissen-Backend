@@ -169,20 +169,8 @@ class KLEnvironmentalSensor(BaseModel):
                     "data_source": "Datenquelle",
                     "city_district_name": "Stadtteil"
                     }
-
-    SENSOR_TYPES = [
-        ('weather', 'Wetterstation'),
-        ('particle', 'Luftqualität'),
-        ('sound', 'Lärm'),
-        ('distance_lidar', 'Distance Lidar'),
-        ('distance_ultrasonic', 'Distance Ultrasonic'),
-        ('temperature', 'Temperatur'),
-        ('moisture', 'Feuchtigkeit'),
-        ('particle_temp', 'Luftqualität & Temperatur'),
-        ('temperature_multi', 'Temperatur'),
-    ]
     sensor_topic = models.CharField(max_length=255)
-    sensor_type = models.CharField(max_length=50, choices=SENSOR_TYPES)
+    sensor_type = models.CharField(max_length=50, blank=True, null=True)
     geometry = models.GeometryField(null=True, blank=True)
 
 

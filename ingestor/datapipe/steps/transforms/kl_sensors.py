@@ -29,6 +29,8 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+SENSOR_TYPE_CONFIG_PATH = "/config/init/sensor_types.yaml"
+
 
 class KLSensorsTransformStep(DefaultTransformStep):
     """Sensor-specific transform step."""
@@ -49,7 +51,7 @@ class KLSensorsTransformStep(DefaultTransformStep):
 
     def __init__(self):
         super(KLSensorsTransformStep, self).__init__()
-        self.sensor_type_map = dict(KLSensorsTransformStep.SENSOR_TYPES)
+        self.sensor_type_map = self._load_sensor_type_map()
 
     def transform(self, context, db_model, data_acquisition_date):
         download_file = os.path.join(context.out_dir, context.resource.filename)
@@ -60,9 +62,9 @@ class KLSensorsTransformStep(DefaultTransformStep):
                 logger.info("Loading Sensor: %s", mqtt_res["topic"])
 
                 sensor_type = "Unbekannt"
-                for (k, v) in KLSensorsTransformStep.SENSOR_TYPES:                
-                    if k in mqtt_res["topic"]:
-                        sensor_type = v
+                for key, label in self.sensor_type_map.items():
+                    if key in mqtt_res["topic"]:
+                        sensor_type = label
                         break
 
                 position = Point(mqtt_res["sensor_longitude"], mqtt_res["sensor_latitude"])
@@ -74,3 +76,18 @@ class KLSensorsTransformStep(DefaultTransformStep):
                            data_acquisition_date=data_acquisition_date)
                 result.append(row)
         return result
+
+    def _load_sensor_type_map(self):
+        if os.path.exists(SENSOR_TYPE_CONFIG_PATH):
+            try:
+                with open(SENSOR_TYPE_CONFIG_PATH, "r", encoding="utf-8") as f:
+                    cfg = yaml.safe_load(f)
+                    if isinstance(cfg, dict) and "sensor_types" in cfg:
+                        logger.info("Loaded sensor type mapping from YAML")
+                        return cfg["sensor_types"]
+            except Exception as e:
+                logger.error("Failed to load sensor_types.yaml: %s", e, exc_info=True)
+
+        # Fallback to built-in mapping
+        logger.warning("Using built-in SENSOR_TYPES mapping")
+        return dict(self.SENSOR_TYPES)

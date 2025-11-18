@@ -1,0 +1,12 @@
+sensor_types:
+  particle: "Luftqualität"
+  sound: "Geräuschpegel"
+  distance: "Abstandssensor"
+  distance_lidar: "Abstandssensor"
+  distance_ultrasonic: "Abstandssensor"
+  temperature: "Temperatur"
+  moisture: "Feuchtigkeit"
+  particle_temp: "Luftqualität & Temperatur"
+  temperature_multi: "Temperatur"
+  weather: "Wetterstation"
+  flood: "Wasserpegel"
