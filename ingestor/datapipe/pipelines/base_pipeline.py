@@ -70,9 +70,10 @@ class BasePipeline(ABC):
                 step_record = None
                 if self.run_record and PipelineRunStep:
                     try:
+                        step_name = f"{step.__class__.__name__} ({context.resource.db_model_class})"
                         step_record = PipelineRunStep.objects.create(
                             run=self.run_record,
-                            step_name=step.__class__.__name__,
+                            step_name=step_name,
                             status="running",
                             started_at=timezone.now(),
                         )
