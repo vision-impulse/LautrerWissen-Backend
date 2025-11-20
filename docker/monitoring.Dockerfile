@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y goaccess && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY ../. /app
+COPY ../monitoring /app/monitoring
 
 RUN mkdir -p /logs/nginx /logs/analysis /config
 
