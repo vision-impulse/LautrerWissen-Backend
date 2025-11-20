@@ -36,6 +36,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+from django.conf import settings
+from django.conf.urls.static import static
 
 from lautrer_wissen.urls import router as lautrer_wissen_router
 from frontend_config.urls import router as frontend_config_router
@@ -50,3 +52,6 @@ urlpatterns = [
     path('admin/pipeline_manager/', include('pipeline_manager.urls')),  
     path('api/', include(router.urls)),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
