@@ -103,16 +103,12 @@ class DjangoORMUtils:
                 
                 if len(new_records) > 0:
                     # Filter rows matching the data_source but with a different insert timestamp
-
                     queryset = django_model.objects.filter(data_source=data_source).exclude(
                         insert_timestamp=insert_ts
                     )
                     # Only keep rows of the same type as objects in the queryset
-                    #types_to_delete = queryset.values_list('type', flat=True).distinct()
                     types_to_delete = [record.type for record in new_records]
                     queryset = queryset.filter(type__in=types_to_delete)
-                    #queryset = queryset.filter(type__in=new_records[0]["type"])
-
                     deleted_count, _ = queryset.delete()
                     logger.info("Deleted %s outdated GenericGeoModel records of matching types.", deleted_count)
             else:
@@ -125,13 +121,3 @@ class DjangoORMUtils:
                 deleted_count, _ = queryset.delete()
                 logger.info("Deleted %s outdated records.", deleted_count)
         
-        """
-        with transaction.atomic():
-            queryset = django_model.objects.filter(data_source=data_source).exclude(
-                insert_timestamp=insert_ts
-            )
-            queryset |= django_model.objects.filter(data_source__isnull=True)
-            queryset |= django_model.objects.filter(data_source="")
-            deleted_count, _ = queryset.delete()
-            logger.info("Deleted %s outdated records.", deleted_count)
-        """
