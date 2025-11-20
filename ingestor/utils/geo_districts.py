@@ -16,16 +16,22 @@
 # Authors: Benjamin Bischke
 
 import os.path
-import wget
-import geopandas as gpd
-from shapely.geometry import Point, Polygon, MultiPolygon
-import geopandas as gpd
 import pandas as pd
+import requests
+import geopandas as gpd
+import logging
 from shapely.ops import unary_union
 from geopandas.tools import sjoin
+from shapely.geometry import shape
+from shapely.geometry import Point, Polygon, MultiPolygon
 from pyproj import CRS
 
-URL = "https://opendata.kaiserslautern.de/dataset/e2757392-39b5-4008-8a0b-5998adcf7238/resource/701101ef-b868-4f49-ab78-86a79139d46c/download/ortsbezirksgrenzen_wgs84.geojson"
+logger = logging.getLogger(__name__)
+
+DJANGO_BACKEND_PORT = os.getenv("DJANGO_BACKEND_PORT")
+API_URL_DISTRICTS = f"http://localhost:{DJANGO_BACKEND_PORT}/api/geo/klcitydistrict/?format=json"
+DISTRICTS_4326 = None
+
 
 def _get_local_aea(center_lat: float, center_lon: float) -> CRS:
     """
@@ -39,17 +45,65 @@ def _get_local_aea(center_lat: float, center_lon: float) -> CRS:
     )
 
 
+def load_districts():
+    global DISTRICTS_4326
+    if DISTRICTS_4326 is not None:
+        return DISTRICTS_4326
+
+    try:
+        response = requests.get(API_URL_DISTRICTS, timeout=20)
+        response.raise_for_status()
+        data = response.json()
+
+        features = data.get("features", [])
+        if not features:
+            logger.info("No polygon features found — using empty dataframe.")
+            DISTRICTS_4326 = gpd.GeoDataFrame(columns=["Name", "geometry"], crs="EPSG:4326")
+            return DISTRICTS_4326
+
+        fixed_features = []
+        for f in features:
+            geom = f.get("geometry")
+            if not geom:
+                continue
+
+            coords = geom.get("coordinates", [])
+            if geom["type"] == "Polygon":
+                if coords and isinstance(coords[0][0], float):
+                    geom["coordinates"] = [coords]  # wrap coordinates
+
+            try:
+                geometry = shape(geom)  # shapely parses dict -> geometry
+            except Exception:
+                geometry = None
+
+            fixed_features.append({
+                "Name": f.get("properties", {}).get("Name"),
+                "geometry": geometry,
+            })
+
+        # Build GeoDataFrame (some geometries may still be None)
+        gdf = gpd.GeoDataFrame(fixed_features, geometry="geometry", crs="EPSG:4326")
+        gdf = gdf[gdf.geometry.notnull()]
+
+        if gdf.empty:
+            logger.info("Polygon dataset contains only invalid geometries.")
+            DISTRICTS_4326 = gpd.GeoDataFrame(columns=["Name", "geometry"], crs="EPSG:4326")
+            return DISTRICTS_4326
+
+        if gdf.crs is None:
+            gdf.set_crs("EPSG:4326", inplace=True)
+
+        DISTRICTS_4326 = gdf
+        return DISTRICTS_4326
+
+    except Exception as e:
+        logger.info(f"Failed to load district polygons: {e}")
+        DISTRICTS_4326 = gpd.GeoDataFrame(columns=["Name", "geometry"], crs="EPSG:4326")
+        return DISTRICTS_4326
+    
+
 class CityDistrictsDecoder(object):
-
-    _FILENAME = "ortsbezirksgrenzen_wgs84.geojson"
-    _ENV_PATH = os.getenv("APP_DATA_DIR", "./data/") # Fallback    
-    _POLYGON_DISTRICT_FILE = os.path.join(_ENV_PATH, "initial/data/" + _FILENAME)
-
-    if not os.path.exists(_POLYGON_DISTRICT_FILE):
-        os.makedirs(os.path.dirname(_POLYGON_DISTRICT_FILE))
-        wget.download(URL, out=_POLYGON_DISTRICT_FILE)
-    _CITY_DISTRICTS = gpd.read_file(_POLYGON_DISTRICT_FILE)
-    _CITY_DISTRICTS_4326 = _CITY_DISTRICTS.to_crs(4326)[["Name", "geometry"]]
 
     @staticmethod
     def _to_target_crs(geom):
@@ -69,17 +123,13 @@ class CityDistrictsDecoder(object):
     
     @staticmethod
     def get_district_name_for_geometry(geom):
-        if geom is None or CityDistrictsDecoder._CITY_DISTRICTS_4326 is None:
+        districts = load_districts()
+        if geom is None or districts is None:
             return "Unbekannt"
         
         geom_wgs = CityDistrictsDecoder._to_target_crs(geom)
-        districts = CityDistrictsDecoder._CITY_DISTRICTS_4326
-
         names = districts.loc[districts.geometry.intersects(geom_wgs), "Name"].unique()
-
         return ", ".join(sorted(names)) if names.size else "Kreis Kaiserslautern"
-
-
 
     @staticmethod
     def filter_points_by_city_polygon(geoms_proj: gpd.GeoDataFrame,
