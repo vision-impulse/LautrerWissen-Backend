@@ -105,11 +105,11 @@ kl_wfs_pipeline:
 emergency_point_pipeline:
   description: "Diese Pipeline importiert Rettungspunkte über die bereitgestellte Shape-Datei im Zip Archiv auf der Webseite der KWF Online."
   endpoints:
-    - url: https://kwf2020.kwf-online.de/wp-content/uploads/2025/01/KWF_RP_V2_18_DE_SHP.zip
+    - url: https://kwf2020.kwf-online.de/wp-content/uploads/2025/01/KWF_RP_V2_19_SHP.zip
       filename: emergency_points.zip
       db_model_class: EmergencyPoint
       data_source: "KWF-Rettungspunkte"
-      source_filename: KWF_RP_V2_18_DE.shp
+      source_filename: KWF_RP_V2_19.shp
       region_filter: "Rheinland-Pfalz"
 
 was_geht_app_pipeline:
