@@ -32,6 +32,7 @@ from ingestor.datapipe.pipelines.base_pipeline_types import PipelineType
 from ingestor.datapipe.pipelines.emergency_point_pipeline import EmergencyPointPipeline
 from ingestor.datapipe.pipelines.wga_events_pipeline import WGAEventPipeline
 from ingestor.datapipe.pipelines.ttn_gateway_pipeline import TTNGatewayPipeline
+from ingestor.datapipe.pipelines.demographics_pipeline import DemographicsPipeline
 
 import logging
 
@@ -68,6 +69,7 @@ PipelineFactory.register_pipeline(PipelineType.VRN.name, VRNPipeline)
 PipelineFactory.register_pipeline(PipelineType.WIKIPEDIA.name, WikipediaPipeline)
 PipelineFactory.register_pipeline(PipelineType.EV_STATIONS.name, EVStationPipeline)
 PipelineFactory.register_pipeline(PipelineType.WIFI_FREIFUNK.name, WifiFreifunkPipeline)
+PipelineFactory.register_pipeline(PipelineType.DEMOGRAPHICS.name, DemographicsPipeline)
 PipelineFactory.register_pipeline(
     PipelineType.EXTERNAL_GEO_RESOURCES.name, ExternalGeoResourcePipeline
 )

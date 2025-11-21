@@ -82,6 +82,7 @@ class PipelineType(Enum):
     WIFI_LOCAL = "wifi_myspot_empera_pipeline"
     TTN_GATEWAY = "ttn_gateway_pipeline"
     VRN = "vrn_pipeline"
+    DEMOGRAPHICS = "demographics_pipeline"
 
 
 PIPELINE_RESOURCE_MAP = {
@@ -98,5 +99,6 @@ PIPELINE_RESOURCE_MAP = {
     PipelineType.TTN_GATEWAY: RemoteResourceFile,
     PipelineType.VRN: RemoteResourceFile,
     PipelineType.WIFI_LOCAL: LocalResourceFile,
-    PipelineType.OSM: ResourceOSM
+    PipelineType.OSM: ResourceOSM,
+    PipelineType.DEMOGRAPHICS: RemoteResourceFile,
 }

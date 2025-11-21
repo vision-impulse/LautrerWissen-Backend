@@ -144,6 +144,7 @@ class PipelineAdmin(BasePipelineAdmin):
             PipelineType.EXTERNAL_GEO_RESOURCES.name,
             PipelineType.EMERGENCY_POINTS.name,
             PipelineType.EVENTS_RIS.name,
+            PipelineType.DEMOGRAPHICS.name,
         ]:
             inlines = [RemoteResourceFileInline]
 
