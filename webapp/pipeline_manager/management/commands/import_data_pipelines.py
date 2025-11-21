@@ -26,7 +26,7 @@ from pipeline_manager.models import LocalResourceFile
 from pipeline_manager.models import ResourceWikipage
 from pipeline_manager.models import RemoteResourceFile
 
-from ingestor.datapipe.config import load_config
+from ingestor.datapipe.pipeline_config import load_config
 from settings_seedfiles import SEED_FILES
 
 logger = logging.getLogger("webapp")

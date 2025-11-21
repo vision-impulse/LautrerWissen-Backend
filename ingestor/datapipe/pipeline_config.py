@@ -24,24 +24,24 @@ from ingestor.datapipe.pipelines.base_pipeline_types import PIPELINE_RESOURCE_MA
 
 
 @dataclass
-class PipelineConfig:
+class PipelineResourceConfig:
     description: str
     resources: List[BaseResource]
 
 
 @dataclass
-class Config:
+class PipelineConfig:
     out_dir: str
-    pipelines: Dict[PipelineType, PipelineConfig] = field(default_factory=dict)
+    pipelines: Dict[PipelineType, PipelineResourceConfig] = field(default_factory=dict)
 
 
-def load_config(file_path: str) -> Config:
+def load_config(file_path: str) -> PipelineConfig:
     """Loads pipeline configurations from YAML."""
     with open(file_path, 'r') as file:
         data = yaml.safe_load(file)
 
     out_dir=data["out_dir"]
-    pipelines: Dict[PipelineType, PipelineConfig] = {}
+    pipelines: Dict[PipelineType, PipelineResourceConfig] = {}
 
     for pipeline_type in PipelineType:
         section = data.get(pipeline_type.value)
@@ -56,6 +56,6 @@ def load_config(file_path: str) -> Config:
         if not resource_cls:
             continue
         resources = [resource_cls(**res) for res in resources_data]
-        pipelines[pipeline_type] = PipelineConfig(description=description, resources=resources)
+        pipelines[pipeline_type] = PipelineResourceConfig(description=description, resources=resources)
 
-    return Config(out_dir=out_dir, pipelines=pipelines)
+    return PipelineConfig(out_dir=out_dir, pipelines=pipelines)
