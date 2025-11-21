@@ -26,7 +26,7 @@ from shapely.geometry import shape
 from shapely.geometry import Point, Polygon, MultiPolygon
 from pyproj import CRS
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("webapp")
 
 DJANGO_BACKEND_PORT = os.getenv("DJANGO_BACKEND_PORT")
 API_URL_DISTRICTS = f"http://localhost:{DJANGO_BACKEND_PORT}/api/geo/klcitydistrict/?format=json"
@@ -146,7 +146,12 @@ class CityDistrictsDecoder(object):
             Radial buffer (in kilometres) to enlarge the polygons before testing.
         """
         # ── Ensure CRS for polygons & points ───────────────────────────────
-        poly_gdf = CityDistrictsDecoder._CITY_DISTRICTS.to_crs(epsg=4326)
+        districts = load_districts()
+        if districts is None or districts.empty:
+            logger.info("No districts found for filtering step, returning original data!")
+            return geoms_proj
+
+        poly_gdf = districts.to_crs(epsg=4326)
         poly_gdf = poly_gdf.dissolve()
 
         # ── Optional polygon buffer (in metres) ────────────────────────────
