@@ -16,13 +16,14 @@
 # Authors: Benjamin Bischke
 
 import os.path
-from ingestor.apis import Downloader
 import pandas as pd
 import requests
 import datetime
 
-WASGEHTAPP_USER = os.getenv('WASGEHTAPP_USER')
-WASGEHTAPP_PASS = os.getenv('WASGEHTAPP_PASS')
+from ingestor.apis import Downloader
+from ingestor.config.env_config import WASGEHTAPP_PASS
+from ingestor.config.env_config import WASGEHTAPP_USER
+
 
 class WGAEventDownloader(Downloader):
 

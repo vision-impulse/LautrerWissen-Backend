@@ -17,16 +17,13 @@
 
 
 import json
-import os
 import redis
 import logging
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from ingestor.apis.mqtt.mqtt_stream_consumer import MQTTConsumer
-
-REDIS_HOST = os.getenv("REDIS_HOST", "redis")
-REDIS_PORT = os.getenv("REDIS_PORT", 6379) 
+from ingestor.config.env_config import REDIS_HOST, REDIS_PORT
 
 logger = logging.getLogger(__name__)
 

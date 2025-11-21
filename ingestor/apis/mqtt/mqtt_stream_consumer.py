@@ -24,16 +24,16 @@ import threading
 from typing import Optional
 from paho.mqtt import client as mqtt_client
 from abc import ABC, abstractmethod
+from ingestor.config.env_config import MQTT_BROKER
+from ingestor.config.env_config import MQTT_PORT
+from ingestor.config.env_config import MQTT_USERNAME
+from ingestor.config.env_config import MQTT_PASSWORD
+from ingestor.config.env_config import MQTT_HEARTBEAT_INTERVAL
+from ingestor.config.env_config import MQTT_HEARTBEAT_FILE_PATH
+from ingestor.config.env_config import MQTT_TOPIC_SELECTOR
+
 
 logger = logging.getLogger(__name__)
-
-MQTT_BROKER = os.getenv("MQTT_BROKER")
-MQTT_PORT = os.getenv("MQTT_PORT")
-MQTT_USERNAME = os.getenv("MQTT_USERNAME")
-MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
-MQTT_TOPIC_SELECTOR = os.getenv("MQTT_TOPIC_SELECTOR", "*")
-MQTT_HEARTBEAT_FILE_PATH = os.getenv("MQTT_HEARTBEAT_FILE_PATH", "/logs/heartbeat.log") 
-MQTT_HEARTBEAT_INTERVAL = int(os.getenv("MQTT_HEARTBEAT_INTERVAL", 60*10))
 
 
 def write_heartbeat_file(file_path: str = MQTT_HEARTBEAT_FILE_PATH):

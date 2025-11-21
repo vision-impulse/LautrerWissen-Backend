@@ -16,21 +16,18 @@
 # Authors: Benjamin Bischke
 
 
-from paho.mqtt import client as mqtt_client
-from datetime import datetime
-import random
 import json
 import time
 import yaml
 import os
-import logging
 
+from paho.mqtt import client as mqtt_client
+from datetime import datetime
 from ingestor.apis import Downloader
-
-MQTT_BROKER = os.getenv("MQTT_BROKER")
-MQTT_PORT = os.getenv("MQTT_PORT")
-MQTT_USERNAME = os.getenv("MQTT_USERNAME")
-MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
+from ingestor.config.env_config import MQTT_BROKER
+from ingestor.config.env_config import MQTT_PORT
+from ingestor.config.env_config import MQTT_USERNAME
+from ingestor.config.env_config import MQTT_PASSWORD
 
 
 class MQTTInitialSensorsDownloader(Downloader):

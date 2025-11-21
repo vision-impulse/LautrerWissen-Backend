@@ -25,14 +25,9 @@ import os
 import logging
 
 from ingestor.apis.mqtt.mqtt_stream_consumer import MQTTConsumer
+from ingestor.config.env_config import DB_DSN
+from ingestor.config.env_config import DB_TABLENAME
 
-DB_NAME = os.getenv('DATABASE_NAME')
-DB_USER = os.getenv('DATABASE_USER')
-DB_PASSWORD = os.getenv('DATABASE_PASSWORD')
-DB_HOST = os.getenv('DATABASE_HOST')
-DB_PORT = os.getenv('DATABASE_PORT')
-DB_DSN = "postgresql://%s:%s@%s:%s/%s" %(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
-DB_TABLENAME = "lautrer_wissen_klfieldtestmeasurements"
 
 logger = logging.getLogger(__name__)
 

@@ -26,10 +26,9 @@ from shapely.geometry import shape, mapping, Polygon, MultiPolygon
 from ingestor.utils.geo_districts import CityDistrictsDecoder
 from shapely.geometry import Point
 from datetime import datetime
+from ingestor.config.env_config import SENSOR_TYPE_CONFIG_PATH
 
 logger = logging.getLogger(__name__)
-
-SENSOR_TYPE_CONFIG_PATH = "/config/init/sensor_types.yaml"
 
 
 class MQTTSensorsTransformStep(DefaultTransformStep):
