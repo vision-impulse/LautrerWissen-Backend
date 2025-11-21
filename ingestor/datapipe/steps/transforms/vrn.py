@@ -45,9 +45,10 @@ class VRNBusStationTransformStep(DefaultTransformStep):
 
     def transform(self, context, db_model, data_acquisition_date):
         download_file = os.path.join(context.out_dir, context.resource.filename)
+        src_filename = context.resource.source_filename
         result = []
 
-        df, creation_date = self._read_zip_as_df_with_creation_date(download_file)
+        df, creation_date = self._read_zip_as_df_with_creation_date(download_file, src_filename)
 
         for idx, row in df.iterrows():
             row['geometry'] = Point(row['longitude'], row['latitude'])
@@ -62,10 +63,10 @@ class VRNBusStationTransformStep(DefaultTransformStep):
             result.append(row)
         return result
 
-    def _read_zip_as_df_with_creation_date(self, zip_file_path):
+    def _read_zip_as_df_with_creation_date(self, zip_file_path, src_filename):
         with zipfile.ZipFile(zip_file_path, 'r') as z:
             file_list = z.namelist()
-            csv_file_name = [f for f in file_list if f.startswith("RP_KLS_Haltestellenkataster")][0]
+            csv_file_name = [f for f in file_list if f.startswith(src_filename)][0]
 
             info = z.getinfo(csv_file_name)
             with z.open(csv_file_name) as csv_file:

@@ -28,14 +28,13 @@ import numpy as np
 
 class EvStationTransformStep(DefaultTransformStep):
 
-    CITY_FILTER = ['Kreisfreie Stadt Kaiserslautern', 'Landkreis Kaiserslautern']
-
     def transform(self, context, db_model, data_acquisition_date):
         download_file = os.path.join(context.out_dir, context.resource.filename)
+        city_filter = context.resource.city_filter
         df, creation_date_str = self._extract_ladesaeulen_data(download_file)
         creation_date = datetime.strptime(creation_date_str, "%d.%m.%Y").date()
 
-        df = df[df['Kreis/kreisfreie Stadt'].isin(EvStationTransformStep.CITY_FILTER)]
+        df = df[df['Kreis/kreisfreie Stadt'].isin(city_filter)]
 
         rename_map = {
             'Betreiber': 'operator',
@@ -103,4 +102,3 @@ class EvStationTransformStep(DefaultTransformStep):
         df_table = pd.read_excel(filepath, skiprows=10)
 
         return df_table, update_date
-

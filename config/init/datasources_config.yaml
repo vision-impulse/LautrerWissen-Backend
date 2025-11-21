@@ -15,6 +15,9 @@ ev_pipeline:
       filename: "ev_station.xlsx"
       data_source: "Bundesnetzagentur (Öffentliche Ladeinfrastruktur)"
       db_model_class: ChargingStation
+      city_filter: 
+        - 'Kreisfreie Stadt Kaiserslautern'
+        - 'Landkreis Kaiserslautern'
 
 ttn_gateway_pipeline:
   description: "Diese Pipeline importiert Daten für das Modell TTN-Gateway. Es wird eine öffentlicher http-Endpunkt mit JSON-Format angesprochen."
@@ -65,6 +68,7 @@ kl_wfs_pipeline:
       filename: "kl_wfs_education_sites.geojson"
       db_model_class: KLEducationalInstitution
       data_source: Stadtverwaltung Kaiserslautern (Geoportal)
+      version: "2.0.0"
     - layer_name: ms:GPSLocation
       srs_name: "EPSG:4326"
       out_format: "text/xml; subtype=gml/3.2.1"
@@ -72,6 +76,7 @@ kl_wfs_pipeline:
       filename: "kl_wfs_sculptures.geojson"
       db_model_class: KLSculpture
       data_source: Stadtverwaltung Kaiserslautern (Geoportal)
+      version: "2.0.0"
     - layer_name: ms:Baustellen
       srs_name: "EPSG:4326"
       out_format: "text/xml; subtype=gml/3.2.1"
@@ -79,6 +84,7 @@ kl_wfs_pipeline:
       filename: "kl_wfs_construction_sites_ongoing.geojson"
       db_model_class: KLConstructionSite
       data_source: Stadtverwaltung Kaiserslautern (Geoportal)
+      version: "2.0.0"
     - layer_name: ms:Bauluecke
       srs_name: "EPSG:4326"
       out_format: "text/xml; subtype=gml/3.2.1"
@@ -86,6 +92,7 @@ kl_wfs_pipeline:
       filename: "kl_wfs_building_area_sites.geojson"
       db_model_class: KLVacantLot
       data_source: "Stadtverwaltung Kaiserslautern (Geoportal)"
+      version: "2.0.0"
     - layer_name: ms:Bebauungsplan
       srs_name: "EPSG:4326"
       out_format: "text/xml; subtype=gml/3.2.1"
@@ -93,6 +100,7 @@ kl_wfs_pipeline:
       filename: "kl_wfs_building_right_sites.geojson"
       db_model_class: KLLandUsePlan
       data_source: "Stadtverwaltung Kaiserslautern (Geoportal)"
+      version: "2.0.0"
 
 emergency_point_pipeline:
   description: "Diese Pipeline importiert Rettungspunkte über die bereitgestellte Shape-Datei im Zip Archiv auf der Webseite der KWF Online."
@@ -101,6 +109,8 @@ emergency_point_pipeline:
       filename: emergency_points.zip
       db_model_class: EmergencyPoint
       data_source: "KWF-Rettungspunkte"
+      source_filename: KWF_RP_V2_18_DE.shp
+      region_filter: "Rheinland-Pfalz"
 
 was_geht_app_pipeline:
   description: Diese Pipeline importiert Veranstaltungen aus dem externen Veranstaltungskalender Plattform „Was geht App?“. Es wird ein HTTP-Endpunkt mit JSON-Format angesprochen."
@@ -109,6 +119,9 @@ was_geht_app_pipeline:
       filename: wga_events.csv
       db_model_class: WGAEvent
       data_source: "Was geht app?"
+      region_latitude: 49.4454858
+      region_longitude: 7.7581375
+      region_region: 30
 
 wiki_pipeline:
   description: "Diese Pipeline importiert die Inhalte von einzelnen Wikipedia Seiten. Die Pipeline kann für mehrere Wikipedia Seiten ausgeführt werden. Es können grundlegende Informationen für jede zu verarbeitende Wikipediaseite konfiguiert werden (Name der Seite, Angabe der Nummer der Tabelle auf der Seite, einzusetzende Klasse der Tabellenextraktion und Datenhaltung)."
@@ -204,6 +217,7 @@ vrn_pipeline:
       filename: 'bus_stations.zip'
       db_model_class: VRNBusStation
       data_source: "Verkehrsverbund Rhein-Neckar GmbH (Opendata)"
+      source_filename: RP_KLS_Haltestellenkataster
 
 osm_pipeline:
   description: "Diese Pipeline importiert die Inhalte von OSM. Die Pipeline kann für mehrere unterschiedliche OSM-Objekte ausgeführt werden. Unter dem Attribut Tags: kann die Selektion der OSM-Objekte angegeben werden."
@@ -214,113 +228,132 @@ osm_pipeline:
       filename: 'osm_leisure_nature_reserve.geojson'
       db_model_class: OsmNatureReserve
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - music_school
       filename: 'osm_amenity_music_school.geojson'
       db_model_class: OsmMusicSchool
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - driving_school
       filename: 'osm_amenity_driving_school.geojson'
       db_model_class: OsmDrivingSchool
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         sport:
           - volleyball
       filename: 'osm_sport_volleyball.geojson'
       db_model_class: OsmVolleyball
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         leisure:
           - dance
       filename: 'osm_leisure_dance.geojson'
       db_model_class: OsmLeisureDance
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         tourism:
           - zoo
       filename: 'osm_tourism_zoo.geojson'
       db_model_class: OsmZoo
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - cinema
       filename: 'osm_amenity_cinema.geojson'
       db_model_class: OsmCinema
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         leisure:
           - miniature_golf
       filename: 'osm_leisure_miniature_golf.geojson'
       db_model_class: OsmMiniatureGolf
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         leisure:
           - escape_game
       filename: 'osm_leisure_escape_game.geojson'
       db_model_class: OsmEscapegame
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         shop:
           - copyshop
       filename: 'osm_shop_copyshop.geojson'
       db_model_class: OsmCopyshop
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         advertising:
           - column
       filename: 'osm_advertising_column.geojson'
       db_model_class: OsmAdvertisingColumn
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         landuse:
           - cemetery
       filename: 'osm_landuse_cemetery.geojson'
       db_model_class: OsmCemetery
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - post_box
       filename: 'osm_amenity_post_box.geojson'
       db_model_class: OsmPostBox
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - parcel_locker
       filename: 'osm_amenity_parcel_locker.geojson'
       db_model_class: OsmParcelLocker
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - recycling
       filename: 'osm_amenity_recycling_center.geojson'
       db_model_class: OsmRecyclingCenter
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - recycling
       filename: 'osm_amenity_recycling_container.geojson'
       db_model_class: OsmRecyclingContainer
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - car_rental
       filename: 'osm_amenity_car_rental.geojson'
       db_model_class: OsmCarRental
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - parking
       filename: 'osm_amenity_parking.geojson'
       db_model_class: OsmAmenityParking
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - bicycle_repair_station
       filename: 'osm_amenity_bicycle_repair_station.geojson'
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
       db_model_class: OsmBicycleRepairStation
     - tags:
         amenity:
@@ -328,111 +361,130 @@ osm_pipeline:
       filename: 'osm_amenity_bicycle_parking.geojson'
       db_model_class: OsmBicycleParking
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - bicycle_rental
       filename: 'osm_amenity_bicycle_rental.geojson'
       db_model_class: OsmBicycleRental
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - drinking_water
       filename: 'osm_amenity_drinking_water.geojson'
       db_model_class: OsmAmenityDrinkingWater
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - waste_basket
       filename: 'osm_amenity_waste_basket.geojson'
       db_model_class: OsmAmenityWasteBasket
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - toilets
       filename: 'osm_amenity_toilets.geojson'
       db_model_class: OsmAmenityToilets
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - bench
       filename: 'osm_amenity_bench.geojson'
       db_model_class: OSMAmenityBench
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         sport:
           - basketball
       filename: 'osm_sport_basketball.geojson'
       db_model_class: OsmSportBasketball
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         sport:
           - soccer
       filename: 'osm_sport_soccer.geojson'
       db_model_class: OsmSportSoccer
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         sport:
           - tennis
       filename: 'osm_sport_tennis.geojson'
       db_model_class: OsmSportTennis
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         leisure:
           - pitch
       filename: 'osm_leisure_pitch.geojson'
       db_model_class: OsmLeisurePitch
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         leisure:
           - playground
       filename: 'osm_leisure_playground.geojson'
       db_model_class: OsmLeisurePlayground
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         natural:
           - tree
       filename: 'osm_natural_trees.geojson'
       db_model_class: OsmNaturalTrees
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - vending_machine
       filename: 'osm_amenity_vending_machine__parking_ticket.geojson'
       db_model_class: OsmVendingMachineParkingTicket
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         amenity:
           - vending_machine
       filename: 'osm_amenity_vending_machine__excrement_bag.geojson'
       db_model_class: OsmVendingMachineDogToilet
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         leisure:
           - sports_centre
       filename: 'osm_leisure_sports_centre__climbing.geojson'
       db_model_class: OsmSportCenterClimbing
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         leisure:
           - sports_centre
       filename: 'osm_leisure_sports_centre__swimming.geojson'
       db_model_class: OsmSportCenterSwimming
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         leisure:
           - dog_park
       filename: 'osm_leisure__dog_park.geojson'
       db_model_class: OsmLeisureDogPark
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         landuse:
           - military
       filename: 'osm_landuse__military.geojson'
       db_model_class: OsmLandUseMilitary
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"
     - tags:
         landuse:
           - sports_centre
       filename: 'osm_leisure_sports_centre__swimming.geojson'
       db_model_class: OsmSportCenterSwimming
       data_source: "OSM"
+      place_filter: "Kaiserslautern, Germany"

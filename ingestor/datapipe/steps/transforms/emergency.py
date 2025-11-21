@@ -28,7 +28,9 @@ class EmergencyPointTransformStep(DefaultTransformStep):
 
     def transform(self, context, db_model, data_acquisition_date):
         download_file = os.path.join(context.out_dir, context.resource.filename)
-        df, creation_date = self._read_zip_as_df_with_creation_date(download_file)
+        src_filename = context.resource.source_filename
+        region_filter = context.resource.region_filter
+        df, creation_date = self._read_zip_as_df_with_creation_date(download_file, src_filename, region_filter)
 
         result = []
         for idx, row in df.iterrows():
@@ -42,12 +44,12 @@ class EmergencyPointTransformStep(DefaultTransformStep):
             result.append(row)
         return result
 
-    def _read_zip_as_df_with_creation_date(self, zip_file_path):
+    def _read_zip_as_df_with_creation_date(self, zip_file_path, src_filepath, region_filter):
         with zipfile.ZipFile(zip_file_path, 'r') as z:
             file_list = z.namelist()
 
             # Extract the base name of the shapefile (without path inside the ZIP)
-            shp_file_name = [f for f in file_list if f.endswith("KWF_RP_V2_18_DE.shp")][0]
+            shp_file_name = [f for f in file_list if f.endswith(src_filepath)][0]
             info = z.getinfo(shp_file_name)
             creation_date = datetime(*info.date_time)
 
@@ -60,5 +62,5 @@ class EmergencyPointTransformStep(DefaultTransformStep):
             'Urheber': 'originator',
             'Bundesland': 'federal_state'
         })
-        df = df[df['federal_state'] == "Rheinland-Pfalz"]
+        df = df[df['federal_state'] == region_filter]
         return df, creation_date

@@ -20,27 +20,19 @@ import osmnx as ox
 import os
 import pandas as pd
 
-
 class OSMDownloader(Downloader):
-
-    PLACE = "Kaiserslautern, Germany"
 
     def __init__(self, out_dir, osm_resource, logger):
         super(OSMDownloader, self).__init__(out_dir)
         self.osm_resource = osm_resource
         self.logger = logger
 
-    @staticmethod
-    def download_place():
-        gdf = ox.geocode_to_gdf(OSMDownloader.PLACE)
-        gdf.to_file('kl_boundary.geojson', driver="GeoJSON", engine="pyogrio")
-
     def perform_download(self):
         tag_type = self.osm_resource.tags
         output_file = self.osm_resource.filename
         try:
             self._on_resource_download_start(tag_type)
-            gdf = ox.features_from_place(self.PLACE, tag_type)
+            gdf = ox.features_from_place(self.osm_resource.place_filter, tag_type)
             out_path = os.path.join(self.out_dir, "%s" % (output_file))
             gdf.to_file(out_path, driver="GeoJSON", engine="pyogrio")
             self._on_resource_downloaded(self.out_dir, output_file)

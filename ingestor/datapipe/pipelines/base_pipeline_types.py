@@ -36,9 +36,36 @@ class LocalResourceFile(BaseResource):
 
 @dataclass
 class RemoteResourceFile(BaseResource):
-    """Represents simple file-based resources."""
+    """Represents simple resource for remote files."""
     url: str
     filename: str
+
+
+@dataclass
+class WGAResourceFile(RemoteResourceFile):
+    """Represents a resource for WGA data."""
+    region_latitude: str
+    region_longitude: str
+    region_region: str
+
+
+@dataclass
+class VRNResourceFile(RemoteResourceFile):
+    """Represents a resource for VRN data."""
+    source_filename: str
+
+
+@dataclass
+class EVResourceFile(RemoteResourceFile):
+    """Represents a resource for EV data."""
+    city_filter: list
+
+
+@dataclass
+class EmergencyPointResourceFile(RemoteResourceFile):
+    """Represents a resource for emergency points."""
+    source_filename: str
+    region_filter: str 
 
 
 @dataclass
@@ -46,6 +73,7 @@ class ResourceOSM(BaseResource):
     """Represents an OSM resource with specific attributes."""
     tags: Dict[str, str] 
     filename: str
+    place_filter: str
 
 
 @dataclass
@@ -56,6 +84,7 @@ class ResourceWFSFile(BaseResource):
     layer_name: str
     out_format: str
     filename: str
+    version: str
 
 
 @dataclass
@@ -89,15 +118,15 @@ PIPELINE_RESOURCE_MAP = {
     PipelineType.GEO_WFS: ResourceWFSFile,
     PipelineType.WIKIPEDIA: ResourceWikipage,
     PipelineType.MQTT_SENSOR_RESOURCES: LocalResourceFile,
-    PipelineType.EMERGENCY_POINTS: RemoteResourceFile,
-    PipelineType.EV_STATIONS: RemoteResourceFile,
+    PipelineType.EMERGENCY_POINTS: EmergencyPointResourceFile,
+    PipelineType.EV_STATIONS: EVResourceFile,
     PipelineType.EVENTS_MIADI: RemoteResourceFile,
     PipelineType.EVENTS_RIS:RemoteResourceFile,
     PipelineType.EXTERNAL_GEO_RESOURCES: RemoteResourceFile,
     PipelineType.WIFI_FREIFUNK: RemoteResourceFile,
-    PipelineType.EVENTS_WGA: RemoteResourceFile,
+    PipelineType.EVENTS_WGA: WGAResourceFile,
     PipelineType.TTN_GATEWAY: RemoteResourceFile,
-    PipelineType.VRN: RemoteResourceFile,
+    PipelineType.VRN: VRNResourceFile,
     PipelineType.WIFI_LOCAL: LocalResourceFile,
     PipelineType.OSM: ResourceOSM,
     PipelineType.DEMOGRAPHICS: RemoteResourceFile,

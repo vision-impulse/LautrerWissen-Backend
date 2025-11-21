@@ -38,6 +38,7 @@ class WGAEventDownloader(Downloader):
         self.out_fp = os.path.join(out_dir, wga_event_resource.filename)
         self.logger = logger
         self.url = wga_event_resource.url
+        self.wga_event_resource = wga_event_resource
 
     def perform_download(self):
         data = []
@@ -60,9 +61,10 @@ class WGAEventDownloader(Downloader):
                        "sublocation,lat,lng,url,youtube,groupid",
             "datum_start": datum_start,
             "datum_ende": datum_end,
-            "lat": 49.4454858,
-            "lng": 7.7581375,
-            "radius": 30,
+            "lat": self.wga_event_resource.region_latitude,
+            "lng": self.wga_event_resource.region_longitude,
+            "radius": self.wga_event_resource.region_region,
+
         }
         response = requests.post(self.url, headers=WGAEventDownloader.HEADERS, data=payload)
         if response.status_code == 200:

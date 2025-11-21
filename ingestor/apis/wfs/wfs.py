@@ -15,15 +15,12 @@
 #
 # Authors: Benjamin Bischke
 
-from ingestor.apis import Downloader
-import osmnx as ox
-import os
-import pandas as pd
-import requests
 
+import os
+import requests
 import geopandas as gpd
-from owslib.wfs import WebFeatureService
-from requests import Request
+
+from ingestor.apis import Downloader
 from io import BytesIO
 
 
@@ -37,8 +34,8 @@ class WFSDownloader(Downloader):
         resource_wfs_file = self.resource_wfs_file
         params = {
             "SERVICE": "WFS",
-            "VERSION": "2.0.0",
             "REQUEST": "GetFeature",
+            "VERSION": resource_wfs_file.version,
             "TYPENAME": resource_wfs_file.layer_name,
             "SRSNAME": resource_wfs_file.srs_name,
             "OUTPUTFORMAT": resource_wfs_file.out_format
