@@ -34,6 +34,10 @@ from .models import (
     LocalResourceFile,
     ResourceWikipage,
     RemoteResourceFile,
+    EmergencyPointResourceFile,
+    EVResourceFile,
+    WGAResourceFile,
+    VRNResourceFile
 )
 from .models import PipelineType
 from .models import PipelineSchedule
@@ -67,6 +71,30 @@ class ResourceWikipageInline(admin.StackedInline):
 
 class RemoteResourceFileInline(admin.StackedInline):
     model = RemoteResourceFile
+    extra = 0
+    can_delete = False
+
+
+class EmergencyPointResourceFileInline(admin.StackedInline):
+    model = EmergencyPointResourceFile
+    extra = 0
+    can_delete = False
+
+
+class VRNResourceFileInline(admin.StackedInline):
+    model = VRNResourceFile
+    extra = 0
+    can_delete = False
+
+
+class WGAResourceFileInline(admin.StackedInline):
+    model = WGAResourceFile
+    extra = 0
+    can_delete = False
+
+
+class EVResourceFileInline(admin.StackedInline):
+    model = EVResourceFile
     extra = 0
     can_delete = False
 
@@ -134,18 +162,21 @@ class PipelineAdmin(BasePipelineAdmin):
             inlines = [ResourceWikipageInline]
         elif obj.name == PipelineType.WIFI_LOCAL.name:
             inlines = [LocalResourceFileInline]
+        elif obj.name == PipelineType.EMERGENCY_POINTS.name:
+            inlines = [EmergencyPointResourceFileInline]
+        elif obj.name == PipelineType.EV_STATIONS.name:
+            inlines = [EVResourceFileInline]
+        elif obj.name == PipelineType.EVENTS_WGA.name:
+            inlines = [WGAResourceFileInline]
+        elif obj.name == PipelineType.VRN.name:
+            inlines = [VRNResourceFileInline]
         elif obj.name in [
-            PipelineType.TTN_GATEWAY.name,
-            PipelineType.WIFI_FREIFUNK.name,
-            PipelineType.WIFI_FREIFUNK.name,
-            PipelineType.VRN.name,
-            PipelineType.EV_STATIONS.name,
             PipelineType.EVENTS_MIADI.name,
-            PipelineType.EXTERNAL_GEO_RESOURCES.name,
-            PipelineType.EMERGENCY_POINTS.name,
             PipelineType.EVENTS_RIS.name,
-            PipelineType.DEMOGRAPHICS.name,
-        ]:
+            PipelineType.EXTERNAL_GEO_RESOURCES.name,
+            PipelineType.WIFI_FREIFUNK.name,
+            PipelineType.TTN_GATEWAY.name,
+            ]:
             inlines = [RemoteResourceFileInline]
 
         return [inline(self.model, self.admin_site) for inline in inlines]

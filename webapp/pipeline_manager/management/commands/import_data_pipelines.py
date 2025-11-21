@@ -25,6 +25,10 @@ from pipeline_manager.models import ResourceWFSFile
 from pipeline_manager.models import LocalResourceFile
 from pipeline_manager.models import ResourceWikipage
 from pipeline_manager.models import RemoteResourceFile
+from pipeline_manager.models import WGAResourceFile
+from pipeline_manager.models import EmergencyPointResourceFile
+from pipeline_manager.models import EVResourceFile
+from pipeline_manager.models import VRNResourceFile
 
 from ingestor.datapipe.pipeline_config import load_config
 from settings_seedfiles import SEED_FILES
@@ -88,6 +92,10 @@ class Command(BaseCommand):
                         "LocalResourceFile": LocalResourceFile,
                         "RemoteResourceFile": RemoteResourceFile,
                         "ResourceWikipage": ResourceWikipage,
+                        "WGAResourceFile": WGAResourceFile,
+                        "VRNResourceFile": VRNResourceFile,
+                        "EVResourceFile": EVResourceFile,
+                        "EmergencyPointResourceFile": EmergencyPointResourceFile,
                     }.get(res.__class__.__name__, None)
 
                     if not model_cls:

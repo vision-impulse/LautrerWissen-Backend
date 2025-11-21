@@ -60,6 +60,14 @@ class Command(BaseCommand):
             resources.extend(pipeline.wikipage_resources.filter(active=True))
         if hasattr(pipeline, 'remote_resources'):
             resources.extend(pipeline.remote_resources.filter(active=True))
+        if hasattr(pipeline, 'wga_resources'):
+            resources.extend(pipeline.wga_resources.filter(active=True))
+        if hasattr(pipeline, 'vrn_resources'):
+            resources.extend(pipeline.vrn_resources.filter(active=True))
+        if hasattr(pipeline, 'ev_resources'):
+            resources.extend(pipeline.ev_resources.filter(active=True))
+        if hasattr(pipeline, 'ep_resources'):
+            resources.extend(pipeline.ep_resources.filter(active=True))
         return resources
     
     def handle(self, *args, **kwargs):

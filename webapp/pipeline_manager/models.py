@@ -84,6 +84,45 @@ class RemoteResourceFile(BaseResource):
     )
     filename = models.CharField(max_length=255)
     url = models.URLField()
+    
+
+class WGAResourceFile(BaseResource):
+    pipeline = models.ForeignKey(
+        Pipeline, on_delete=models.CASCADE, related_name="wga_resources", null=True
+    )
+    url = models.URLField()
+    filename = models.CharField(max_length=255)
+    region_latitude = models.CharField(max_length=255)
+    region_longitude = models.CharField(max_length=255)
+    region_region = models.CharField(max_length=255)
+
+
+class VRNResourceFile(BaseResource):
+    pipeline = models.ForeignKey(
+        Pipeline, on_delete=models.CASCADE, related_name="vrn_resources", null=True
+    )
+    url = models.URLField()
+    filename = models.CharField(max_length=255)
+    source_filename: str = models.CharField(max_length=255)
+
+
+class EVResourceFile(BaseResource):
+    pipeline = models.ForeignKey(
+        Pipeline, on_delete=models.CASCADE, related_name="ev_resources", null=True
+    )
+    url = models.URLField()
+    filename = models.CharField(max_length=255)
+    city_filter = models.CharField(max_length=255)
+
+
+class EmergencyPointResourceFile(BaseResource):
+    pipeline = models.ForeignKey(
+        Pipeline, on_delete=models.CASCADE, related_name="ep_resources", null=True
+    )
+    url = models.URLField()
+    filename = models.CharField(max_length=255)
+    source_filename = models.CharField(max_length=255)
+    region_filter = models.CharField(max_length=255)
 
 
 class ResourceOSM(BaseResource):
@@ -92,6 +131,7 @@ class ResourceOSM(BaseResource):
     )
     tags = models.JSONField(default=dict)
     filename = models.CharField(max_length=255)
+    place_filter = models.CharField(max_length=255, null=True)
 
 
 class ResourceWFSFile(BaseResource):
@@ -103,6 +143,7 @@ class ResourceWFSFile(BaseResource):
     layer_name = models.CharField(max_length=100)
     out_format = models.CharField(max_length=50)
     filename = models.CharField(max_length=255)
+    version = models.CharField(max_length=50, default="2.0.0", null=True)
 
 
 class ResourceWikipage(BaseResource):
