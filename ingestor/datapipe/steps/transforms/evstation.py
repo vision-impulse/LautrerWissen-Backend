@@ -15,22 +15,23 @@
 #
 # Authors: Benjamin Bischke
 
-from ingestor.datapipe.steps.base_step import DefaultTransformStep
-from datetime import datetime
-import pandas as pd
-import os
-from ingestor.utils.geo_districts import CityDistrictsDecoder
-
-from shapely.geometry import Point
 import re
+import os
+import ast
+import pandas as pd
 import numpy as np
+
+from datetime import datetime
+from ingestor.datapipe.steps.base_step import DefaultTransformStep
+from ingestor.utils.geo_districts import CityDistrictsDecoder
+from shapely.geometry import Point
 
 
 class EvStationTransformStep(DefaultTransformStep):
 
     def transform(self, context, db_model, data_acquisition_date):
         download_file = os.path.join(context.out_dir, context.resource.filename)
-        city_filter = context.resource.city_filter
+        city_filter =  self._safe_parse_list(context.resource.city_filter)
         df, creation_date_str = self._extract_ladesaeulen_data(download_file)
         creation_date = datetime.strptime(creation_date_str, "%d.%m.%Y").date()
 
@@ -102,3 +103,13 @@ class EvStationTransformStep(DefaultTransformStep):
         df_table = pd.read_excel(filepath, skiprows=10)
 
         return df_table, update_date
+    
+    def _safe_parse_list(s: str):
+        fallback = ['Kreisfreie Stadt Kaiserslautern', 'Landkreis Kaiserslautern']
+        try:
+            result = ast.literal_eval(s)
+            if isinstance(result, list):
+                return [str(item) for item in result]
+            return fallback
+        except Exception:
+            return fallback
