@@ -19,6 +19,14 @@ ev_pipeline:
         - 'Kreisfreie Stadt Kaiserslautern'
         - 'Landkreis Kaiserslautern'
 
+demographics_pipeline:
+  description: "Diese Pipeline importiert demografische Daten aus dem OpenData Portal."
+  endpoints:
+    - url: "https://opendata.kaiserslautern.de/dataset/geburtsjahrgange-stadt-kaiserslautern"
+      filename: "demographics.csv"
+      data_source: "Stadtverwaltung Kaiserslautern (Open Data Portal)"
+      db_model_class: DemographicData
+
 ttn_gateway_pipeline:
   description: "Diese Pipeline importiert Daten für das Modell TTN-Gateway. Es wird eine öffentlicher http-Endpunkt mit JSON-Format angesprochen."
   endpoints:
