@@ -71,7 +71,7 @@ def run_health_check(config, tcp_timeout_seconds, heartbeat_max_delay_minutes):
             detail = f"Missing hostname/port or check type is not 'tcp' or 'heartbeat' (Type: {check_type})"
             
         # Log and store the result
-        print(f"  -> Status: {status} ({detail})")
+        print(f"  -> Service: {service}, Status: {status} ({detail})")
 
         data = {
             "service_name": name,
