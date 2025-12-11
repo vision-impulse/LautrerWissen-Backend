@@ -16,7 +16,7 @@
 # Authors: Benjamin Bischke
 
 import os
-import yaml
+import urllib.parse
 
 SENSOR_TYPE_CONFIG_PATH = "/config/init/sensor_types.yaml"
 
@@ -36,7 +36,10 @@ DB_USER = os.getenv('DATABASE_USER')
 DB_PASSWORD = os.getenv('DATABASE_PASSWORD')
 DB_HOST = os.getenv('DATABASE_HOST')
 DB_PORT = os.getenv('DATABASE_PORT')
-DB_DSN = "postgresql://%s:%s@%s:%s/%s" %(DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
+DB_DSN = (
+    f"postgresql://{DB_USER}:{urllib.parse.quote(DB_PASSWORD)}"
+    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
 DB_TABLENAME = "lautrer_wissen_klfieldtestmeasurements"
 
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
