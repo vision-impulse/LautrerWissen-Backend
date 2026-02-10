@@ -230,7 +230,7 @@ vrn_pipeline:
       filename: 'bus_stations.zip'
       db_model_class: VRNBusStation
       data_source: "Verkehrsverbund Rhein-Neckar GmbH (Opendata)"
-      source_filename: RP_KLS_Haltestellenkataster
+      source_filename: "haltestellen_Rheinland-Pfalz Kaiserslautern Stadt.xlsx"
 
 osm_pipeline:
   description: "Diese Pipeline importiert die Inhalte von OSM. Die Pipeline kann für mehrere unterschiedliche OSM-Objekte ausgeführt werden. Unter dem Attribut Tags: kann die Selektion der OSM-Objekte angegeben werden."
