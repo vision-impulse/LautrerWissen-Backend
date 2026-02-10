@@ -31,7 +31,7 @@ class EvStationTransformStep(DefaultTransformStep):
 
     def transform(self, context, db_model, data_acquisition_date):
         download_file = os.path.join(context.out_dir, context.resource.filename)
-        city_filter =  self._safe_parse_list(context.resource.city_filter)
+        city_filter =  EvStationTransformStep._safe_parse_list(s=context.resource.city_filter)
         df, creation_date_str = self._extract_ladesaeulen_data(download_file)
         creation_date = datetime.strptime(creation_date_str, "%d.%m.%Y").date()
 
@@ -77,8 +77,15 @@ class EvStationTransformStep(DefaultTransformStep):
 
             for i in range(1, 7):
                 value_power_output = row[f'power_output_{i}']
-                if value_power_output is not None and ";" in value_power_output:
-                    row[f'power_output_{i}'] = float(value_power_output.split(";")[0])
+
+                if isinstance(value_power_output, int):
+                    row[f'power_output_{i}'] = float(value_power_output)
+                elif isinstance(value_power_output, str) and ";" in value_power_output:
+                    first_value = value_power_output.split(";")[0].strip()
+                    try:
+                        row[f'power_output_{i}'] = float(first_value)
+                    except ValueError:
+                        pass  
 
             row["city_district_name"] = CityDistrictsDecoder.get_district_name_for_geometry(row["geometry"])
             row["data_source"] = context.resource.data_source
