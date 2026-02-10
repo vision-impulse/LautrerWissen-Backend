@@ -22,7 +22,6 @@ from django.core.management.base import BaseCommand
 from pipeline_manager.models import Pipeline
 from pipeline_manager.models import ResourceOSM
 from pipeline_manager.models import ResourceWFSFile
-from pipeline_manager.models import LocalResourceFile
 from pipeline_manager.models import ResourceWikipage
 from pipeline_manager.models import RemoteResourceFile
 from pipeline_manager.models import WGAResourceFile
@@ -89,7 +88,6 @@ class Command(BaseCommand):
                     model_cls = {
                         "ResourceOSM": ResourceOSM,
                         "ResourceWFSFile": ResourceWFSFile,
-                        "LocalResourceFile": LocalResourceFile,
                         "RemoteResourceFile": RemoteResourceFile,
                         "ResourceWikipage": ResourceWikipage,
                         "WGAResourceFile": WGAResourceFile,

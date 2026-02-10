@@ -24,7 +24,7 @@ from ingestor.apis.miadi.event_calendar import EventCalendarDownloader
 from ingestor.apis.ris.council_calendar import CouncilCalendarDownloader
 from ingestor.apis.wikipedia.wiki_downloader import WikipediaDownloader
 from ingestor.apis.mqtt.mqtt_static_sensors import MQTTInitialSensorsDownloader
-from ingestor.apis import ResourceDownloader, LocalResourceDownloader
+from ingestor.apis import ResourceDownloader
 from typing import Type, Dict
 import logging
 
@@ -78,6 +78,5 @@ DownloadStepFactory.register(EventCalendarDownloader)
 DownloadStepFactory.register(CouncilCalendarDownloader)
 DownloadStepFactory.register(WFSDownloader)
 DownloadStepFactory.register(ResourceDownloader)
-DownloadStepFactory.register(LocalResourceDownloader)
 DownloadStepFactory.register(WGAEventDownloader)
 DownloadStepFactory.register(MQTTInitialSensorsDownloader)

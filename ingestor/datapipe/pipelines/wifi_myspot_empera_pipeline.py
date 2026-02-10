@@ -15,7 +15,7 @@
 #
 # Authors: Benjamin Bischke
 
-from ingestor.apis import LocalResourceDownloader
+from ingestor.apis import ResourceDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.wifi import WifiTransformStep
 from ..steps.geo.step_filter import GeoFilterStep
@@ -31,7 +31,7 @@ class WifiMySpotEmperaPipeline(BasePipeline):
 
     def build_pipeline(self):
         return [
-            DownloadStepFactory.create(LocalResourceDownloader),
+            DownloadStepFactory.create(ResourceDownloader),
             WifiTransformStep(),
             DatabaseImportStep(),
         ]

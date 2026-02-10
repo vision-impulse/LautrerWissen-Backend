@@ -31,7 +31,6 @@ from .models import (
     Pipeline,
     ResourceOSM,
     ResourceWFSFile,
-    LocalResourceFile,
     ResourceWikipage,
     RemoteResourceFile,
     EmergencyPointResourceFile,
@@ -53,12 +52,6 @@ class ResourceOSMInline(admin.StackedInline):
 
 class ResourceWFSFileInline(admin.StackedInline):
     model = ResourceWFSFile
-    extra = 0
-    can_delete = False
-
-
-class LocalResourceFileInline(admin.StackedInline):
-    model = LocalResourceFile
     extra = 0
     can_delete = False
 
@@ -160,8 +153,6 @@ class PipelineAdmin(BasePipelineAdmin):
             inlines = [ResourceWFSFileInline]
         elif obj.name == PipelineType.WIKIPEDIA.name:
             inlines = [ResourceWikipageInline]
-        elif obj.name == PipelineType.WIFI_LOCAL.name:
-            inlines = [LocalResourceFileInline]
         elif obj.name == PipelineType.EMERGENCY_POINTS.name:
             inlines = [EmergencyPointResourceFileInline]
         elif obj.name == PipelineType.EV_STATIONS.name:
@@ -176,6 +167,7 @@ class PipelineAdmin(BasePipelineAdmin):
             PipelineType.EXTERNAL_GEO_RESOURCES.name,
             PipelineType.WIFI_FREIFUNK.name,
             PipelineType.TTN_GATEWAY.name,
+            PipelineType.WIFI_LOCAL.name
             ]:
             inlines = [RemoteResourceFileInline]
 

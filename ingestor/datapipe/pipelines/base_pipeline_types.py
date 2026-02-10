@@ -29,19 +29,14 @@ class BaseResource:
 
 
 @dataclass
-class LocalResourceFile(BaseResource):
-    """Represents simple file-based resources."""
-    filename: str
-
-
-@dataclass
 class RemoteResourceFile(BaseResource):
     """Represents simple resource for remote files."""
     url: str
     filename: str
+    local_path: Optional[str] = None
 
 
-@dataclass
+@dataclass(kw_only=True)
 class WGAResourceFile(RemoteResourceFile):
     """Represents a resource for WGA data."""
     region_latitude: str
@@ -49,19 +44,19 @@ class WGAResourceFile(RemoteResourceFile):
     region_region: str
 
 
-@dataclass
+@dataclass(kw_only=True)
 class VRNResourceFile(RemoteResourceFile):
     """Represents a resource for VRN data."""
     source_filename: str
 
 
-@dataclass
+@dataclass(kw_only=True)
 class EVResourceFile(RemoteResourceFile):
     """Represents a resource for EV data."""
     city_filter: list
 
 
-@dataclass
+@dataclass(kw_only=True)
 class EmergencyPointResourceFile(RemoteResourceFile):
     """Represents a resource for emergency points."""
     source_filename: str
@@ -117,7 +112,7 @@ class PipelineType(Enum):
 PIPELINE_RESOURCE_MAP = {
     PipelineType.GEO_WFS: ResourceWFSFile,
     PipelineType.WIKIPEDIA: ResourceWikipage,
-    PipelineType.MQTT_SENSOR_RESOURCES: LocalResourceFile,
+    PipelineType.MQTT_SENSOR_RESOURCES: RemoteResourceFile,
     PipelineType.EMERGENCY_POINTS: EmergencyPointResourceFile,
     PipelineType.EV_STATIONS: EVResourceFile,
     PipelineType.EVENTS_MIADI: RemoteResourceFile,
@@ -127,7 +122,7 @@ PIPELINE_RESOURCE_MAP = {
     PipelineType.EVENTS_WGA: WGAResourceFile,
     PipelineType.TTN_GATEWAY: RemoteResourceFile,
     PipelineType.VRN: VRNResourceFile,
-    PipelineType.WIFI_LOCAL: LocalResourceFile,
+    PipelineType.WIFI_LOCAL: RemoteResourceFile,
     PipelineType.OSM: ResourceOSM,
     PipelineType.DEMOGRAPHICS: RemoteResourceFile,
 }

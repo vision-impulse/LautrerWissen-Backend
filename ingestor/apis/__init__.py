@@ -20,10 +20,10 @@ import osmnx as ox
 import requests
 import pandas as pd
 import geopandas as gpd
-from owslib.wfs import WebFeatureService
-import subprocess
-from io import BytesIO
 import shutil
+from owslib.wfs import WebFeatureService
+from io import BytesIO
+from urllib.parse import urlparse
 
 
 class Downloader(object):
@@ -82,15 +82,25 @@ class ResourceDownloader(Downloader):
         super(ResourceDownloader, self).__init__(out_dir, logger)
         self.resource_file = resource_file
 
-    def perform_download(self):
-        self._download_file_resource(self.resource_file)
-
     def _on_resource_download_start(self, url):
         self.logger.info("Start resource download from %s" %(url), extra={'classname': self.__class__.__name__})
 
-    def _download_file_resource(self, resource_file):
-        output_file = os.path.join(self.out_dir, resource_file.filename)
-        url = resource_file.url
+    def perform_download(self):
+        local_path = self.resource_file.local_path
+        if local_path and local_path.lower().startswith("file://"):
+            self._copy_local_file()
+            return
+
+        url = self.resource_file.url
+        if url:
+            scheme = urlparse(url).scheme
+            if scheme in ("http", "https"):
+                self._download_file_resource()
+                            
+
+    def _download_file_resource(self):
+        output_file = os.path.join(self.out_dir, self.resource_file.filename)
+        url = self.resource_file.url
         self._on_resource_download_start(url)
         response = requests.get(url, stream=True)
         if response.status_code == 200:
@@ -102,18 +112,12 @@ class ResourceDownloader(Downloader):
             self._on_resource_error(url, response.status_code)
             raise Exception("Error downloading the resource from %s" %(url))
 
-
-class LocalResourceDownloader(Downloader):
-
-    def __init__(self, out_dir, resource_file, logger=None):
-        super(LocalResourceDownloader, self).__init__(out_dir, logger)
-        self.resource_file = resource_file
-
-    def perform_download(self):
+    def _copy_local_file(self):
         dst = os.path.join(self.out_dir, self.resource_file.filename)
 
         data_folder = os.getenv("APP_DATA_DIR", "./data/") # Fallback    
-        data_folder = os.path.join(data_folder, "initial/data")
+        data_folder = os.path.join(data_folder, "init")
         src = os.path.join(data_folder, self.resource_file.filename)
         shutil.copy(src, dst)
 
+    

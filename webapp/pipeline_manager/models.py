@@ -71,19 +71,13 @@ class BaseResource(models.Model):
         abstract = True  # Not a real DB table
 
 
-class LocalResourceFile(BaseResource):
-    pipeline = models.ForeignKey(
-        Pipeline, on_delete=models.CASCADE, related_name="local_resources", null=True
-    )
-    filename = models.CharField(max_length=255)
-
-
 class RemoteResourceFile(BaseResource):
     pipeline = models.ForeignKey(
         Pipeline, on_delete=models.CASCADE, related_name="remote_resources", null=True
     )
     filename = models.CharField(max_length=255)
-    url = models.URLField()
+    local_path = models.CharField(max_length=500, blank=True, null=True)
+    url = models.URLField(blank=True, null=True)
     
 
 class WGAResourceFile(BaseResource):
@@ -95,6 +89,7 @@ class WGAResourceFile(BaseResource):
     region_latitude = models.CharField(max_length=255)
     region_longitude = models.CharField(max_length=255)
     region_region = models.CharField(max_length=255)
+    local_path = models.CharField(max_length=500, blank=True, null=True)
 
 
 class VRNResourceFile(BaseResource):
@@ -104,6 +99,7 @@ class VRNResourceFile(BaseResource):
     url = models.URLField()
     filename = models.CharField(max_length=255)
     source_filename: str = models.CharField(max_length=255)
+    local_path = models.CharField(max_length=500, blank=True, null=True)
 
 
 class EVResourceFile(BaseResource):
@@ -113,6 +109,7 @@ class EVResourceFile(BaseResource):
     url = models.URLField()
     filename = models.CharField(max_length=255)
     city_filter = models.CharField(max_length=255)
+    local_path = models.CharField(max_length=500, blank=True, null=True)
 
 
 class EmergencyPointResourceFile(BaseResource):
@@ -123,6 +120,7 @@ class EmergencyPointResourceFile(BaseResource):
     filename = models.CharField(max_length=255)
     source_filename = models.CharField(max_length=255)
     region_filter = models.CharField(max_length=255)
+    local_path = models.CharField(max_length=500, blank=True, null=True)
 
 
 class ResourceOSM(BaseResource):
