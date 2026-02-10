@@ -93,3 +93,4 @@ tzlocal==5.3.1
 urllib3==2.6.0
 wget==3.2
 zope.interface==8.0.1
+django-environ==0.12.0
