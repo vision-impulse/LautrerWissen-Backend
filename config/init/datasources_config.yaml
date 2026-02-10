@@ -65,6 +65,7 @@ kl_sensors_mqtt_pipeline:
     - filename: 'kl_sensors.yaml'
       db_model_class: KLEnvironmentalSensor
       data_source: "Stadtverwaltung Kaiserslautern"
+      url:
 
 kl_wfs_pipeline:
   description: "Diese Pipeline importiert GeoDaten, die über eine Web Feature Service-Schnittstelle (WFS) vorliegen. Die Dateien werden über das Geoportal der Stadtverwaltung Kaiserslautern bezogen."
@@ -214,9 +215,13 @@ wifi_myspot_empera_pipeline:
     - filename: 'wifi_myspot.xlsx'
       db_model_class: WLANHotspot
       data_source: "MySpot"
+      local_path: "file:///appdata/init/wifi_myspot.xlsx"
+      url: 
     - filename: 'wifi_empera.kml'
       db_model_class: WLANHotspot
       data_source: "Empera"
+      local_path: "file:///appdata/init/wifi_empera.kml"
+      url: 
 
 vrn_pipeline:
   description: "Diese Pipeline importiert Bushaltestellen über das Opendataportal der VRN. Die Daten stehen als Zip-Datei zur Verfügung und werden (in der Regel unter gleicher URL) aktualisiert."
