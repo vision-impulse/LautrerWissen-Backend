@@ -24,10 +24,12 @@ class KLCityDistrict(BaseModel):
     VISIBLE_OBJECT_NAME = "Stadtteil"
     MAP_FIELDS = {
         "name": "Name",
+        "official_district_id": "OffizielleID",
         **BaseModel.MAP_FIELDS,
     }
 
     name = models.CharField(max_length=255)
+    official_district_id = models.CharField(max_length=255, null=True, blank=True) # encoded as string e.g. '01'
     geometry = models.PolygonField()
 
 
