@@ -83,7 +83,8 @@ class ExternalGeoResourceTransformStep(DefaultTransformStep):
     def _transform_city_district(feature):
         properties = feature['properties']
         return {
-            "name": properties['Name'],
+            "name": properties['Bezirk'],
+            "official_district_id": properties['Nummer'],
             "geometry": ExternalGeoResourceTransformStep._convert_geometry(feature['geometry'])
         }
 
