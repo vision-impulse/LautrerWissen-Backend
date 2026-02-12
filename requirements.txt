@@ -15,7 +15,7 @@ chardet==5.2.0
 charset-normalizer==3.4.3
 constantly==23.10.4
 croniter==6.0.0
-cryptography==46.0.1
+cryptography==46.0.5
 cyclonedx-python-lib==11.6.0
 daphne==4.1.2
 defusedxml==0.7.1
@@ -28,9 +28,9 @@ djangorestframework==3.15.2
 djangorestframework-gis==1.1
 docker==7.1.0
 et_xmlfile==2.0.0
-filelock==3.20.0
+filelock==3.20.3
 GeoAlchemy2==0.15.2
-geopandas==1.0.0
+geopandas==1.1.2
 gunicorn==23.0.0
 hyperlink==21.0.0
 idna==3.10
@@ -49,7 +49,7 @@ packageurl-python==0.17.6
 packaging==25.0
 paho-mqtt==2.1.0
 pandas==2.2.3
-pillow==11.3.0
+pillow==12.1.1
 pip-api==0.0.34
 pip-requirements-parser==32.0.1
 pip_audit==2.10.0
@@ -57,7 +57,7 @@ platformdirs==4.5.1
 psycopg==3.2.1
 psycopg-binary==3.2.2
 py-serializable==2.1.0
-pyasn1==0.6.1
+pyasn1==0.6.2
 pyasn1_modules==0.4.2
 pycparser==2.23
 Pygments==2.19.2
@@ -90,7 +90,7 @@ txaio==25.9.2
 typing_extensions==4.15.0
 tzdata==2025.2
 tzlocal==5.3.1
-urllib3==2.6.0
+urllib3==2.6.3
 wget==3.2
 zope.interface==8.0.1
 django-environ==0.12.0
