@@ -24,6 +24,7 @@ demographics_pipeline:
   endpoints:
     - url: "https://opendata.kaiserslautern.de/dataset/geburtsjahrgange-stadt-kaiserslautern"
       filename: "demographics.csv"
+      local_path: "file://20251231_AltersgruppenstatistikStadtteile.csv"
       data_source: "Stadtverwaltung Kaiserslautern (Open Data Portal)"
       db_model_class: DemographicData
 
@@ -54,6 +55,7 @@ kl_geo_pipeline:
       filename: 'kl_city_districts.geojson'
       db_model_class: KLCityDistrict
       data_source: "Stadtverwaltung Kaiserslautern (OpenDataPortal)"
+      local_path: "file://Ortsbezirke_Stadtteile_20260205.geojson"
     - url: https://opendata.kaiserslautern.de/dataset/9bb02c74-2e79-4bf2-9165-4cfd6ada94fa/resource/80df0327-b929-4d05-9368-4f5703bef514/download/parkhaeuserkaiserslautern.geojson
       filename: 'kl_parking_locations.geojson'
       db_model_class: KLParkingLocation
@@ -132,6 +134,37 @@ was_geht_app_pipeline:
       region_longitude: 7.7581375
       region_region: 30
 
+wifi_freifunk_pipeline:
+  description: "Diese Pipeline importiert Daten für das Modell Wifi-Hotspot der Datenquelle Freifunk. Es wird ein öffentlicher HTTP-Endpunkt mit JSON-Format angesprochen."
+  endpoints:
+    - url: https://api.karlsruhe.freifunk.net/yanic/meshviewer/ffwp/meshviewer.json
+      filename: wifi_freifunk.json
+      db_model_class: WLANHotspot
+      data_source: "Freifunk"
+
+wifi_myspot_empera_pipeline:
+  description: "WIFI local Pipeline"
+  endpoints:
+    - filename: 'wifi_myspot.xlsx'
+      db_model_class: WLANHotspot
+      data_source: "MySpot"
+      local_path: "file://wifi_myspot.xlsx"
+      url: 
+    - filename: 'wifi_empera.kml'
+      db_model_class: WLANHotspot
+      data_source: "Empera"
+      local_path: "file://wifi_empera.kml"
+      url: 
+
+vrn_pipeline:
+  description: "Diese Pipeline importiert Bushaltestellen über das Opendataportal der VRN. Die Daten stehen als Zip-Datei zur Verfügung und werden (in der Regel unter gleicher URL) aktualisiert."
+  endpoints:
+    - url: https://geoportal.vrn.de/services/sharing/rest/content/items/99af9c8780b542d08f02c9f08a52cea4/data
+      filename: 'bus_stations.zip'
+      db_model_class: VRNBusStation
+      data_source: "Verkehrsverbund Rhein-Neckar GmbH (Opendata)"
+      source_filename: "haltestellen_Rheinland-Pfalz Kaiserslautern Stadt.xlsx"
+
 wiki_pipeline:
   description: "Diese Pipeline importiert die Inhalte von einzelnen Wikipedia Seiten. Die Pipeline kann für mehrere Wikipedia Seiten ausgeführt werden. Es können grundlegende Informationen für jede zu verarbeitende Wikipediaseite konfiguiert werden (Name der Seite, Angabe der Nummer der Tabelle auf der Seite, einzusetzende Klasse der Tabellenextraktion und Datenhaltung)."
   endpoints:
@@ -200,37 +233,6 @@ wiki_pipeline:
       table_filenames: ['wiki_stolpersteine.csv', ]
       table_extractor_classes: [StolpersteinTableExtractor,]
       db_model_class: WikiStolperstein
-
-wifi_freifunk_pipeline:
-  description: "Diese Pipeline importiert Daten für das Modell Wifi-Hotspot der Datenquelle Freifunk. Es wird ein öffentlicher HTTP-Endpunkt mit JSON-Format angesprochen."
-  endpoints:
-    - url: https://api.karlsruhe.freifunk.net/yanic/meshviewer/ffwp/meshviewer.json
-      filename: wifi_freifunk.json
-      db_model_class: WLANHotspot
-      data_source: "Freifunk"
-
-wifi_myspot_empera_pipeline:
-  description: "WIFI local Pipeline"
-  endpoints:
-    - filename: 'wifi_myspot.xlsx'
-      db_model_class: WLANHotspot
-      data_source: "MySpot"
-      local_path: "file:///appdata/init/wifi_myspot.xlsx"
-      url: 
-    - filename: 'wifi_empera.kml'
-      db_model_class: WLANHotspot
-      data_source: "Empera"
-      local_path: "file:///appdata/init/wifi_empera.kml"
-      url: 
-
-vrn_pipeline:
-  description: "Diese Pipeline importiert Bushaltestellen über das Opendataportal der VRN. Die Daten stehen als Zip-Datei zur Verfügung und werden (in der Regel unter gleicher URL) aktualisiert."
-  endpoints:
-    - url: https://geoportal.vrn.de/services/sharing/rest/content/items/99af9c8780b542d08f02c9f08a52cea4/data
-      filename: 'bus_stations.zip'
-      db_model_class: VRNBusStation
-      data_source: "Verkehrsverbund Rhein-Neckar GmbH (Opendata)"
-      source_filename: "haltestellen_Rheinland-Pfalz Kaiserslautern Stadt.xlsx"
 
 osm_pipeline:
   description: "Diese Pipeline importiert die Inhalte von OSM. Die Pipeline kann für mehrere unterschiedliche OSM-Objekte ausgeführt werden. Unter dem Attribut Tags: kann die Selektion der OSM-Objekte angegeben werden."
