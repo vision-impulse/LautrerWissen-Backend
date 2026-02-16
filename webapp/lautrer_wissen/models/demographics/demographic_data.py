@@ -18,12 +18,18 @@
 from django.db import models
 
 class DemographicData(models.Model):
-    city_district_id = models.IntegerField()
+    city_district_id = models.CharField(max_length=100, null=True, default=None)
     city_district_name = models.CharField(max_length=255, null=True, default=None)
-    age_group = models.CharField(max_length=20)
-    gender = models.CharField(max_length=20)
-    number = models.IntegerField(default=0)
+    age_group = models.CharField(max_length=255)
+    gender = models.CharField(max_length=255)
+    population_count = models.IntegerField(default=0)
     reporting_date = models.DateField()
+    remark = models.TextField(null=True, blank=True)
+    metadata = models.JSONField(default=dict)
+
+    data_source = models.CharField(max_length=255, null=True)
+    data_acquisition_date = models.DateField(null=True)
+    insert_timestamp = models.DateTimeField(null=True)
 
     class Meta:
         verbose_name = "Demographic Data"
