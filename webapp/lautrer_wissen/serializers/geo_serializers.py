@@ -91,7 +91,7 @@ class BaseGeoSerializer(GeoFeatureModelSerializer):
 
         return properties
 
-    def get_id(self, obj, ):
+    def get_id(self, obj):
         """
         Custom logic to return object depending on specific model 
         (use virtual_ids for specific models).
