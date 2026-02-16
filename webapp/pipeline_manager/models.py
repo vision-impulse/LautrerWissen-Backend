@@ -49,6 +49,7 @@ class PipelineType(Enum):
     WIKIPEDIA = "Wikipedia Import"
     EMERGENCY_POINTS = "Rettungspunkte Import"
     TTN_GATEWAY = "TTN Gateway Import"
+    DEMOGRAPHICS = "Demografische Daten Import"
 
 
 # Pipeline model to manage each pipeline

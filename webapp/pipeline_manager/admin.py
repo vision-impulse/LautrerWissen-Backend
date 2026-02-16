@@ -162,6 +162,7 @@ class PipelineAdmin(BasePipelineAdmin):
         elif obj.name == PipelineType.VRN.name:
             inlines = [VRNResourceFileInline]
         elif obj.name in [
+            PipelineType.DEMOGRAPHICS.name,
             PipelineType.EVENTS_MIADI.name,
             PipelineType.EVENTS_RIS.name,
             PipelineType.EXTERNAL_GEO_RESOURCES.name,
