@@ -87,7 +87,7 @@ class ResourceDownloader(Downloader):
 
     def perform_download(self):
         local_path = self.resource_file.local_path
-        if local_path and local_path.lower().startswith("file://"):
+        if local_path and urlparse(local_path).scheme.lower() == 'file':
             self._copy_local_file()
             return
 
@@ -117,7 +117,12 @@ class ResourceDownloader(Downloader):
 
         data_folder = os.getenv("APP_DATA_DIR", "./data/") # Fallback    
         data_folder = os.path.join(data_folder, "init")
-        src = os.path.join(data_folder, self.resource_file.filename)
+        local_resource_filename = self.resource_file.local_path.replace("file://", "")
+        src = os.path.join(data_folder, local_resource_filename)
+    
+        if not os.path.exists(src):
+            raise FileNotFoundError(f"Source file not found: {src}")
+        
         shutil.copy(src, dst)
 
     
