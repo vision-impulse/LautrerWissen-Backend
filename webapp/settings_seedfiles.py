@@ -30,7 +30,6 @@ SEED_FILES = {
     
     # Seed data files
     "dashboard_data_file": os.path.join(APP_DATA_DIR, "init/dashboards.yaml"),
-    "demographics_data_file": os.path.join(APP_DATA_DIR, "init/demographics.csv"),
     "election_data_file": os.path.join(APP_DATA_DIR, "init/bundestagswahl_2025.csv"),
     "fieldtest_sql_file": os.path.join(APP_DATA_DIR, "init/fieldtest_dump_hd.sql"),
 }
