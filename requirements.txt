@@ -81,7 +81,7 @@ six==1.17.0
 sortedcontainers==2.4.0
 soupsieve==2.8
 SQLAlchemy==2.0.32
-sqlparse==0.5.3
+sqlparse==0.5.4
 tomli==2.3.0
 tomli_w==1.2.0
 tqdm==4.66.5
