@@ -1,0 +1,62 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+name: Lautrer Wissen (Backend)
+url: 'https://github.com/vision-impulse/LautrerWissen-Backend'
+releaseDate: '2026-02-23'
+softwareVersion: 1.0.0
+developmentStatus: stable
+softwareType: standalone/backend
+platforms:
+  - linux
+categories:
+  - data-collection
+  - data-analytics
+  - data-visualization
+maintenance:
+  type: contract
+  contractors:
+    - name: Vision Impulse GmbH
+      until: '2026-06-30'
+      website: 'https://www.vision-impulse.com/de/'
+legal:
+  license: AGPL-3.0-or-later
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - de
+description:
+  de:
+    genericName: Web Application (Backend)
+    shortDescription: >-
+      Das LautrerWissen ist eine modulare Smart-City-Plattform zur Erfassung,
+      Verarbeitung, Speicherung und Visualisierung heterogener Datenquellen. 
+    longDescription: >
+      Die Plattform LautrerWissen stellt ein zentrales Daten-Backend mit
+      integrierter Monitoring- und Analyseinfrastruktur bereit und unterstützt
+      damit datengetriebene urbane Informationssysteme. Das System aggregiert
+      und verarbeitet Daten aus unterschiedlichen externen und internen Quellen,
+      darunter:
+      
+      - Geodaten (z. B. OpenStreetMap, kommunale Geodatenportale, externe
+      Schnittstellen)
+
+      - Offene Verwaltungs- und Open-Data-Portale
+
+      - Wissensquellen wie Wikipedia
+
+      - Veranstaltungs- und Eventdaten
+
+      - IoT- und Sensordaten (z. B. LoRaWAN)
+
+      - Weitere projekt- oder kommunenbezogene Fachverfahren
+
+      Das System fungiert als konsolidiertes Smart-City-Datenbackend mit
+      integrierter Monitoring-, Analyse- und Administrationsmodule.
+    features:
+      - 'Pipelines für smartCity Daten (Akquise, Verarbeitung, Speicherung)'
+      - 'Monitoring, Administration, Konfiguration in einem Admin-Dashboard'
+      - 'Bereitstellung einer REST API für Daten'
+      - 'Verarbeitung von Streaming Daten (MQTT, Websockets)'
