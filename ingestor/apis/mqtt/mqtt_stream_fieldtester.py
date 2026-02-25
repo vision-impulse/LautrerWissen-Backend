@@ -23,9 +23,10 @@ import json
 import threading
 import os
 import logging
+import urllib.parse
 
 from ingestor.apis.mqtt.mqtt_stream_consumer import MQTTConsumer
-from ingestor.config.env_config import DB_DSN
+from ingestor.config.env_config import DB_HOST, DB_PORT, DB_NAME, DB_HOST, DB_USER, DB_PASSWORD
 from ingestor.config.env_config import DB_TABLENAME
 
 
@@ -97,7 +98,11 @@ class MQTTFieldtesterConsumer(MQTTConsumer):
 
     def __init__(self):
         super(MQTTFieldtesterConsumer, self).__init__()
-        self.db_handler = SensorDBHandler(DB_DSN)
+        self.dsn = (
+            f"postgresql://{DB_USER}:{urllib.parse.quote(DB_PASSWORD)}"
+            f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        )
+        self.db_handler = SensorDBHandler(self.dsn)
         # Start the background flusher in a separate thread
         self.loop = asyncio.get_event_loop()
         threading.Thread(target=self.start_background_loop, daemon=True).start()

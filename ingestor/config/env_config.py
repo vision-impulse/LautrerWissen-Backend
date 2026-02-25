@@ -16,35 +16,56 @@
 # Authors: Benjamin Bischke
 
 import os
-import urllib.parse
+
+def load_secrets(file_path):
+    secrets = {}
+    if not os.path.exists(file_path):
+        return secrets
+
+    with open(file_path) as f:
+        for line in f:
+            if line.strip() and not line.startswith("#"):
+                key, value = line.strip().split("=", 1)
+                secrets[key] = value
+    return secrets
+
 
 SENSOR_TYPE_CONFIG_PATH = "/config/init/sensor_types.yaml"
 
-WASGEHTAPP_USER = os.getenv('WASGEHTAPP_USER')
-WASGEHTAPP_PASS = os.getenv('WASGEHTAPP_PASS')
+# -----------------------------------------------------------------------------
+#       Redis
+# -----------------------------------------------------------------------------
+REDIS_HOST = os.getenv("REDIS_HOST", "redis")
+REDIS_PORT = os.getenv("REDIS_PORT", 6379) 
 
+# -----------------------------------------------------------------------------
+#       WGA
+# -----------------------------------------------------------------------------
+wga_secrets = load_secrets("/run/secrets/wga_secrets")
+WASGEHTAPP_USER = wga_secrets.get('WASGEHTAPP_USERNAME')
+WASGEHTAPP_PASS = wga_secrets.get('WASGEHTAPP_PASSWORD')
+
+# -----------------------------------------------------------------------------
+#       MQTT
+# -----------------------------------------------------------------------------
 MQTT_BROKER = os.getenv("MQTT_BROKER")
 MQTT_PORT = os.getenv("MQTT_PORT")
-MQTT_USERNAME = os.getenv("MQTT_USERNAME")
-MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
 MQTT_TOPIC_SELECTOR = os.getenv("MQTT_TOPIC_SELECTOR", "*")
 MQTT_HEARTBEAT_FILE_PATH = os.getenv("MQTT_HEARTBEAT_FILE_PATH", "/logs/heartbeat.log") 
 MQTT_HEARTBEAT_INTERVAL = int(os.getenv("MQTT_HEARTBEAT_INTERVAL", 60*10))
 
-DB_NAME = os.getenv('DATABASE_NAME')
-DB_USER = os.getenv('DATABASE_USER')
-DB_PASSWORD = os.getenv('DATABASE_PASSWORD')
+mqtt_secrets = load_secrets("/run/secrets/mqtt_secrets")
+MQTT_USERNAME = mqtt_secrets.get("MQTT_USERNAME")
+MQTT_PASSWORD = mqtt_secrets.get("MQTT_PASSWORD")
+
+# -----------------------------------------------------------------------------
+#       Database
+# -----------------------------------------------------------------------------
 DB_HOST = os.getenv('DATABASE_HOST')
 DB_PORT = os.getenv('DATABASE_PORT')
-DB_DSN = (
-    f"postgresql://{DB_USER}:{urllib.parse.quote(DB_PASSWORD)}"
-    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
 DB_TABLENAME = "lautrer_wissen_klfieldtestmeasurements"
 
-REDIS_HOST = os.getenv("REDIS_HOST", "redis")
-REDIS_PORT = os.getenv("REDIS_PORT", 6379) 
-
-
-
-
+db_secrets = load_secrets("/run/secrets/db_secrets")
+DB_PASSWORD = db_secrets.get("POSTGRES_PASSWORD")
+DB_USER = db_secrets.get("POSTGRES_USER")
+DB_NAME = db_secrets.get("POSTGRES_DB")
