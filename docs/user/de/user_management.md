@@ -1,6 +1,6 @@
-# Konfiguration von Nutzern, Gruppen und Berechtigungen
+# 4. Konfiguration von Nutzern, Gruppen und Berechtigungen
 
-## Zweck und Überblick
+## 4.1 Zweck und Überblick
 Das LauterWissen-System verfügt über ein rollenbasiertes Berechtigungssystem, das sicherstellt, dass nur autorisierte Personen Zugriff auf administrative Funktionen und Daten haben. Über den Menüpunkt „Nutzerverwaltung“ (bestehend aus den Reitern Users und Groups) können Benutzerkonten, Gruppen und deren Berechtigungen verwaltet werden. Das System unterscheidet dabei zwischen:
 *	Einzelnen Nutzern, die sich anmelden können,
 *	Gruppen, über die Berechtigungen zentral verwaltet werden,
@@ -8,8 +8,8 @@ Das LauterWissen-System verfügt über ein rollenbasiertes Berechtigungssystem, 
 
 Die Einrichtung und Pflege von Benutzern und Gruppen sollte nur durch Personen mit administrativen Rechten erfolgen.
 
-## Gruppenverwaltung
-### Anlegen und Bearbeiten von Gruppen
+## 4.2 Gruppenverwaltung
+### 4.2.1 Anlegen und Bearbeiten von Gruppen
 Unter dem Menüpunkt „Groups“ können bestehende Gruppen angezeigt, bearbeitet oder neue Gruppen angelegt werden. Gruppen dienen als Container für Berechtigungen, die anschließend mehreren Nutzern gleichzeitig zugewiesen werden können.
 Typische Gruppenbeispiele:
 *	Datenredakteure – dürfen Inhalte und Datenquellen pflegen, jedoch keine Systemänderungen vornehmen
@@ -18,21 +18,21 @@ Typische Gruppenbeispiele:
 
 Beim Anlegen einer Gruppe wird ein Gruppenname vergeben. Im Formularfeld „Permissions“ können anschließend Berechtigungen (Rechte) für diese Gruppe ausgewählt werden.
 
-### Zuweisung von Berechtigungen
+### 4.2.2 Zuweisung von Berechtigungen
 Im Feld „Permissions“ werden alle verfügbaren Rechte des Systems aufgelistet.
 Diese Rechte beziehen sich in der Regel auf konkrete Modelle oder Funktionen (z.B. Add, Change, Delete, View für bestimmte Datentypen).
 
 Empfehlung: Berechtigungen sollten grundsätzlich über Gruppen verwaltet werden, um die Administration übersichtlich und konsistent zu halten. Einzelberechtigungen für Nutzer sollten nur in Ausnahmefällen vergeben werden.
 
-## Benutzerverwaltung
-### Übersicht und Verwaltung
+## 4.3 Benutzerverwaltung
+### 4.3.1 Übersicht und Verwaltung
 Unter dem Menüpunkt „Users“ können alle vorhandenen Benutzerkonten eingesehen, bearbeitet oder neue Nutzer angelegt werden. Die Benutzerliste zeigt unter anderem folgende Informationen:
 *	Benutzername
 *	Aktivitätsstatus
 *	Zugeordnete Gruppen
 *	Superuser-Status
 
-### Anlegen neuer Nutzer
+### 4.3.2 Anlegen neuer Nutzer
 *	Öffnen Sie im Menü „Users“ die Option Add user.
 *	Geben Sie im Formular folgende Informationen an:
 *	Username (eindeutiger Login-Name)
@@ -51,10 +51,10 @@ Wichtige Hinweise:
 *	Ein Nutzer ohne aktivierten Staff User-Status kann sich nicht am Backend anmelden.
 *	Ein Nutzer ohne Gruppen- oder Einzelberechtigungen sieht nach dem Login eine leere Oberfläche.
 
-## Zuweisen von Einzelberechtigungen
+## 4.4 Zuweisen von Einzelberechtigungen
 Technisch ist es möglich, einem Benutzer Einzelberechtigungen direkt zuzuweisen (unabhängig von Gruppen). Diese Zuweisung geschieht ebenfalls im Tab „Permissions“ eines Benutzers. Allerdings ist diese Vorgehensweise nicht empfehlenswert, da sie die Rechteverwaltung unübersichtlich macht. Besser ist es, alle Rechte über Gruppenrollen zu steuern, damit Änderungen für mehrere Nutzer gleichzeitig greifen.
 
-## Typische Fehler, Hinweise und Best Practices
+## 4.5 Typische Fehler, Hinweise und Best Practices
 
 Typische Ursachen für Fehler während bei der Konfiguration:
 

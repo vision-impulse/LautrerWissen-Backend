@@ -1,5 +1,5 @@
-# Konfiguration der Frontend-Darstellung
-## Zweck und Überblick
+# 3 Konfiguration der Frontend-Darstellung
+## 3.1 Zweck und Überblick
 Über die Administrationsoberfläche des LauterWissens kann das Erscheinungsbild und die Struktur der Kartenansicht im Frontend dynamisch angepasst werden.
 Dies ermöglicht es, Inhalte, Layer und Objektattribute zu konfigurieren, ohne Änderungen am Code vornehmen zu müssen.
 Die Konfiguration erfolgt über den Menüpunkt „Frontend-Konfiguration“
@@ -7,10 +7,10 @@ Hier können insbesondere folgende Elemente während der Laufzeit angepasst werd
 *	Sidebar-Konfiguration: Verwaltung thematischer Gruppen und Kartenebenen
 *	Objekt- und Attributkonfiguration: Steuerung, welche Datenfelder in der Kartenansicht oder in Pop-ups angezeigt werden
 
-## Konfiguration der Sidebar
+## 3.2 Konfiguration der Sidebar
 Die Sidebar im Frontend dient der thematischen Gliederung der dargestellten Inhalte. Sie ermöglicht es Nutzenden, zwischen verschiedenen Themenbereichen (z. B. Freizeit, Bildung, Kultur) zu wechseln und Kartenlayer gezielt ein- oder auszublenden.
 
-### Anlegen thematischer Gruppen
+### 3.2.1 Anlegen thematischer Gruppen
 Unter dem Reiter „Sidebar“ können neue Kategorien angelegt oder bestehende bearbeitet werden. Für jede Kategorie müssen folgende Informationen angegeben werden:
 
 | Feldname | Beschreibung |
@@ -21,7 +21,7 @@ Unter dem Reiter „Sidebar“ können neue Kategorien angelegt oder bestehende 
 
 Hinweis: Farbgruppen dienen nicht nur der visuellen Ordnung, sondern auch der automatischen Farbzuweisung für neue Layer innerhalb dieser Kategorie.
 
-### Hinzufügen von neuen Kartenebenen
+### 3.2.2 Hinzufügen von neuen Kartenebenen
 
 Innerhalb jeder Sidebar-Kategorie können über den Abschnitt „Map Layers“ neue Kartenebenen hinzugefügt werden. Für jede Ebene sind folgende Angaben erforderlich:
 
@@ -42,7 +42,7 @@ Dieser verweist auf die Daten eines Modells, das unter „Datenmodelle“ gepfle
 
 Externe Layer (WMS): Neben internen Daten können auch externe WMS-Dienste eingebunden werden. Dies ermöglicht die Integration von Geodaten öffentlicher Dienste (z.B. Stadtplanung, Open Data-Portale). Die Konfiguration dieser Datenquelle wird im nächsten Abschnitt näher erläutert.
 
-### Hinzufügen von neuen WMS-Layern
+### 3.2.3 Hinzufügen von neuen WMS-Layern
 
 Das Hinzufügen eines neuen WMS-Layers wird im Folgenden anhand eines realen Beispiels aufgezeigt. Zur Konfiguration eine WMS-Layers neben dem Namen die Erzeugung der entsprechenden URL relevant. Diese setzt sich wie folgt zusammen:
 `$WMS_ENDPUNKT&SERVICE=WMS&layername=$LAYERNAME`
@@ -81,7 +81,7 @@ Beispiel: Integration eines WMS-Layers der Stadt Kaiserslautern
 | URL	| `https://geoportal.kaiserslautern.de/cgi-bin/fnpkl?SERVICE=WMS&layer=FNP_Stadt_Kaiserslautern` |
 | Quelle / Lizenz / URL / Legende | Optionale Angaben sofern in der XML-Dienstbeschreibung vorhanden |
 
-### Erweiterte Einstellungen pro Layer
+### 3.2.4 Erweiterte Einstellungen pro Layer
 
 Für jede Kartenebene können zusätzlich folgende Optionen gesetzt werden:
 
@@ -89,18 +89,18 @@ Für jede Kartenebene können zusätzlich folgende Optionen gesetzt werden:
 *	Legenden Attributionen: Angaben zur Datenquelle, Urheber und Lizenzbedingungen (werden im Frontend in der Kartenlegende angezeigt).
 *	Farbüberschreibungen: Weist einer Ebene explizit eine Farbe zu, unabhängig von der übergeordneten Kategorie. Diese Funktion ist besonders nützlich, um z.B. bestimmte Layer (wie Bäume oder Infrastrukturobjekte) farblich hervorzuheben.
 
-## Konfiguration der Objekt- und Attributdarstellung
+## 3.3 Konfiguration der Objekt- und Attributdarstellung
 
 Unter dem Reiter „Datenmodell“ können die in der Karte dargestellten Objekte und deren Attribute angepasst werden. In der Ansicht werden alle verfügbaren Modelle (Tabellen) aufgelistet, die über Schnittstellen oder Pipelines befüllt werden.
 
-### Übersicht der Datenmodelle
+### 3.3.1 Übersicht der Datenmodelle
 
 Die Übersicht zeigt pro Modell:
 *	den internen Datenbanknamen (z. B. osmleisuredogpark),
 *	den REST-Endpunkt (z. B. /geo/osmleisuredogpark),
 *	den Anzeigenamen, der im Frontend verwendet wird (z. B. „Hundewiese“).
 
-### Konfiguration der Feldanzeige
+### 3.3.2 Konfiguration der Feldanzeige
 Beim Klick auf ein Modell öffnet sich die Detailansicht unter „Field Configurations“.
 
 In der Ansicht kann für jedes Feld (Attribut) des Modells konfiguriert werden:
@@ -116,10 +116,9 @@ Beispiel: Das Feld website kann als „Website“ angezeigt werden, während add
 
 Hinweis: Wenn ein Feld in der Datenquelle keinen Wert enthält, wird es automatisch ausgeblendet, um leere Zeilen in der Pop-up-Anzeige zu vermeiden.
 
-## Typische Fehler, Hinweise und Best Practices
+## 3.4 Typische Fehler, Hinweise und Best Practices
 
 Typische Ursachen für Fehler während bei der Konfiguration:
-
 		
 | Problem | Ursache | Lösung |
 | :--- | :--- | :----------- |

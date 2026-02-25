@@ -1,5 +1,5 @@
-# Konfiguration der Datenimport-Pipelines
-## Zweck und Funktionsweise der Datenpipelines
+# 2 Konfiguration der Datenimport-Pipelines
+## 2.1 Zweck und Funktionsweise der Datenpipelines
 
 Datenpipelines bilden das Rückgrat der automatisierten Datenverarbeitung im LauterWissen. Sie dienen dazu, externe Datenquellen (Schnittstellen, Dateien, Feeds oder APIs) automatisiert abzurufen, die Daten zu verarbeiten, zu transformieren und in die Datenbank des Systems zu importieren.
 Die grundlegende Aufgabenfolge einer Pipeline umfasst typischerweise:
@@ -11,7 +11,7 @@ Die grundlegende Aufgabenfolge einer Pipeline umfasst typischerweise:
 Jede Pipeline ist individuell implementiert und berücksichtigt die spezifischen Anforderungen der jeweiligen Datenquelle.
 Änderungen an der Struktur, dem Format oder der Logik der Quellschnittstelle erfordern in der Regel Anpassungen am Softwaremodul der Pipeline selbst – diese können nicht über das Backend vorgenommen werden, sondern müssen im Quellcode erfolgen.
 
-## Beziehung zwischen Pipelines und Modellen
+## 2.2 Beziehung zwischen Pipelines und Modellen
 Ein wesentliches Konzept im LauterWissen ist die Trennung zwischen Pipelines (Verarbeitung) und Modellen (Datenstruktur).
 *	Modelle repräsentieren die Datenobjekte, die im System gespeichert werden (z.B. Veranstaltungen, Orte, Wikipedia-Einträge in der Tabelle).
 *	Pipelines definieren den Weg, wie Daten in diese Modelle gelangen.
@@ -22,7 +22,7 @@ Beispiel: Die Pipeline Wikipedia ruft mehrere Wikipedia-Seiten nacheinander ab. 
 
 Beispiel: Umgekehrt kann auch ein Modell von mehreren Pipelines befüllt werden (z.B. wenn verschiedene Datenquellen dieselbe Datentabelle erweitern oder aktualisieren, dies ist beispielsweise bei Wifi-Hotspots der Fall).
 
-## Zugriff auf Pipelines und Modelle
+## 2.3 Zugriff auf Pipelines und Modelle
 
 In der Administrationsoberfläche finden Sie die entsprechenden Bereiche:
 *	Pipelines:  Menüpunkt → „Pipelines“ → Übersicht aller implementierten Datenimport-Pipelines
@@ -30,7 +30,7 @@ In der Administrationsoberfläche finden Sie die entsprechenden Bereiche:
 
 Diese Trennung unterstützt sowohl die Wartung als auch die Nachvollziehbarkeit von Datenquellen und -flüssen.
 
-## Übersicht der vorhandenen Pipelines
+## 2.4 Übersicht der vorhandenen Pipelines
 
 Unter dem Menüpunkt „Pipelines“ werden alle aktuell verfügbaren Datenpipelines aufgelistet. Für jede Pipeline werden in der Übersicht typischerweise folgende Informationen angezeigt:
 
@@ -52,7 +52,7 @@ Markdown
 | 13 | `Wikipedia Import` | Geodaten | Diese Pipeline importiert die Inhalte von einzelnen Wikipedia Seiten. Die Pipeline kann für mehrere Wikipedia Seiten ausgeführt werden. Es können grundlegende Informationen für jede zu verarbeitende Wikipedia-Seite konfiguriert werden (Name der Seite, Angabe der Nummer der Tabelle auf der Seite, einzusetzende Klasse der Tabellenextraktion und Datenhaltung). |
 
 
-## Konfiguration einer Datenpipeline
+## 2.5 Konfiguration einer Datenpipeline
 Jede Pipeline ist softwareseitig in mehrere Verarbeitungsschritte (Module) unterteilt, die zusammen den ETL-Prozess (Extract, Transform, Load) bilden. Im Backend können Sie verschiedene konfigurierbare Eigenschaften einer Pipeline anpassen, ohne den Code zu ändern.
 Unter dem Reiter „Ressourcen“ können einzelne Datenquellen (z. B. API-Endpunkte, Dateipfade, URLs) eingesehen und bearbeitet werden. Hier können Sie:
 *	die URL oder den Pfad einer Ressource ändern,
@@ -63,7 +63,7 @@ Beispiel: Eine MIADI-Pipeline hat genau eine Ressource (z.B. einen XML-Endpunkt)
 
 Beispiel: Die Wikipedia-Pipeline dagegen kann mehrere Ressourcen (mehrere Wikipedia-Seiten) enthalten, die nacheinander verarbeitet werden. Sofern eine Seite nicht erreichbar ist oder eine strukturelle Änderung unterworfen ist, kann diese deaktiviert werden und die Pipeline für die verbleibenden Ressourcen (Wikipedia Seiten) ausgeführt werden.
 
-## Ausführen von Datenpipelines
+## 2.6 Ausführen von Datenpipelines
 Über den Button „Run“ in der Pipeline-Übersicht kann eine Datenpipeline manuell gestartet werden. Dies ist sinnvoll, wenn:
 *	sich Datenquellen geändert haben und ein sofortiger Reimport notwendig ist,
 *	nach einer Konfigurationsänderung die aktuelle Datenbasis aktualisiert werden soll,
@@ -81,17 +81,17 @@ Empfehlung:
 *	Vermeiden Sie, dass alle Pipelines gleichzeitig starten.
 *	Berücksichtigen Sie die Laufzeit einzelner Pipelines (kurze Importe: Sekunden; umfangreiche wie Wikipedia: mehrere Minuten).
 
-## Monitoring, Fehleranalyse und Best Practices
+## 2.7 Monitoring, Fehleranalyse und Best Practices
 Unter dem Reiter „Pipeline-Runs“ werden alle ausgeführten Pipeline-Läufe (manuell und automatisch) protokolliert. Die Tabelle zeigt u.a. den Status, die Dauer, Name der Pipeline und Startzeit. Fehlerhafte Läufe können im Log detailliert untersucht werden.
 
-### Fehleranalysen
+### 2.7.1 Fehleranalysen
 Typische Ursachen für Fehler während der Ausführung:
 *	API-Endpunkt ist nicht erreichbar
 *	Formatänderungen in der Quelle
 *	Authentifizierungsfehler
 *	Zeitüberschreitungen (Timeouts)
 
-### Best Practices
+### 2.7.2 Best Practices
 Bei dem Erstellen, Änderungen oder Ausführen der Datenpipelines empfehlen wir die folgenden Best Practices und Hinweise:
 *	Testen Sie Änderungen an Ressourcen zunächst manuell, bevor Sie Cron-Jobs aktivieren.
 *	Führen Sie keine parallelen Läufe derselben Pipeline aus, um Dateninkonsistenzen zu vermeiden.
