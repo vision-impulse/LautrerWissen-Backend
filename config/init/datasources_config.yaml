@@ -28,6 +28,15 @@ demographics_pipeline:
       data_source: "Stadtverwaltung Kaiserslautern (Open Data Portal)"
       db_model_class: DemographicData
 
+dashboard_pipeline:
+  description: "Diese Pipeline importiert Daten zu den vorhandenen Grafana Dashboards."
+  endpoints:
+    - url: ""
+      filename: "dashboards.yaml"
+      local_path: "file://dashboards.yaml"
+      data_source: "Stadtverwaltung Kaiserslautern (Open Data Portal)"
+      db_model_class: KLSensorGrafanaDashboard
+
 ttn_gateway_pipeline:
   description: "Diese Pipeline importiert Daten für das Modell TTN-Gateway. Es wird eine öffentlicher http-Endpunkt mit JSON-Format angesprochen."
   endpoints:
