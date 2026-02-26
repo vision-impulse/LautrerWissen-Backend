@@ -62,6 +62,6 @@ Die weiteren Kapitel dieses Dokuments sind thematisch strukturiert und behandeln
 * [`Systemarchitektur und Komponentenübersicht`](./architecture.md)   
 * [`Installations- und Deploymentprozesse`](./installation.md) 
 * [`Konfigurationsrichtlinien und Umgebungsvariablen`](./configuration.md) 
-* [`Betrieb, Wartung, Updates und Troubleshooting`](./troubleshooting.md) 
+* [`Betrieb, Wartung, Updates und Troubleshooting`](./maintenance.md) 
 
 Jedes Kapitel ist in sich abgeschlossen und kann bei Bedarf gezielt als Referenz für den jeweiligen Aufgabenbereich verwendet werden.
