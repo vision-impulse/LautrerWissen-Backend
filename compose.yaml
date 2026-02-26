@@ -1,0 +1,104 @@
+name: lautrerwissen
+
+services:
+
+  # -----------------------------------------------------------------------------
+  # Infrastructure
+  # -----------------------------------------------------------------------------
+
+  core-db:
+    image: postgis/postgis:16-3.4
+    hostname: core-database
+    networks:
+      - lautrerwissen-net
+    volumes:
+      - ${APP_DATA_DIR_DB:?err}/db:/var/lib/postgresql/data
+      - ${APP_DATA_DIR_DB:?err}/init_sql_dump:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  core-cache:
+    image: redis:8.0.0
+    hostname: redis
+    networks:
+      - lautrerwissen-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  # -----------------------------------------------------------------------------
+  # Backend
+  # -----------------------------------------------------------------------------
+
+  core-backend:
+    build:
+      context: .
+      dockerfile: ./docker/webapp.Dockerfile
+    hostname: core-backend
+    networks:
+      - lautrerwissen-net
+    volumes:
+      - lautrerwissen-web-static:/lautrer_wissen_backend/static
+    depends_on:
+      core-db:
+        condition: service_healthy
+      core-cache:
+        condition: service_healthy
+
+  # -----------------------------------------------------------------------------
+  # Frontend
+  # -----------------------------------------------------------------------------
+
+  core-frontend:
+    build: ../LautrerWissen-Frontend/
+    hostname: core-frontend
+    networks:
+      - lautrerwissen-net
+
+  # -----------------------------------------------------------------------------
+  # MQTT Ingesters
+  # -----------------------------------------------------------------------------
+
+  core-mqtt-sensor-ingester:
+    build:
+      context: .
+      dockerfile: ./docker/ingestor_streaming.Dockerfile
+    hostname: core-mqtt-sensor-ingester
+    networks:
+      - lautrerwissen-net
+    environment:
+      MQTT_TOPIC_SELECTOR: ^geo.*sensor,
+      MQTT_HEARTBEAT_FILE_PATH: "/logs/components/mqtt-sensor-ingester/heartbeat.log"
+    depends_on:
+      core-cache:
+        condition: service_healthy
+    command: ingestor/run_streaming_import.py --sensor sensors
+
+  core-mqtt-fieldstrength-ingester:
+    build:
+      context: .
+      dockerfile: ./docker/ingestor_streaming.Dockerfile
+    hostname: core-mqtt-fieldstrength-ingester
+    networks:
+      - lautrerwissen-net
+    environment:
+      MQTT_TOPIC_SELECTOR: .*fieldtester.*,
+      MQTT_HEARTBEAT_FILE_PATH: "/logs/components/mqtt-fieldstrength-ingester/heartbeat.log"
+    depends_on:
+      core-db:
+        condition: service_healthy
+    command: ingestor/run_streaming_import.py --sensor fieldtester
+
+volumes:
+  lautrerwissen-web-static:
+
+networks:
+  lautrerwissen-net:
+    driver: bridge
