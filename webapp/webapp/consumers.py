@@ -21,18 +21,34 @@ Authors:
 """
 
 import json
-import redis
-import json
 import asyncio
-import json
+import redis.asyncio as redis
+
 from channels.generic.websocket import AsyncWebsocketConsumer
-import redis.asyncio as aioredis  
+from webapp.settings import REDIS_URL
+
+_redis_client = None
+
+def get_redis():
+    global _redis_client
+    
+    if _redis_client is None:
+        _redis_client = redis.from_url(
+            REDIS_URL,
+            decode_responses=True,
+            socket_connect_timeout=5,
+            socket_timeout=5,
+            retry_on_timeout=True,
+            health_check_interval=30,
+            max_connections=10 
+        )
+    return _redis_client
 
 
 class SensorConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
-        self.redis = aioredis.Redis(host='redis', port=6379, decode_responses=True)
+        self.redis = get_redis()
         self.pubsub = self.redis.pubsub()
         self.topic = None
         self.reader_task = None
@@ -40,17 +56,33 @@ class SensorConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         if self.reader_task:
             self.reader_task.cancel()
-        if self.pubsub and self.topic:
-            await self.pubsub.unsubscribe(self.topic)
+            try:
+                await self.reader_task
+            except asyncio.CancelledError:
+                pass
+        if self.pubsub:
             await self.pubsub.close()
-        await self.redis.close()
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        self.topic = data.get("topic")
-        if not self.topic:
+        topic = data.get("topic")
+
+        if not topic:
             await self.send(json.dumps({"error": "No topic provided"}))
             return
+
+        # Cancel old reader if switching topics
+        if self.reader_task:
+            self.reader_task.cancel()
+            try:
+                await self.reader_task
+            except asyncio.CancelledError:
+                pass
+
+        if self.topic:
+            await self.pubsub.unsubscribe(self.topic)
+
+        self.topic = topic
 
         # Send current value from Redis
         latest = await self.redis.hget("sensor_data", self.topic)
@@ -60,21 +92,24 @@ class SensorConsumer(AsyncWebsocketConsumer):
             except json.JSONDecodeError:
                 payload = latest
             await self.send(json.dumps({"topic": self.topic, "sensor_data": payload}))
-
         # Subscribe to topic
         await self.pubsub.subscribe(self.topic)
 
-        async def reader():
-            async for message in self.pubsub.listen():
-                if message['type'] == 'message':
-                    try:
-                        payload = json.loads(message['data'])                    
-                    except json.JSONDecodeError:
-                        payload = ""
-                    await self.send(json.dumps({
-                        "topic": self.topic,
-                        "sensor_data":  payload 
-                    }))
+        async def reader(local_topic):
+            try:
+                async for message in self.pubsub.listen():
+                    if message["type"] == "message":
+                        try:
+                            payload = json.loads(message["data"])
+                        except json.JSONDecodeError:
+                            payload = ""
 
+                        await self.send(json.dumps({
+                            "topic": local_topic,
+                            "sensor_data": payload
+                        }))
+            except asyncio.CancelledError:
+                pass
+        
         # Start reader in background
-        self.reader_task = asyncio.create_task(reader())
+        self.reader_task = asyncio.create_task(reader(topic))
