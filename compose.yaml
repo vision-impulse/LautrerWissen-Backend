@@ -55,9 +55,20 @@ services:
   # -----------------------------------------------------------------------------
   # Frontend
   # -----------------------------------------------------------------------------
-
+  
   core-frontend:
-    build: ../LautrerWissen-Frontend/
+    build: 
+      context: ../LautrerWissen-Frontend/
+      args:
+        NEXT_PUBLIC_PLAUSIBLE_DOMAIN: ${NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
+        NEXT_PUBLIC_PLAUSIBLE_SRC: ${NEXT_PUBLIC_PLAUSIBLE_SRC}
+        NEXT_PUBLIC_URL_GEOPORTAL: ${NEXT_PUBLIC_URL_GEOPORTAL}
+        NEXT_PUBLIC_URL_EVENT_CALENDAR: ${NEXT_PUBLIC_URL_EVENT_CALENDAR}
+        NEXT_PUBLIC_URL_RIS_CALENDAR: ${NEXT_PUBLIC_URL_RIS_CALENDAR}
+        NEXT_PUBLIC_URL_WGA_CALENDAR: ${NEXT_PUBLIC_URL_WGA_CALENDAR}
+        NEXT_PUBLIC_EMAIL_ADDRESS_CONTACT: ${NEXT_PUBLIC_EMAIL_ADDRESS_CONTACT}
+        NEXT_PUBLIC_API_BACKEND: ${NEXT_PUBLIC_API_BACKEND}
+        NEXT_PUBLIC_API_WEBSOCKET_ENDPOINT: ${NEXT_PUBLIC_API_WEBSOCKET_ENDPOINT}
     hostname: core-frontend
     networks:
       - lautrerwissen-net
@@ -98,6 +109,7 @@ services:
 
 volumes:
   lautrerwissen-web-static:
+    name: lautrerwissen-web-static
 
 networks:
   lautrerwissen-net:
