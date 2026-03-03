@@ -1,0 +1,57 @@
+services:
+
+  core-db:
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+      - /etc/lautrerwissen/secrets/db_secrets
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  core-backend:
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    volumes:
+      - ./logs:/logs:rw
+      - ./appdata:/appdata:rw
+      - ./config:/config:rw
+      - /etc/lautrerwissen/secrets/django_secrets:/run/secrets/django_secrets:ro
+      - /etc/lautrerwissen/secrets/mqtt_secrets:/run/secrets/mqtt_secrets:ro
+      - /etc/lautrerwissen/secrets/db_secrets:/run/secrets/db_secrets:ro
+      - /etc/lautrerwissen/secrets/wga_secrets:/run/secrets/wga_secrets:ro
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  core-frontend:
+    restart: unless-stopped
+
+  core-mqtt-sensor-ingester:
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    volumes:
+      - ./logs:/logs:rw
+      - /etc/lautrerwissen/secrets/mqtt_secrets:/run/secrets/mqtt_secrets:ro
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+
+  core-mqtt-fieldstrength-ingester:
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    volumes:
+      - ./logs:/logs:rw
+      - /etc/lautrerwissen/secrets/db_secrets:/run/secrets/db_secrets:ro
+      - /etc/lautrerwissen/secrets/mqtt_secrets:/run/secrets/mqtt_secrets:ro
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
