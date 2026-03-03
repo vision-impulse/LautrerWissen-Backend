@@ -23,25 +23,40 @@ cd /lautrer_wissen_backend/webapp
 
 # ----------------------------------------------------------------------------------------
 # Make django migrations
-echo "Migrations..."
-python3 manage.py makemigrations
-python3 manage.py migrate
+echo "Applying database migrations..."
+python manage.py migrate --noinput
 
 # ----------------------------------------------------------------------------------------
 # Create superuser if not exists
-if [ "$DJANGO_SUPERUSER_USERNAME" ] && [ "$DJANGO_SUPERUSER_EMAIL" ] && [ "$DJANGO_SUPERUSER_PASSWORD" ]; then
-    python manage.py shell << EOF
+python manage.py shell << EOF
+
 from django.contrib.auth import get_user_model
+
+def load_secrets(file_path):
+    secrets = {}
+    if not os.path.exists(file_path):
+        return secrets
+
+    with open(file_path) as f:
+        for line in f:
+            if line.strip() and not line.startswith("#"):
+                key, value = line.strip().split("=", 1)
+                secrets[key] = value
+    return secrets
+
+django_secrets = load_secrets("/run/secrets/django_secrets")
+DJANGO_SUPERUSER_USERNAME = django_secrets.get("DJANGO_SUPERUSER_USERNAME") 
+DJANGO_SUPERUSER_EMAIL = django_secrets.get("DJANGO_SUPERUSER_EMAIL") 
+DJANGO_SUPERUSER_PASSWORD = django_secrets.get("DJANGO_SUPERUSER_PASSWORD") 
+
 User = get_user_model()
-if not User.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists():
-    User.objects.create_superuser('$DJANGO_SUPERUSER_USERNAME', '$DJANGO_SUPERUSER_EMAIL', '$DJANGO_SUPERUSER_PASSWORD')
+if not User.objects.filter(username=DJANGO_SUPERUSER_USERNAME).exists():
+    User.objects.create_superuser(DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_EMAIL, DJANGO_SUPERUSER_PASSWORD)
 EOF
-fi
 
 # ----------------------------------------------------------------------------------------
 # Import seed data content (static, no API existing) (app: lautrer_wissen)
 python3 manage.py import_dashboards
-python3 manage.py import_demographics
 python3 manage.py import_elections
 python3 manage.py import_fieldtests
 
