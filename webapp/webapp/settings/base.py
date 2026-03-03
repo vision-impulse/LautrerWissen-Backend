@@ -264,7 +264,7 @@ LOGGING = {
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = '/static/'
 STATICFILES_DIRS = []  # optional, usually empty
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # for collectstatic
+STATIC_ROOT = "/lautrer_wissen_backend/static"
 
 # Who emails are sent from
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
