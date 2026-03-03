@@ -1,0 +1,46 @@
+services:
+
+  core-db:
+    restart: no
+    ports:
+      - "${DATABASE_PORT}:5432"
+    env_file:
+      - .env
+      - ./secrets/db_secrets
+
+  core-frontend:
+    restart: no
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    
+  core-backend:
+    restart: no
+    ports:
+      - "${DJANGO_BACKEND_PORT}:${DJANGO_BACKEND_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/logs
+      - ./appdata:/appdata
+      - ./config:/config
+      - ./secrets/db_secrets:/run/secrets/db_secrets:ro
+      - ./secrets/django_secrets:/run/secrets/django_secrets:ro
+      - ./secrets/mqtt_secrets:/run/secrets/mqtt_secrets:ro
+      - ./secrets/wga_secrets:/run/secrets/wga_secrets:ro
+
+  core-mqtt-sensor-ingester:
+    restart: no
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/logs
+      - ./secrets/mqtt_secrets:/run/secrets/mqtt_secrets:ro
+
+  core-mqtt-fieldstrength-ingester:
+    restart: no
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/logs
+      - ./secrets/db_secrets:/run/secrets/db_secrets:ro
+      - ./secrets/mqtt_secrets:/run/secrets/mqtt_secrets:ro
