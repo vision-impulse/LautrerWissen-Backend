@@ -11,11 +11,8 @@ The solution is build on the following tech stack:
 ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-316192?logo=postgresql&logoColor=white)
 ![Redis](https://img.shields.io/badge/-Redis-DC382D?logo=redis&logoColor=white)
 ![Docker](https://img.shields.io/badge/-Docker-2496ED?logo=docker&logoColor=white)
-![FluentBit](https://img.shields.io/badge/-Fluent--Bit-49A1E1?logo=fluentbit&logoColor=white)
 ![Plausible](https://img.shields.io/badge/-Plausible-5850EC?logo=plausibleanalytics&logoColor=white)
 ![MQTT](https://img.shields.io/badge/-MQTT-660066?logo=eclipse-mosquitto&logoColor=white)
-
-<br>
 
 # System Overview
 
@@ -30,7 +27,6 @@ The system uses a **microservice & event-driven architecture**, orchestrated via
 | **MQTT Sensor Ingester** | Capture, Transform, store  MQTT events|  Streams MQTT messages → Redis (live data) |
 | **MQTT Fieldstrength Ingester** | Capture, Transform, store MQTT events| Streams MQTT → PostgreSQL (signal diagnostics) |
 | **Plausible Analytics** | Analytics (GDPR-friendly) | Lightweight usage & performance analytics |
-| **Fluent-Bit** | Log aggregation | Logs ingestion and forwarding |
 | **Health-monitoring service** | Custom Uptime & anomaly detection | Checks component health, log anomalies |
 
 The overall system components work together by running the following workflow:
@@ -39,11 +35,11 @@ The overall system components work together by running the following workflow:
 * Persistent Storage: Data and configurations are stored in PostgreSQL.
 * API Exposure: The Django backend exposes REST APIs and a management interface.
 * Visualization: The frontend fetches API data to visualize it on dashboards and interactive maps.
-* Monitoring & Observability: Plausible, Fluent-Bit, and the Health Monitor provide metrics, logs, and health checks.
+* Monitoring & Observability: Plausible, and the Health Monitor provide metrics, logs, and health checks.
 * Real-time Data: MQTT ingesters consume live sensor data streams and update Redis for web clients.
 * Client Updates: WebSocket connections push Redis-cached live data to connected users in real time.
 
-<br>
+
 
 # Component Details
 
@@ -89,7 +85,6 @@ The component *MQTT Fieldstrength Ingeste* performs the following tasks:
 - Parses incoming messages (JSON / LoRaWAN payload)
 - Writes processed data to **PostgreSQL** for persistence and analytics
 
-
 ## Supporting Services
 
 All services are defined in the main `docker-compose.yaml`. Supporting components include:
@@ -99,33 +94,38 @@ All services are defined in the main `docker-compose.yaml`. Supporting component
 * Fluent-Bit: Centralized log collection and forwarding
 * Health Monitor: Sidecar app for system health and uptime checks
 
-<br>
-
 # Getting Started
 
-## Prerequisites
+The following section describes how to get the system set up and running in development mode. More details for a secure setup for deployment in production is described in detail in the [admin handbook](docs/admin/de/index.md).
 
+## Prerequisites
 - Docker & Docker Compose installed
 - Unix-based environment recommended (Linux/Mac)
 - 4 GB RAM minimum for local setup
 
-### Start all services
+## Setup environment variables and secrets
 
-To build and start all containers:
-
-```bash
-docker-compose -f compose.yaml up --build
-```
-
-
-To run in detached mode:
+Setup a `.env` file for environment variables and define values in the file:
 
 ```bash
-docker-compose -f compose.yaml up -d
+cp .env.example .env
+vi .env
 ```
 
-<br>
+Setup secrets for all example secrets files as follows:
 
+```bash
+cp ./secrets/db_secrets.example ./secrets/db_secrets
+vi ./secrets/db_secrets
+```
+
+## Start the services
+
+Build and start all containers:
+
+```bash
+docker compose -f compose.yaml -f docker/compose/compose.dev.yaml up --build -d
+```
 
 # Project Structure
 
@@ -133,6 +133,11 @@ The project layout is organized in a modular manner, ensuring clear separation o
 
 ```
 lauter_wissen
+├── secrets/                         # secrets (only use in dev, move to /etc in prod)
+│
+├── doc/                             # project documention 
+│   ├── admin/de                     # admin handbook / documentation for administrators, developers
+│   └── user/de                      # documentation for uers / user guide
 │
 ├── ingestor/                        # data ingestor code
 │   ├── apis                         # impl. of data connectors for APIs
@@ -152,16 +157,40 @@ lauter_wissen
 ├── docker/                          # Application specific Docker containers
 │   ├── webapp.Dockerfile
 │   ├── ingestor_streaming.Dockerfile
-│   └── monitoring.Dockerfile
+│   ├── monitoring.Dockerfile
+│   └── compose/                     # Docker compose files for dev / prod             
+│       ├── compose.dev.yaml
+│       └── compose.prod.yaml
 │
 ├── config/                          # Configurationd data
 │   ├── init/                        # Django DB seed/init configs (e.g. sidebar, data pipelines etc.)
 │   └── components/                  # component configs (fluentbit, monitoring...)
 │
-├── appdata/                         # Specific application data
-    └── initial/                     # Seed/init data (e.g. for data without an API-Endpoint),
-
+└── appdata/                         # Specific application data
+    ├── data_import/                 # Automatically created, stores all external imports in a daily folder
+    └── init/                        # Seed/init data (e.g. for data without an API-Endpoint),
 ```
+
+# Project Documentation
+
+### Admin Handbook
+
+For more technical information about the architecture, components, admin tasks see the [Admin Handbook](docs/admin/de/index.md) in German.
+
+1. [Introduction](docs/admin/de/index.md)
+2. [Systemarchitecture and overview](docs/admin/de/architecture.md)
+3. [Installation and deployment](docs/admin/de/installation.md)
+4. [Configuration](docs/admin/de/configuration.md)
+4. [Hosting, Updates, Troubleshooting](docs/admin/de/maintenance.md)
+
+### User Handbook
+
+For more information about the usage and configuration of data sources see the [User Handbook](docs/user/de/index.md) in German.
+
+1. [Introduction](docs/user/de/index.md)
+2. [Data configuration](docs/user/de/data_management.md)
+3. [Frontend configuration](docs/user/de/frontend_configuration.md)
+4. [User Management](docs/user/de/user_management.md)
 
 
 # License and Contact

@@ -121,7 +121,7 @@ Alle Abhängigkeiten zwischen den Containern sind im Docker-Compose definiert.
 Start der Kernservices:
 
 ```bash
-docker compose -f compose.yaml -f docker/compose/compose.prod.yaml up -d --build
+docker compose -f compose.yaml -f docker/compose/compose.prod.yaml up --env-file .env.prod -d --build 
 ```
 
 Start von Plausible (separate Compose-Dateien):
@@ -287,7 +287,7 @@ Beispiel Docker-Mount im Proxy-Container für nginx (in der docker-compose.yaml 
 Abschließend müssen die Domain und die öffentlichen URLs in den Konfigurationsdateien gesetzt werden:
 
 * Frontend-Umgebungsvariablen (z.B. `NEXT_PUBLIC_API_BACKEND`)
-* Backend-Umgebungsvariablen (`ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, etc.)
+* Backend-Umgebungsvariablen (`DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`, etc.)
 
 Siehe Abschnitt 2.2 sowie Kapitel 3 Konfiguration.
 
