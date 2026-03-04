@@ -55,3 +55,15 @@ services:
     read_only: true
     security_opt:
       - no-new-privileges:true
+
+  core-health-monitoring:
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    volumes:
+      - ./logs/analysis:/logs/analysis
+      - ./logs/components/:/logs/components/:ro
+      - ./config/components/health-monitoring/services.json:/config/components/health-monitoring/services.json:ro
+    read_only: true
+    security_opt:
+      - no-new-privileges:true

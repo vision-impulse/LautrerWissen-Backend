@@ -107,6 +107,17 @@ services:
         condition: service_healthy
     command: ingestor/run_streaming_import.py --sensor fieldtester
 
+  # -----------------------------------------------------------------------------
+  # Health Monitoring Sidecar
+  # -----------------------------------------------------------------------------
+
+  core-health-monitoring:
+    build: 
+      context: .
+      dockerfile: ./docker/monitoring.Dockerfile
+    networks:
+      - lautrerwissen-net
+
 volumes:
   lautrerwissen-web-static:
     name: lautrerwissen-web-static

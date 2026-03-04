@@ -44,3 +44,12 @@ services:
       - ./logs:/logs
       - ./secrets/db_secrets:/run/secrets/db_secrets:ro
       - ./secrets/mqtt_secrets:/run/secrets/mqtt_secrets:ro
+
+  core-health-monitoring:
+    restart: no
+    env_file:
+      - .env
+    volumes:
+      - ./logs/analysis:/logs/analysis
+      - ./logs/components/:/logs/components/:ro
+      - ./config/components/health-monitoring/services.json:/config/components/health-monitoring/services.json:ro
