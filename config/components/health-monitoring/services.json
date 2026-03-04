@@ -16,28 +16,28 @@
         },
         {
             "name": "LautrerWissen Sensor Caching (Redis)",
-            "hostname": "redis",
+            "hostname": "core-cache",
             "port": 6379,
             "type": "tcp",
             "log_path": "/logs/components/core-redis/redis.log"
         },
         {
             "name": "LautrerWissen Database (PostGIS)",
-            "hostname": "database",
+            "hostname": "core-db",
             "port": 5432,
             "type": "tcp",
             "log_path": "/logs/components/core-postgis/postgis.log"
         },
         {
             "name": "LautrerWissen Frontend (NextJS)",
-            "hostname": "frontend",
+            "hostname": "core-frontend",
             "port": 3000,
             "type": "tcp",
             "log_path": "/logs/components/core-frontend/frontend.log"
         },
         {
             "name": "LautrerWissen Backend (Django)",
-            "hostname": "backend",
+            "hostname": "core-backend",
             "port": 8002,
             "type": "tcp",
             "log_path": "/logs/components/core-backend/backend.log"
