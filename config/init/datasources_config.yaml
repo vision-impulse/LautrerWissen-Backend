@@ -143,17 +143,13 @@ was_geht_app_pipeline:
       region_longitude: 7.7581375
       region_region: 30
 
-wifi_freifunk_pipeline:
-  description: "Diese Pipeline importiert Daten für das Modell Wifi-Hotspot der Datenquelle Freifunk. Es wird ein öffentlicher HTTP-Endpunkt mit JSON-Format angesprochen."
+wifi_pipeline:
+  description: "Diese Pipeline importiert Daten für das Modell Wifi-Hotspot. Für die Datenquelle 'Freifunk' wird ein öffentlicher HTTP-Endpunkt mit JSON-Format angesprochen. Für die Datenquellen 'MySpot' und 'Empera' werden lokale Datein importiert."
   endpoints:
     - url: https://api.karlsruhe.freifunk.net/yanic/meshviewer/ffwp/meshviewer.json
       filename: wifi_freifunk.json
       db_model_class: WLANHotspot
       data_source: "Freifunk"
-
-wifi_myspot_empera_pipeline:
-  description: "WIFI local Pipeline"
-  endpoints:
     - filename: 'wifi_myspot.xlsx'
       db_model_class: WLANHotspot
       data_source: "MySpot"

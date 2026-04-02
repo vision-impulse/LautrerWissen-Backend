@@ -24,10 +24,7 @@ from ingestor.datapipe.pipelines.external_geodata_pipeline import ExternalGeoRes
 from ingestor.datapipe.pipelines.mqtt_sensors_pipeline import MQTTSensorsPipeline
 from ingestor.datapipe.pipelines.vrn_pipeline import VRNPipeline
 from ingestor.datapipe.pipelines.wiki_pipeline import WikipediaPipeline
-from ingestor.datapipe.pipelines.wifi_freifunk_pipeline import WifiFreifunkPipeline
-from ingestor.datapipe.pipelines.wifi_myspot_empera_pipeline import (
-    WifiMySpotEmperaPipeline,
-)
+from ingestor.datapipe.pipelines.wifi_hotspot_pipeline import WifiHotspotPipeline
 from ingestor.datapipe.pipelines.base_pipeline_types import PipelineType
 from ingestor.datapipe.pipelines.emergency_point_pipeline import EmergencyPointPipeline
 from ingestor.datapipe.pipelines.wga_events_pipeline import WGAEventPipeline
@@ -68,13 +65,10 @@ PipelineFactory.register_pipeline(PipelineType.TTN_GATEWAY.name, TTNGatewayPipel
 PipelineFactory.register_pipeline(PipelineType.VRN.name, VRNPipeline)
 PipelineFactory.register_pipeline(PipelineType.WIKIPEDIA.name, WikipediaPipeline)
 PipelineFactory.register_pipeline(PipelineType.EV_STATIONS.name, EVStationPipeline)
-PipelineFactory.register_pipeline(PipelineType.WIFI_FREIFUNK.name, WifiFreifunkPipeline)
+PipelineFactory.register_pipeline(PipelineType.WIFI_HOTSPOTS.name, WifiHotspotPipeline)
 PipelineFactory.register_pipeline(PipelineType.DEMOGRAPHICS.name, DemographicsPipeline)
 PipelineFactory.register_pipeline(
     PipelineType.EXTERNAL_GEO_RESOURCES.name, ExternalGeoResourcePipeline
-)
-PipelineFactory.register_pipeline(
-    PipelineType.WIFI_LOCAL.name, WifiMySpotEmperaPipeline
 )
 PipelineFactory.register_pipeline(
     PipelineType.MQTT_SENSOR_RESOURCES.name, MQTTSensorsPipeline

@@ -166,9 +166,8 @@ class PipelineAdmin(BasePipelineAdmin):
             PipelineType.EVENTS_MIADI.name,
             PipelineType.EVENTS_RIS.name,
             PipelineType.EXTERNAL_GEO_RESOURCES.name,
-            PipelineType.WIFI_FREIFUNK.name,
+            PipelineType.WIFI_HOTSPOTS.name,
             PipelineType.TTN_GATEWAY.name,
-            PipelineType.WIFI_LOCAL.name
             ]:
             inlines = [RemoteResourceFileInline]
 

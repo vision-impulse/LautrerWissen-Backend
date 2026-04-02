@@ -18,13 +18,13 @@
 from ingestor.apis import ResourceDownloader
 from ..steps.download.step_download import DownloadStepFactory
 from ..steps.transforms.wifi import WifiTransformStep
-from ..steps.geo.step_filter import GeoFilterStep
 from ..steps.database.step_import import DatabaseImportStep
-from ..pipelines.base_pipeline import BasePipeline
+from ..steps.geo.step_filter import GeoFilterStep
+from .base_pipeline import BasePipeline
 
 
-class WifiMySpotEmperaPipeline(BasePipeline):
-    """Pipeline for Wifi data (Empera and MySpot)."""
+class WifiHotspotPipeline(BasePipeline):
+    """Pipeline for Wifi data."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,5 +33,6 @@ class WifiMySpotEmperaPipeline(BasePipeline):
         return [
             DownloadStepFactory.create(ResourceDownloader),
             WifiTransformStep(),
+            GeoFilterStep(),
             DatabaseImportStep(),
         ]

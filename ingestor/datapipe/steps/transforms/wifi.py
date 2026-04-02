@@ -31,9 +31,10 @@ import os
 class WifiTransformStep(DefaultTransformStep):
 
     def transform(self, context, db_model, data_acquisition_date):
-        if "freifunk" in context.resource.filename: # check
+        hotspot_data_source = context.resource.data_source.lower()
+        if hotspot_data_source == "freifunk":
             return WifiTransformStep._read_freifunk_json_as_df(context, db_model, data_acquisition_date)
-        elif "empera" in context.resource.filename:
+        elif hotspot_data_source == "empera":
             return WifiTransformStep._read_empera_kml_as_df(context, db_model)
         return WifiTransformStep._read_myspot_excell_as_df(context, db_model)
 

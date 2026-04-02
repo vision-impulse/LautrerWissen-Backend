@@ -102,8 +102,7 @@ class PipelineType(Enum):
     EVENTS_MIADI = "kl_event_calendar_pipeline"
     EVENTS_RIS = "kl_event_ris_calendar_pipeline"
     EVENTS_WGA = "was_geht_app_pipeline"
-    WIFI_FREIFUNK = "wifi_freifunk_pipeline"
-    WIFI_LOCAL = "wifi_myspot_empera_pipeline"
+    WIFI_HOTSPOTS = "wifi_pipeline"
     TTN_GATEWAY = "ttn_gateway_pipeline"
     VRN = "vrn_pipeline"
     DEMOGRAPHICS = "demographics_pipeline"
@@ -118,11 +117,10 @@ PIPELINE_RESOURCE_MAP = {
     PipelineType.EVENTS_MIADI: RemoteResourceFile,
     PipelineType.EVENTS_RIS:RemoteResourceFile,
     PipelineType.EXTERNAL_GEO_RESOURCES: RemoteResourceFile,
-    PipelineType.WIFI_FREIFUNK: RemoteResourceFile,
+    PipelineType.WIFI_HOTSPOTS: RemoteResourceFile,
     PipelineType.EVENTS_WGA: WGAResourceFile,
     PipelineType.TTN_GATEWAY: RemoteResourceFile,
     PipelineType.VRN: VRNResourceFile,
-    PipelineType.WIFI_LOCAL: RemoteResourceFile,
     PipelineType.OSM: ResourceOSM,
     PipelineType.DEMOGRAPHICS: RemoteResourceFile,
 }
