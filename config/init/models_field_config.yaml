@@ -60,7 +60,7 @@ models:
 
   - app_label: lautrer_wissen
     model_name: ChargingStation
-    display_name: Haltestelle (Bus)
+    display_name: E-Ladestation
     fields:
       - field_name: operator
         visible: true
