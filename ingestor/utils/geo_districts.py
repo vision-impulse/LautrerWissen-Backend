@@ -24,13 +24,15 @@ from shapely.ops import unary_union
 from geopandas.tools import sjoin
 from shapely.geometry import shape
 from shapely.geometry import Point, Polygon, MultiPolygon
+from shapely.wkb import loads as load_wkb
 from pyproj import CRS
+from ingestor.utils.geo import clean_geometries
+from ingestor.datapipe.utils.django_integration import get_django_model
 
 logger = logging.getLogger("webapp")
 
-DJANGO_BACKEND_PORT = os.getenv("DJANGO_BACKEND_PORT")
-API_URL_DISTRICTS = f"http://localhost:{DJANGO_BACKEND_PORT}/api/geo/klcitydistrict/?format=json"
-DISTRICTS_4326 = None
+DEFAULT_LOCAL_CRS = "EPSG:25832"
+TARGET_CRS = "EPSG:4326"
 
 
 def _get_local_aea(center_lat: float, center_lon: float) -> CRS:
@@ -44,64 +46,74 @@ def _get_local_aea(center_lat: float, center_lon: float) -> CRS:
         f"+x_0=0 +y_0=0 +units=m +ellps=WGS84 +no_defs"
     )
 
+def _empty_districts_gdf():
+    """
+    Standardized empty GeoDataFrame.
+    """
+    return gpd.GeoDataFrame(
+        columns=["Name", "geometry"],
+        geometry="geometry",
+        crs=TARGET_CRS,
+    )
+
 
 def load_districts():
-    global DISTRICTS_4326
-    if DISTRICTS_4326 is not None:
-        return DISTRICTS_4326
+    """
+    Load districts from Django ORM into GeoDataFrame.
+    Always returns valid GeoDataFrame in EPSG:4326.
+    Never raises.
+    """
 
     try:
-        response = requests.get(API_URL_DISTRICTS, timeout=20)
-        response.raise_for_status()
-        data = response.json()
+        District = get_django_model(
+            "KLCityDistrict",
+            django_app="lautrer_wissen",
+        )
+        if District is None:
+            return _empty_districts_gdf()
+        queryset = District.objects.all()
 
-        features = data.get("features", [])
-        if not features:
-            logger.info("No polygon features found — using empty dataframe.")
-            DISTRICTS_4326 = gpd.GeoDataFrame(columns=["Name", "geometry"], crs="EPSG:4326")
-            return DISTRICTS_4326
+        if not queryset.exists():
+            logger.info("District table is empty.")
+            return _empty_districts_gdf()
 
-        fixed_features = []
-        for f in features:
-            geom = f.get("geometry")
-            if not geom:
+        rows = []
+        for obj in queryset:
+            geom = getattr(obj, "geometry", None)
+            if geom is None:
                 continue
-
-            coords = geom.get("coordinates", [])
-            if geom["type"] == "Polygon":
-                if coords and isinstance(coords[0][0], float):
-                    geom["coordinates"] = [coords]  # wrap coordinates
-
             try:
-                geometry = shape(geom)  # shapely parses dict -> geometry
+                # Convert GeoDjango GEOSGeometry -> Shapely geometry
+                shapely_geom = load_wkb(bytes(geom.wkb))
             except Exception:
-                geometry = None
-
-            fixed_features.append({
-                "Name": f.get("properties", {}).get("Name"),
-                "geometry": geometry,
+                logger.debug(
+                    "Skipping invalid geometry for object %s",
+                    obj.pk,
+                    exc_info=True,
+                )
+                continue
+            rows.append({
+                "Name": getattr(obj, "name", None),
+                "geometry": shapely_geom,
             })
+        gdf = gpd.GeoDataFrame(
+            rows,
+            geometry="geometry",
+        )
 
-        # Build GeoDataFrame (some geometries may still be None)
-        gdf = gpd.GeoDataFrame(fixed_features, geometry="geometry", crs="EPSG:4326")
-        gdf = gdf[gdf.geometry.notnull()]
-
+        gdf = gdf.set_crs(DEFAULT_LOCAL_CRS)
+        gdf = clean_geometries(gdf)
         if gdf.empty:
-            logger.info("Polygon dataset contains only invalid geometries.")
-            DISTRICTS_4326 = gpd.GeoDataFrame(columns=["Name", "geometry"], crs="EPSG:4326")
-            return DISTRICTS_4326
-
-        if gdf.crs is None:
-            gdf.set_crs("EPSG:4326", inplace=True)
-
-        DISTRICTS_4326 = gdf
-        return DISTRICTS_4326
-
-    except Exception as e:
-        logger.info(f"Failed to load district polygons: {e}")
-        DISTRICTS_4326 = gpd.GeoDataFrame(columns=["Name", "geometry"], crs="EPSG:4326")
-        return DISTRICTS_4326
+            logger.info("All district geometries invalid.")
+            return _empty_districts_gdf()
+        if gdf.crs != TARGET_CRS:
+            gdf = gdf.to_crs(TARGET_CRS)
+        return gdf.copy()
+    except Exception:
+        logger.exception("Failed loading districts from Django.")
+        return _empty_districts_gdf()
     
+
 
 class CityDistrictsDecoder(object):
 
@@ -153,6 +165,9 @@ class CityDistrictsDecoder(object):
 
         poly_gdf = districts.to_crs(epsg=4326)
         poly_gdf = poly_gdf.dissolve()
+
+        if not poly_gdf.crs or not poly_gdf.crs.is_geographic:
+            poly_gdf = poly_gdf.to_crs(epsg=4326)
 
         # ── Optional polygon buffer (in metres) ────────────────────────────
         if buffer_km:

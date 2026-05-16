@@ -43,3 +43,15 @@ def remove_z_dimension(geometry: BaseGeometry) -> BaseGeometry:
         if hasattr(geometry, 'geoms'):
             return type(geometry)([remove_z_dimension(part) for part in geometry.geoms])
         return geometry  # Return as is for unsupported geometry types
+
+
+def clean_geometries(gdf):
+    """
+    Remove invalid or unusable geometries.
+    """
+
+    gdf = gdf[gdf.geometry.notnull()].copy()
+    gdf = gdf[~gdf.geometry.is_empty]
+    gdf = gdf[gdf.is_valid]
+
+    return gdf
