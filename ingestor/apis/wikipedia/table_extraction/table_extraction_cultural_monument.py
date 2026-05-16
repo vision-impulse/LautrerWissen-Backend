@@ -22,7 +22,8 @@ import re
 class CulturalMonumentTableExtractor(DefaultWikipediaTableExtractor):
 
     def __init__(self):
-        table_structure = [("name", WikipediaTableCellType.TEXT),
+        table_structure = [("unused_id", WikipediaTableCellType.TEXT),
+                           ("name", WikipediaTableCellType.TEXT),
                            ("address", WikipediaTableCellType.ADDRESS),
                            ("construction_year", WikipediaTableCellType.TEXT),
                            ("description", WikipediaTableCellType.TEXT),
@@ -33,7 +34,8 @@ class CulturalMonumentTableExtractor(DefaultWikipediaTableExtractor):
 class CulturalMonumentTableExtractor_Special(DefaultWikipediaTableExtractor):
 
     def __init__(self):
-        table_structure = [("name", WikipediaTableCellType.TEXT),
+        table_structure = [("unused_id", WikipediaTableCellType.TEXT),
+                           ("name", WikipediaTableCellType.TEXT),
                            ("address", WikipediaTableCellType.ADDRESS),
                            ("construction_year", WikipediaTableCellType.TEXT),
                            ("description", WikipediaTableCellType.TEXT),

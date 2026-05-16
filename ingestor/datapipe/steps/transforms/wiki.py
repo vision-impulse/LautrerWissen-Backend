@@ -78,6 +78,11 @@ class WikiTransformStep(DefaultTransformStep):
                 else:
                     row["address"] = row[WikiDFColumns.ADDRESS_TEXT.value]# "loc_address_text"
 
+                # Note: Some Wikipedia pages have empty 'id' columns. 
+                # They are currently ignored but may be utilized in future iterations.
+                if "unused_id" in row:
+                    del row["unused_id"]
+                
                 del row["id"]
                 del row[WikiDFColumns.ADDRESS_TEXT.value]
                 del row[WikiDFColumns.ADDRESS_LOCATION.value]
