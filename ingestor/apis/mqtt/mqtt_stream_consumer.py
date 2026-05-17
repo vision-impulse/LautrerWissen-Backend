@@ -41,6 +41,10 @@ def write_heartbeat_file(file_path: str = MQTT_HEARTBEAT_FILE_PATH):
     Writes the current Unix timestamp to a file which acts as a 'heartbeat' for external monitoring.
     """
     try:
+        dir_name = os.path.dirname(file_path)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
+
         # Overwrite the file with the new timestamp
         with open(file_path, 'w') as f:
             f.write(str(time.time()))
